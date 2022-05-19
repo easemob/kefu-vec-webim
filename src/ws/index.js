@@ -9,6 +9,7 @@ import commonConfig from '@/common/config'
 import { getConfig, getConfigOption, getRelevanceListConfig, tenantInfo } from '../assets/http/config'
 import { createVisitor, getToken } from '../assets/http/user'
 import { SYSTEM_OFFLINE, HEART_BEAT_INTERVAL, SYSTEM_CHAT_CLOSED, SYSTEM_CLEAR_AGENTSTATE, SYSTEM_CLEAR_AGENTINPUTSTATE, SYSTEM_IS_PULL_HISTORY, SYSTEM_NEW_OFFICIAL_ACCOUNT_FOUND, SYSTEM_OFFICIAL_ACCOUNT_UPDATED, SYSTEM_VIDEO_TICKET_RECEIVED, SYSTEM_VIDEO_ARGO_END, SYSTEM_WHITE_BOARD_RECEIVED, WEBIM_CONNCTION_AUTH_ERROR, WEBIM_CONNCTION_CALLBACK_INNER_ERROR, SYSTEM_AGENT_INFO_UPDATE, SYSTEM_EVENT_MSG_TEXT, SYSTEM_VIDEO_ARGO_REJECT } from '@/assets/constants/events'
+import queryString from 'query-string'
 
 var handleConfig = commonConfig.handleConfig;
 
@@ -326,7 +327,7 @@ function _handleMessage(msg, options){
 	if(!isHistory){
 		// 实时消息需要处理系统事件
 		if(eventName){
-			_handleSystemEvent(eventName, eventObj, msg);
+			// _handleSystemEvent(eventName, eventObj, msg);
 		}
 		else{
 			var agentInfo = utils.getDataByPath(msg, "ext.weichat.agent");
@@ -495,10 +496,9 @@ function _initConnection(){
 	_open();
 }
 
-
 // 初始化配置
 commonConfig.setConfig({
-	configId: '5f958a98-f57e-4c0b-bcee-bdc9e7e7891a'
+	configId: queryString.parse(location.search).configId || '5f958a98-f57e-4c0b-bcee-bdc9e7e7891a'
 })
 function initConfig() {
 	getConfig(commonConfig.getConfig().configId).then(res => {
