@@ -1,0 +1,88 @@
+$new_theme_color:           #2096FF;    //主题色
+$new_icon_color:            #BABABA;   // 会话列表
+$fs: 30px;
+
+@font-face {
+    font-family: 'webimvec';
+    src: url('../font/iconfont.ttf') format('truetype'),
+        url('../font/iconfont.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+}
+
+%font-shell-base-newagent {
+	display: inline-block;
+	line-height: $fs;		// 处理 line-height 继承
+}
+
+%font-base-newagent {
+	display: block;
+	font-family: webimvec;
+	font-size: $fs;
+	vertical-align: middle;
+	-webkit-font-smoothing: antialiased;
+}
+
+.icon-answer {
+    @extend %font-shell-base-newagent;
+	&:before {
+		@extend %font-base-newagent;
+		content: "\e64e";
+	}
+}
+
+.icon-off {
+    @extend %font-shell-base-newagent;
+	&:before {
+		@extend %font-base-newagent;
+		content: "\e650";
+	}
+}
+
+.icon-sound {
+	@extend %font-shell-base-newagent;
+	&:before {
+		@extend %font-base-newagent;
+		content: "\e6ef";
+	}
+}
+
+.icon-sound-close {
+	@extend %font-shell-base-newagent;
+	&:before {
+		@extend %font-base-newagent;
+		content: "\e6a7";
+	}
+}
+
+.icon-face {
+	@extend %font-shell-base-newagent;
+	&:before {
+		@extend %font-base-newagent;
+		content: "\e76c";
+	}
+}
+
+.icon-face-close {
+	@extend %font-shell-base-newagent;
+	&:before {
+		@extend %font-base-newagent;
+		content: "\e659";
+	}
+}
+
+.icon-microphone {
+	@extend %font-shell-base-newagent;
+	&:before {
+		@extend %font-base-newagent;
+		content: "\ecb1";
+	}
+}
+
+.icon-microphone-close {
+	@extend %font-shell-base-newagent;
+	&:before {
+		@extend %font-base-newagent;
+		content: "\e6eb";
+	}
+}
