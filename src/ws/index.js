@@ -7,8 +7,8 @@ import Dict from '@/tools/Dict'
 import List from '@/tools/List'
 import commonConfig from '@/common/config'
 import { getConfig, getConfigOption, getRelevanceListConfig, tenantInfo } from '../assets/http/config'
-import { createVisitor, getToken } from '../assets/http/user'
-import { SYSTEM_OFFLINE, HEART_BEAT_INTERVAL, SYSTEM_CHAT_CLOSED, SYSTEM_CLEAR_AGENTSTATE, SYSTEM_CLEAR_AGENTINPUTSTATE, SYSTEM_IS_PULL_HISTORY, SYSTEM_NEW_OFFICIAL_ACCOUNT_FOUND, SYSTEM_OFFICIAL_ACCOUNT_UPDATED, SYSTEM_VIDEO_TICKET_RECEIVED, SYSTEM_VIDEO_ARGO_END, SYSTEM_WHITE_BOARD_RECEIVED, WEBIM_CONNCTION_AUTH_ERROR, WEBIM_CONNCTION_CALLBACK_INNER_ERROR, SYSTEM_AGENT_INFO_UPDATE, SYSTEM_EVENT_MSG_TEXT, SYSTEM_VIDEO_ARGO_REJECT } from '@/assets/constants/events'
+import { createVisitor, getToken, getOfficalAccounts } from '../assets/http/user'
+import { SYSTEM_OFFLINE, HEART_BEAT_INTERVAL, SYSTEM_CHAT_CLOSED, SYSTEM_CLEAR_AGENTSTATE, SYSTEM_CLEAR_AGENTINPUTSTATE, SYSTEM_IS_PULL_HISTORY, SYSTEM_NEW_OFFICIAL_ACCOUNT_FOUND, SYSTEM_OFFICIAL_ACCOUNT_UPDATED, SYSTEM_VIDEO_TICKET_RECEIVED, SYSTEM_VIDEO_ARGO_END, SYSTEM_WHITE_BOARD_RECEIVED, WEBIM_CONNCTION_AUTH_ERROR, WEBIM_CONNCTION_CALLBACK_INNER_ERROR, SYSTEM_AGENT_INFO_UPDATE, SYSTEM_EVENT_MSG_TEXT, SYSTEM_VIDEO_ARGO_REJECT, SYSTEM_SESSION_TRANSFERED } from '@/assets/constants/events'
 import queryString from 'query-string'
 
 var handleConfig = commonConfig.handleConfig;
@@ -17,18 +17,6 @@ var handleConfig = commonConfig.handleConfig;
 var receiveMsgDict = new Dict();
 var conn
 var config = commonConfig.getConfig()
-// var config = {
-//     user: {
-//         password: "MV2WF37PMJ",
-//         username: "webim-visitor-HX9XVYGY4PBMKV4XC8FQ"
-//     },
-//     appKey: "123zj#kefusandbox",
-//     appName: "kefusandbox",
-//     restServer: "a1-v2.easemob.com",
-//     toUser: "197501",
-//     xmppServer: "im-api.easemob.com",
-//     tenantId: 28994
-// }
 
 var _open = tools.retryThrottle(function(){
 	var op = {
@@ -327,7 +315,7 @@ function _handleMessage(msg, options){
 	if(!isHistory){
 		// 实时消息需要处理系统事件
 		if(eventName){
-			// _handleSystemEvent(eventName, eventObj, msg);
+			_handleSystemEvent(eventName, eventObj, msg);
 		}
 		else{
 			var agentInfo = utils.getDataByPath(msg, "ext.weichat.agent");
@@ -349,53 +337,53 @@ function _handleSystemEvent(event, eventObj, msg){
 
 	switch(event){
 	case SYSTEM_SESSION_TRANSFERED:
-		officialAccount.agentId = eventObj.userId;
-		officialAccount.agentType = eventObj.agentType;
-		officialAccount.agentAvatar = eventObj.avatar;
-		officialAccount.agentNickname = eventObj.agentUserNiceName;
-		officialAccount.sessionState = _const.SESSION_STATE.PROCESSING;
-		officialAccount.isSessionOpen = true;
-		profile.latestNiceName = null;
-		event.emit(_const.SYSTEM_EVENT.STOP_TIMEOUT, [officialAccount]);
+		// officialAccount.agentId = eventObj.userId;
+		// officialAccount.agentType = eventObj.agentType;
+		// officialAccount.agentAvatar = eventObj.avatar;
+		// officialAccount.agentNickname = eventObj.agentUserNiceName;
+		// officialAccount.sessionState = SESSION_STATE_PROCESSING;
+		// officialAccount.isSessionOpen = true;
+		// profile.latestNiceName = null;
+		// event.emit(_const.SYSTEM_EVENT.STOP_TIMEOUT, [officialAccount]);
 		break;
 	case SYSTEM_SESSION_TRANSFERING:
-		officialAccount.sessionState = _const.SESSION_STATE.WAIT;
-		officialAccount.isSessionOpen = true;
-		officialAccount.skillGroupId = null;
-		eventListener.excuteCallbacks(_const.SYSTEM_EVENT.STOP_TIMEOUT, [officialAccount]);
-		profile.latestNiceName = null;  // 转接时把最近一次名称置空
+		// officialAccount.sessionState = _const.SESSION_STATE.WAIT;
+		// officialAccount.isSessionOpen = true;
+		// officialAccount.skillGroupId = null;
+		// eventListener.excuteCallbacks(_const.SYSTEM_EVENT.STOP_TIMEOUT, [officialAccount]);
+		// profile.latestNiceName = null;  // 转接时把最近一次名称置空
 		break;
 	case SYSTEM_SESSION_CLOSED:
 		// 如果在会话结束前已经发起了满意度评价，在结束时开始计算失效时间
-		evaluateFlag = true;
-		var serviceId = msg.ext.weichat.service_session.serviceSessionId;
-		var btnInvalid = $(".em-btn-list>button[data-servicesessionid=" + serviceId + "]");
-		if(btnInvalid){
-			apiHelper.getEvaluatePrescription().then(function(res){
-				if(!res){
-					res = 8 * 3600;
-				}
-				setTimeout(function(){
-					btnInvalid.removeClass("bg-hover-color");
-					btnInvalid.removeClass("js_satisfybtn");
-					btnInvalid.text(__("chat.invalid"));
-					btnInvalid.addClass("invalid-btn");
-				}, res * 1000);
-			});
-		}
-		officialAccount.sessionState = _const.SESSION_STATE.ABORT;
-		officialAccount.agentId = null;
-		// 发起满意度评价需要回传sessionId，所以不能清空
-		// officialAccount.sessionId = null;
-		officialAccount.skillGroupId = null;
-		officialAccount.isSessionOpen = false;
-		officialAccount.hasReportedAttributes = false;
-		profile.latestNiceName = null;  // 结束会话把最近一次名称置空
-		// to topLayer
-		getToHost.send({ event: _const.EVENTS.ONSESSIONCLOSED });
+		// evaluateFlag = true;
+		// var serviceId = msg.ext.weichat.service_session.serviceSessionId;
+		// var btnInvalid = $(".em-btn-list>button[data-servicesessionid=" + serviceId + "]");
+		// if(btnInvalid){
+		// 	apiHelper.getEvaluatePrescription().then(function(res){
+		// 		if(!res){
+		// 			res = 8 * 3600;
+		// 		}
+		// 		setTimeout(function(){
+		// 			btnInvalid.removeClass("bg-hover-color");
+		// 			btnInvalid.removeClass("js_satisfybtn");
+		// 			btnInvalid.text(__("chat.invalid"));
+		// 			btnInvalid.addClass("invalid-btn");
+		// 		}, res * 1000);
+		// 	});
+		// }
+		// officialAccount.sessionState = _const.SESSION_STATE.ABORT;
+		// officialAccount.agentId = null;
+		// // 发起满意度评价需要回传sessionId，所以不能清空
+		// // officialAccount.sessionId = null;
+		// officialAccount.skillGroupId = null;
+		// officialAccount.isSessionOpen = false;
+		// officialAccount.hasReportedAttributes = false;
+		// profile.latestNiceName = null;  // 结束会话把最近一次名称置空
+		// // to topLayer
+		// getToHost.send({ event: _const.EVENTS.ONSESSIONCLOSED });
 		break;
 	case SYSTEM_SESSION_OPENED:
-		officialAccount.sessionState = _const.SESSION_STATE.PROCESSING;
+		officialAccount.sessionState = SESSION_STATE_PROCESSING;
 		officialAccount.agentType = eventObj.agentType;
 		officialAccount.agentId = eventObj.userId;
 		officialAccount.sessionId = eventObj.sessionId;
@@ -404,15 +392,15 @@ function _handleSystemEvent(event, eventObj, msg){
 		officialAccount.isSessionOpen = true;
 		break;
 	case SYSTEM_SESSION_CREATED:
-		officialAccount.sessionState = _const.SESSION_STATE.WAIT;
-		officialAccount.sessionId = eventObj.sessionId;
-		officialAccount.isSessionOpen = true;
-		getToHost.send({ event: _const.EVENTS.ONSESSIONCREAT });
+		// officialAccount.sessionState = _const.SESSION_STATE.WAIT;
+		// officialAccount.sessionId = eventObj.sessionId;
+		// officialAccount.isSessionOpen = true;
+		// getToHost.send({ event: _const.EVENTS.ONSESSIONCREAT });
 		break;
 	default:
 		break;
 	}
-	event.emit(event, [officialAccount]);
+	event.emit(event, officialAccount);
 	// _promptNoAgentOnlineIfNeeded({ officialAccountId: officialAccountId });
 }
 
@@ -545,36 +533,6 @@ function initRelevanceList(tenantId){
 	}, () => {
 		handleCfgData(relevanceList || [], []);
 	})
-
-	// getConfigOption({
-	// 	configId: commonConfig.getConfig().configId,
-	// 	tenantId
-	// })
-	// .then(function(value){
-	// 	if (value.status && value.status === 'OK') {
-	// 		commonConfig.setConfig({
-	// 			configOption: _.extend({}, commonConfig.getConfig().configOption, value)
-	// 		});
-	// 	}
-	// // 获取关联信息（targetChannel）
-	// var relevanceList;
-
-	// getRelevanceList();
-
-	// function getRelevanceList(){
-	// 	getRelevanceListConfig({tenantId})
-	// 	.then(function(_relevanceList){
-	// 		relevanceList = _relevanceList;
-
-	// 		return Promise.resolve([]);
-	// 	})
-	// 	.then(function(results){
-	// 		handleCfgData(relevanceList, results);
-	// 	}, function(){
-	// 		handleCfgData(relevanceList || [], []);
-	// 	});
-	// }
-	// });
 }
 
 // todo: rename this function
@@ -675,7 +633,18 @@ function handleCfgData(relevanceList){
 		})
 
 		config = commonConfig.getConfig()
-		_initConnection()
+
+		// _initConnection()
+
+		getOfficalAccounts().then(officialAccountList => {
+			officialAccountList.forEach(_attemptToAppendOfficialAccount)
+
+			if(!profile.ctaEnable){
+				profile.currentOfficialAccount = profile.systemOfficialAccount;
+			}
+
+			_initConnection()
+		})	
 	} else {
 		setUserInfo()
 	}
@@ -707,14 +676,18 @@ function setUserInfo() {
 }
 
 function getUserToken() {
-	getToken().then(resp => {
-		var token = resp.access_token;
-
-		// cache token
-		profile.imToken = token;
-
+	if (profile.imToken) {
 		_initConnection()
-	})
+	} else {
+		getToken().then(resp => {
+			var token = resp.access_token;
+	
+			// cache token
+			profile.imToken = token;
+	
+			_initConnection()
+		})
+	}
 }
 
 function _sendText(message, ext = {}) {

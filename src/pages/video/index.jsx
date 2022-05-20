@@ -5,7 +5,8 @@ import videoChatAgora from '@/tools/hxVideo'
 import logo from '@/assets/img/qiye.png'
 import commonConfig from '@/common/config'
 import event from '@/tools/event'
-import { SYSTEM_VIDEO_TICKET_RECEIVED, SYSTEM_VIDEO_ARGO_END, SYSTEM_VIDEO_ARGO_REJECT } from '@/assets/constants/events'
+import { visitorClose } from '../../assets/http/user'
+import { SYSTEM_VIDEO_TICKET_RECEIVED, SYSTEM_VIDEO_ARGO_END, SYSTEM_VIDEO_ARGO_REJECT, SYSTEM_SESSION_OPENED } from '@/assets/constants/events'
 
 import ws from '@/ws'
 
@@ -14,7 +15,7 @@ var serviceAgora = null
 export default function Video() {
     const [step, setStep] = useState('start') // start: 发起和重新发起 wait等待接听中 current 视频中 off：挂断
     const [desc, setDesc] = useState('发起通话')
-    const [tip, setTip] = useState('您好，有什么可以帮助您的？可以发起视频进行咨询！')
+    const [tip, setTip] = useState('您好！有什么需要帮助，可以发起视频通话进行咨询呦！')
     const [sound, setSound] = useState(true) // 开关声音
     const [face, setFace] = useState(true) // 开关视频
     const [pos, setPos] = useState(true) // 默认展示自己
@@ -30,16 +31,12 @@ export default function Video() {
     function handleStart() {
         setStep('wait')
         setDesc('挂断')
-        setTip(`您好，您正在向${commonConfig.getConfig().tenantInfo.name}发起视频咨询，请稍等片刻！`)
+        setTip(`您好！您正在发起视频通话进行咨询。`)
         setCompInfo({
             name: commonConfig.getConfig().tenantInfo.name,
             avatar: commonConfig.getConfig().tenantInfo.avatar,
         })
         // setTip(['您好，您正在向环信发起视频咨询，请稍等片刻！', '您前面还有3人，客服小姐姐正在马不停蹄的赶来，请稍等片刻！'][Math.round(Math.random())])
-
-        event.on(SYSTEM_VIDEO_TICKET_RECEIVED, recived) // 监听接受
-        event.on(SYSTEM_VIDEO_ARGO_END, handleClose) // 取消和挂断
-        event.on(SYSTEM_VIDEO_ARGO_REJECT, handleClose) // 坐席拒接
 
         ws.sendText('邀请客服进行实时视频', {
             ext: {
@@ -91,14 +88,17 @@ export default function Video() {
 
     // 结束
     const handleClose = useCallback(() => {
-        setStep('start')
-        setDesc('重新发起')
-        setTip('感谢您的来电，祝您生活愉快！')
-        setCallId(null)
-        setTime(false)
-        setTicketIfo(null)
-
         if (step === 'wait') {
+            setStep('start')
+            setDesc('重新发起')
+            setTip('感谢您的咨询，祝您生活愉快！')
+            setCallId(null)
+            setTime(false)
+            setTicketIfo(null)
+            setSound(true)
+            setFace(true)
+            setPos(true)
+
             ws.sendText('访客取消实时视频', { // 防止发的消息被翻译，归类为系统消息
                 ext: {
                     type: "rtcmedia/video",
@@ -120,11 +120,32 @@ export default function Video() {
                     },
                 },
             })
-        }
 
-        // 本地离开
-        serviceAgora && serviceAgora.leave();
-        serviceAgora = null
+            // 本地离开
+            serviceAgora && serviceAgora.leave();
+            serviceAgora = null
+        } else {
+            // 先请求接口在离开
+            visitorClose().then(res => {
+                if (res.status && res.status === 'OK') {
+                    setStep('start')
+                    setDesc('重新发起')
+                    setTip('感谢您的咨询，祝您生活愉快！')
+                    setCallId(null)
+                    setTime(false)
+                    setTicketIfo(null)
+                    setSound(true)
+                    setFace(true)
+                    setPos(true)
+
+                    // 本地离开
+                    serviceAgora && serviceAgora.leave();
+                    serviceAgora = null
+                } 
+            }, err => {
+                return
+            })
+        }
     }, [step])
 
     // 声音
@@ -192,6 +213,12 @@ export default function Video() {
             setAgentSound(!!agent.audioTrack)
         }
     }, [remoteUsers])
+
+    useEffect(() => {
+        event.on(SYSTEM_VIDEO_TICKET_RECEIVED, recived) // 监听接受
+        event.on(SYSTEM_VIDEO_ARGO_END, handleClose) // 取消和挂断
+        event.on(SYSTEM_VIDEO_ARGO_REJECT, handleClose) // 坐席拒接
+    }, [])
 
     return (
         <Wrapper>
