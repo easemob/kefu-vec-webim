@@ -19,6 +19,33 @@ var vec = merge(common, {
     compress: true,
     // 启动的端口
     port: 8888,
+    // 代理
+    proxy: {
+      "/push": {
+        target: "ws://" + 'sandbox.kefu.easemob.com',
+        ws: true
+      },
+      '/**/*': {
+        // changeOrigin: true,
+        // target: (process.env.HTTPS ? "https://" : "http://") + process.env.PROXY_TO,
+        target: "http://" + 'sandbox.kefu.easemob.com',
+        // 没有黑名单配置方式
+        // 静态资源最优先
+        // 只需要区分 路由 和 接口
+        // bypass: (req, res, proxyOptions) => {
+        //   let targetRule = rewriteConfig.find(rule => rule.from.test(req.url));
+        //   if (targetRule) {
+        //     return targetRule.to;
+        //   }
+        //   else {
+        //     console.log("PROX", req.url);
+        //   }
+        // },
+      },
+    },
+    headers: {
+      "Access-Control-Allow-Origin": "*",
+    },
   },
 })
 

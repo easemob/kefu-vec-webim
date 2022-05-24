@@ -5,8 +5,9 @@ import videoChatAgora from '@/tools/hxVideo'
 import logo from '@/assets/img/qiye.png'
 import commonConfig from '@/common/config'
 import event from '@/tools/event'
-import { visitorClose } from '../../assets/http/user'
+import { visitorClose, getOfficalAccounts } from '@/assets/http/user'
 import { SYSTEM_VIDEO_TICKET_RECEIVED, SYSTEM_VIDEO_ARGO_END, SYSTEM_VIDEO_ARGO_REJECT, SYSTEM_SESSION_OPENED } from '@/assets/constants/events'
+import profile from '@/tools/profile'
 
 import ws from '@/ws'
 
@@ -64,8 +65,7 @@ export default function Video() {
     const recived = useCallback(ticketInfo => {
         if (!serviceAgora) {
             setTicketIfo(ticketInfo)
-            setTime(true) // 开始计时
-            setStep('current') // 进行中视频
+            // setStep('current') // 进行中视频
     
             var cfgAgora = {
                 appid: ticketInfo.appId,
@@ -80,11 +80,36 @@ export default function Video() {
                 onErrorNotify,
                 onRemoteUserChange,
                 onUserLeft})
-            serviceAgora.join(cfgAgora).then(() => {    
-                serviceAgora.localVideoTrack && serviceAgora.localVideoTrack.play('visitor_video');
+            // 获取访客信息 关闭信息的时候要用
+            getOfficalAccounts().then(officialAccountList => {
+                officialAccountList.forEach(ws.attemptToAppendOfficialAccount)
+
+            	if(!profile.ctaEnable){
+            		profile.currentOfficialAccount = profile.systemOfficialAccount;
+            	}
+
+                setTime(true) // 开始计时
+                setStep('current')
+                serviceAgora.join(cfgAgora).then(() => {    
+                    serviceAgora.localVideoTrack && serviceAgora.localVideoTrack.play('visitor_video');
+                })
+            }, err => {
+                noVisitorClose()
             })
         }
     }, [ticketInfo, serviceAgora])
+
+    // 无访客信息直接挂断，否则关闭需要的信息获取不到
+    const noVisitorClose = () => {
+        setStep('start')
+        setDesc('重新发起')
+        setTip('感谢您的咨询，祝您生活愉快！')
+        setCallId(null)
+
+        // 本地离开
+        serviceAgora && serviceAgora.leave();
+        serviceAgora = null
+    }
 
     // 结束
     const handleClose = useCallback(() => {

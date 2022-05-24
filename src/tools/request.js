@@ -14,7 +14,7 @@ export default function request(option) {
 	return new Promise((resolve, reject) => {
 		// 1.创建axios的实例
 		const instance = originAxios.create({
-			baseURL: getDomain(),
+			// baseURL: getDomain(),
 			timeout: 10000
 		});
 

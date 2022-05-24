@@ -8,7 +8,7 @@ import List from '@/tools/List'
 import commonConfig from '@/common/config'
 import { getConfig, getConfigOption, getRelevanceListConfig, tenantInfo } from '../assets/http/config'
 import { createVisitor, getToken, getOfficalAccounts } from '../assets/http/user'
-import { SYSTEM_OFFLINE, HEART_BEAT_INTERVAL, SYSTEM_CHAT_CLOSED, SYSTEM_CLEAR_AGENTSTATE, SYSTEM_CLEAR_AGENTINPUTSTATE, SYSTEM_IS_PULL_HISTORY, SYSTEM_NEW_OFFICIAL_ACCOUNT_FOUND, SYSTEM_OFFICIAL_ACCOUNT_UPDATED, SYSTEM_VIDEO_TICKET_RECEIVED, SYSTEM_VIDEO_ARGO_END, SYSTEM_WHITE_BOARD_RECEIVED, WEBIM_CONNCTION_AUTH_ERROR, WEBIM_CONNCTION_CALLBACK_INNER_ERROR, SYSTEM_AGENT_INFO_UPDATE, SYSTEM_EVENT_MSG_TEXT, SYSTEM_VIDEO_ARGO_REJECT, SYSTEM_SESSION_TRANSFERED } from '@/assets/constants/events'
+import { SYSTEM_OFFLINE, HEART_BEAT_INTERVAL, SYSTEM_CHAT_CLOSED, SYSTEM_CLEAR_AGENTSTATE, SYSTEM_CLEAR_AGENTINPUTSTATE, SYSTEM_IS_PULL_HISTORY, SYSTEM_NEW_OFFICIAL_ACCOUNT_FOUND, SYSTEM_OFFICIAL_ACCOUNT_UPDATED, SYSTEM_VIDEO_TICKET_RECEIVED, SYSTEM_VIDEO_ARGO_END, SYSTEM_WHITE_BOARD_RECEIVED, WEBIM_CONNCTION_AUTH_ERROR, WEBIM_CONNCTION_CALLBACK_INNER_ERROR, SYSTEM_AGENT_INFO_UPDATE, SYSTEM_EVENT_MSG_TEXT, SYSTEM_VIDEO_ARGO_REJECT, SYSTEM_SESSION_TRANSFERED, SYSTEM_SESSION_TRANSFERING, SYSTEM_SESSION_CLOSED, SYSTEM_SESSION_OPENED,SESSION_STATE_PROCESSING,SYSTEM_SESSION_CREATED } from '@/assets/constants/events'
 import queryString from 'query-string'
 
 var handleConfig = commonConfig.handleConfig;
@@ -329,13 +329,13 @@ function _handleMessage(msg, options){
 	}
 }
 
-function _handleSystemEvent(event, eventObj, msg){
-	var eventMessageText = SYSTEM_EVENT_MSG_TEXT[event];
+function _handleSystemEvent(eventName, eventObj, msg){
+	var eventMessageText = SYSTEM_EVENT_MSG_TEXT[eventName];
 	var officialAccountId = utils.getDataByPath(msg, "ext.weichat.official_account.official_account_id");
 	var officialAccount = _getOfficialAccountById(officialAccountId);
 	var agentType = utils.getDataByPath(msg, "ext.weichat.event.eventObj.agentType");
 
-	switch(event){
+	switch(eventName){
 	case SYSTEM_SESSION_TRANSFERED:
 		// officialAccount.agentId = eventObj.userId;
 		// officialAccount.agentType = eventObj.agentType;
@@ -400,11 +400,12 @@ function _handleSystemEvent(event, eventObj, msg){
 	default:
 		break;
 	}
-	event.emit(event, officialAccount);
+	event.emit(eventName, officialAccount);
 	// _promptNoAgentOnlineIfNeeded({ officialAccountId: officialAccountId });
 }
 
 function _initConnection(){
+	config = commonConfig.getConfig()
 	// init connection
 	conn = new WebIM.connection({
 		url: config.xmppServer,
@@ -634,17 +635,17 @@ function handleCfgData(relevanceList){
 
 		config = commonConfig.getConfig()
 
-		// _initConnection()
+		_initConnection()
 
-		getOfficalAccounts().then(officialAccountList => {
-			officialAccountList.forEach(_attemptToAppendOfficialAccount)
+		// getOfficalAccounts().then(officialAccountList => {
+		// 	officialAccountList.forEach(_attemptToAppendOfficialAccount)
 
-			if(!profile.ctaEnable){
-				profile.currentOfficialAccount = profile.systemOfficialAccount;
-			}
+		// 	if(!profile.ctaEnable){
+		// 		profile.currentOfficialAccount = profile.systemOfficialAccount;
+		// 	}
 
-			_initConnection()
-		})	
+		// 	_initConnection()
+		// })	
 	} else {
 		setUserInfo()
 	}
@@ -805,4 +806,5 @@ export default {
     handleMessage: _handleMessage,
 	sendText: _sendText,
 	cancelVideo: _sendCmdExitVideo,
+	attemptToAppendOfficialAccount: _attemptToAppendOfficialAccount
 }
