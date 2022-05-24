@@ -1,0 +1,29 @@
+dist: trusty
+language: node_js
+node_js:
+  - "16"
+
+install:
+  - npm install
+
+# 相同 stage 的 jobs 并行执行
+# 每个 stage 是 travis 独立判断的
+# tag 发布 travis 拿不到任何 branch name
+jobs:
+  include:
+    - stage: "build"
+      name: "build"
+      # 53.0.119-travis1
+      # 53.0.119
+      if: tag =~ ^\d+[.]\d+[.]\d+(-[a-z]+[0-9]*)?$
+      # if: type = pull_request
+      # if: tag IS present
+      script: >-
+        CI=false
+        npm run build
+        && zip -r build.zip build
+        && node ./scripts/upload.js
+
+cache:
+  directories:
+    - node_moduels

@@ -102,7 +102,7 @@ module.exports = {
     // 复制文件
     new CopyPlugin({
       patterns: [
-        { from: getPath('../src/libs'), to: getPath('../dist/js') }
+        { from: getPath('../src/libs'), to: getPath('../build/js') }
       ],
     }),
   ],
