@@ -2,6 +2,8 @@ const { merge } = require('webpack-merge')
 const path = require('path')
 const common = require('./webpack.base')
 
+const getPath = pathname => path.resolve(__dirname, pathname)
+
 var vec = merge(common, {
   mode: 'development',
   // 开发工具，开启 source map，编译调试
@@ -10,6 +12,9 @@ var vec = merge(common, {
     type: 'filesystem', // 使用文件缓存
   },
   entry: './src/index.js',
+  output: {
+    path: getPath('../build')
+  },
   devServer: {
     historyApiFallback: true,
     open: true, // 自动打开页面
