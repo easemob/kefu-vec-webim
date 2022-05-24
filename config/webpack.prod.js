@@ -1,6 +1,6 @@
 const TerserPlugin = require('terser-webpack-plugin') // js压缩
 const CssMinimizerPlugin = require('css-minimizer-webpack-plugin') // css压缩
-var UglifyJsPlugin = require('uglifyjs-webpack-plugin');
+// var UglifyJsPlugin = require('uglifyjs-webpack-plugin');
 const { merge } = require('webpack-merge')
 const common = require('./webpack.base')
 const path = require('path')
@@ -47,22 +47,22 @@ var vec = merge(common, {
       new CssMinimizerPlugin({
         parallel: 4,
       }),
-      new UglifyJsPlugin({
-        uglifyOptions: {
-          test: /\.js$/i,
-          comments: false,
-          sourceMap: true,
-          warnings: false,
-          parse: {},
-          compress: {},
-          mangle: true, // Note `mangle.properties` is `false` by default.
-          output: null,
-          toplevel: false,
-          nameCache: null,
-          ie8: false,
-          keep_fnames: false,
-        }
-      }),
+      // new UglifyJsPlugin({
+      //   uglifyOptions: {
+      //     test: /\.js$/i,
+      //     comments: false,
+      //     sourceMap: true,
+      //     warnings: false,
+      //     parse: {},
+      //     compress: {},
+      //     mangle: true, // Note `mangle.properties` is `false` by default.
+      //     output: null,
+      //     toplevel: false,
+      //     nameCache: null,
+      //     ie8: false,
+      //     keep_fnames: false,
+      //   }
+      // }),
     ],
   },
 })
