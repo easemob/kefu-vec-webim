@@ -25,7 +25,7 @@ var vec = merge(common, {
         target: "ws://" + 'sandbox.kefu.easemob.com',
         ws: true
       },
-      '/**/*': {
+      '/v1/*': { // 如果接口不是v1开始就死了。。
         // changeOrigin: true,
         // target: (process.env.HTTPS ? "https://" : "http://") + process.env.PROXY_TO,
         target: "http://" + 'sandbox.kefu.easemob.com',
@@ -33,9 +33,9 @@ var vec = merge(common, {
         // 静态资源最优先
         // 只需要区分 路由 和 接口
         // bypass: (req, res, proxyOptions) => {
-        //   let targetRule = rewriteConfig.find(rule => rule.from.test(req.url));
+        //   let targetRule = rewriteConfig.find(rule => rule === req.url);
         //   if (targetRule) {
-        //     return targetRule.to;
+        //     return req.url;
         //   }
         //   else {
         //     console.log("PROX", req.url);

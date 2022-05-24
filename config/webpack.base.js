@@ -88,6 +88,7 @@ module.exports = {
   },
   plugins: [
     new htmlWebpackPlugin({
+      title: '环信客服',
       filename: 'index.html',
       template: getPath('../public/index.html')
     }),
