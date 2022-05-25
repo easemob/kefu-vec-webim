@@ -6,7 +6,7 @@ import logo from '@/assets/img/qiye.png'
 import commonConfig from '@/common/config'
 import event from '@/tools/event'
 import { visitorClose, getOfficalAccounts } from '@/assets/http/user'
-import { SYSTEM_VIDEO_TICKET_RECEIVED, SYSTEM_VIDEO_ARGO_END, SYSTEM_VIDEO_ARGO_REJECT, SYSTEM_SESSION_OPENED } from '@/assets/constants/events'
+import { SYSTEM_VIDEO_TICKET_RECEIVED, SYSTEM_VIDEO_ARGO_END, SYSTEM_VIDEO_ARGO_REJECT } from '@/assets/constants/events'
 import profile from '@/tools/profile'
 
 import ws from '@/ws'
@@ -37,11 +37,11 @@ export default function Video() {
             name: commonConfig.getConfig().tenantInfo.name,
             avatar: commonConfig.getConfig().tenantInfo.avatar,
         })
-        // setTip(['您好，您正在向环信发起视频咨询，请稍等片刻！', '您前面还有3人，客服小姐姐正在马不停蹄的赶来，请稍等片刻！'][Math.round(Math.random())])
 
         ws.sendText('邀请客服进行实时视频', {
             ext: {
                 type: "agorartcmedia/video",
+                targetSystem: 'kefurtc',
                 msgtype: {
                     liveStreamInvitation: {
                         msg: '邀请客服进行实时视频',
@@ -127,6 +127,7 @@ export default function Video() {
             ws.sendText('访客取消实时视频', { // 防止发的消息被翻译，归类为系统消息
                 ext: {
                     type: "rtcmedia/video",
+                    targetSystem: 'kefurtc',
                     msgtype: {
                         visitorCancelInvitation: {
                             msg: '访客取消实时视频',
@@ -138,6 +139,7 @@ export default function Video() {
             ws.cancelVideo(callId, {
                 ext: {
                     type: "agorartcmedia/video",
+                    targetSystem: 'kefurtc',
                     msgtype: {
                         visitorCancelInvitation : {
                             callId: callId
@@ -197,10 +199,20 @@ export default function Video() {
     const onUserLeft = useCallback(() => {
         if (!remoteUsers.length) {
             serviceAgora.leave()
+            setStep('start')
+            setDesc('重新发起')
+            setTip('感谢您的咨询，祝您生活愉快！')
+            setCallId(null)
+            setTime(false)
+            setTicketIfo(null)
+            setSound(true)
+            setFace(true)
+            setPos(true)
 
             ws.cancelVideo(callId, {
                 ext: {
                     type: "agorartcmedia/video",
+                    targetSystem: 'kefurtc',
                     msgtype: {
                         visitorRejectInvitation: { // 客服挂断
                             callId: callId
@@ -270,7 +282,7 @@ export default function Video() {
                         {pos ? (<CurrentBodyMicro className='agent'><span className= {agentSound ? 'icon-microphone' : 'icon-microphone-close'}></span></CurrentBodyMicro>) : null}
                         <div className='info'>
                             {pos ? null : (<CurrentBodyMicro className='agent'><span className={agentSound ? 'icon-microphone' : 'icon-microphone-close'}></span></CurrentBodyMicro>)}
-                            <span>客服-{ticketInfo ? ticketInfo.agentTicket.niceName : ''}</span>
+                            <span>客服-{ticketInfo && ticketInfo.agentTicket ? ticketInfo.agentTicket.niceName : ''}</span>
                         </div>
                         <div id='agent_video'></div>
                     </CurrentBodyAgent>) : null
