@@ -248,16 +248,20 @@ export default function Video() {
             let _remoteUsers = serviceAgora.remoteUsers || [];
             if (currentChooseUser && user === currentChooseUser && !!_remoteUsers.length && (_remoteUsers[0] !== user)) {
                 setCurrentChooseUser(_remoteUsers[0]);
-                // 客服名字处理
-                remoteUsers.forEach((item, idx) => {
-                    if (item.uid === user.uid) {
-                        agents.splice(idx, 1)
-                        setAgents(agents)
-                    }
-                })
             }
         }
-    }, [currentChooseUser])
+
+        if (user && currentChooseUser) {
+            // 客服名字处理
+            remoteUsers.forEach((item, idx) => {
+                if (item.uid === user.uid) {
+                    console.log(11111, remoteUsers, idx, agents)
+                    agents.splice(idx, 1)
+                    setAgents(agents)
+                }
+            })
+        }
+    }, [currentChooseUser, remoteUsers, agents])
 
     function onErrorNotify(errorCode) {
         let errorCodeMap = {
@@ -305,12 +309,18 @@ export default function Video() {
     
         currentChooseUser?.audioTrack?.play();
         currentChooseUser?.videoTrack?.play(videoRef.current); //本地播放视频
-      }, [currentChooseUser])
+    }, [currentChooseUser])
 
     useEffect(() => {
         event.on(SYSTEM_VIDEO_TICKET_RECEIVED, recived) // 监听接受
         event.on(SYSTEM_VIDEO_ARGO_END, handleClose) // 取消和挂断
         event.on(SYSTEM_VIDEO_ARGO_REJECT, handleClose) // 坐席拒接
+
+        return () => {
+            event.off(SYSTEM_VIDEO_TICKET_RECEIVED, recived) // 监听接受
+            event.off(SYSTEM_VIDEO_ARGO_END, handleClose) // 取消和挂断
+            event.off(SYSTEM_VIDEO_ARGO_REJECT, handleClose) // 坐席拒接
+        }
     }, [])
 
     return (
