@@ -238,8 +238,9 @@ export default function Video() {
                 },
             })
         } else {
+            console.log(1111, user, currentChooseUser)
             let _remoteUsers = serviceAgora.remoteUsers || [];
-            if (user === currentChooseUser && !!_remoteUsers.length && (_remoteUsers[0] !== user)) {
+            if (currentChooseUser && user === currentChooseUser && !!_remoteUsers.length && (_remoteUsers[0] !== user)) {
                 setCurrentChooseUser(_remoteUsers[0]);
             }
         }
@@ -263,6 +264,13 @@ export default function Video() {
     
         errorCodeMap[errorCode] && console.error(errorCodeMap[errorCode])
     }
+
+    useEffect(() => {
+        if (!serviceAgora?.client) return;
+    
+        serviceAgora.client.on('user-left', onUserLeft);
+        return () => void serviceAgora?.client?.off('user-left', onUserLeft);
+    }, [onUserLeft]);
 
     useEffect(() => {
         if (remoteUsers.length && !currentChooseUser.isLocal) {
@@ -291,6 +299,8 @@ export default function Video() {
         event.on(SYSTEM_VIDEO_ARGO_END, handleClose) // 取消和挂断
         event.on(SYSTEM_VIDEO_ARGO_REJECT, handleClose) // 坐席拒接
     }, [])
+
+    console.log(11111, remoteUsers)
 
     return (
         <Wrapper>
