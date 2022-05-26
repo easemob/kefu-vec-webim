@@ -119,6 +119,9 @@ function _handleMessage(msg, options){
 	var officialAccount = utils.getDataByPath(msg, "ext.weichat.official_account");
 	var officialAccountId = officialAccount && officialAccount.official_account_id;
 	var videoTicket = utils.getDataByPath(msg, "ext.msgtype.sendVisitorTicket.ticket");
+	var agent = utils.getDataByPath(msg, "ext.weichat.agent");
+	videoTicket && (videoTicket.agentTicket = agent)
+
 	var agentRejectVideoTicket = utils.getDataByPath(msg, 'action');
 	var videoExtend = utils.getDataByPath(msg, "ext.msgtype.sendVisitorTicket.extend");
 	var whiteBoardTicket = utils.getDataByPath(msg, "ext.msgtype.roomData");

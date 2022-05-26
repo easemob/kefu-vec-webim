@@ -181,7 +181,51 @@ export const CurrentBody = styled.div`
     }
 `
 export const CurrentBodySelf = styled.div`
-    background: #000;
+    width: 100%;
+    height: 100%;
+    div {
+        width: 100%;
+        height: 100%;
+    }
+    #visitor_video {
+        background-color: #000;
+    }
+    .icon-microphone-close {
+        color: #FD3E3F;
+    }
+    .info {
+        height: 30px;
+        color: #fff;
+        position: absolute;
+        bottom: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 14px;
+        z-index: 10;
+        > div {
+            display: inline-block;
+            background-color: #fff;
+            color: #3689f7;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            margin-right: 5px;
+            span {
+                line-height: 20px;
+                &::before {
+                    font-size: 20px;
+                }
+            }
+        }
+        > span {
+            height: 30px;
+            line-height: 30px;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            overflow: hidden;
+        }
+    }
 `
 
 export const CurrentBodyAgent = styled.div`
@@ -216,5 +260,27 @@ export const CurrentFooter = styled.div`
             color: #d7474a;
         }
     }
+`
+
+export const CurrentBodyMore = styled.div`
+    height: 80vh;
+    position: relative;
+`
+
+export const TopVideoBox = styled.div`
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    display: flex;
+    z-index: 99;
+    > div {
+        margin-right: 10px;
+    }
+`
+
+export const CurrentVideo = styled.div`
+    height: 100%;
+    width: 100%;
+    position: relative;
 `
 

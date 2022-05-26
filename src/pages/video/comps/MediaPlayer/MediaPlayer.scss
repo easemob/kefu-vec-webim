@@ -1,0 +1,25 @@
+
+
+.video-player {
+  background-color: black;
+  
+  .icon-microphone, .icon-microphone-close {
+    z-index: 100;
+    color: #0087FF;
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    width: 10px;
+    height: 13px;
+    border-radius: 5px;
+    background: white;
+    &:before {
+      font-size: 19px;
+      transform: translate(-5px, -9px);
+    }
+  }
+
+  .icon-microphone-close {
+    color: #FD3E3F;
+  }
+}

@@ -1,5 +1,5 @@
-import React, { useState, useCallback, useEffect } from 'react'
-import { Wrapper, WaitWrapper, WaitTitle, WaitAgent, WaitAgentLogo, WaitAgentDesc, WaitTip, WaitOpera, CurrentWrapper, CurrentTitle, CurrentBody, CurrentFooter, CurrentBodySelf, CurrentBodyAgent, CurrentBodyMicro } from './style'
+import React, { useState, useCallback, useEffect, useRef, Suspense } from 'react'
+import { Wrapper, WaitWrapper, WaitTitle, WaitAgent, WaitAgentLogo, WaitAgentDesc, WaitTip, WaitOpera, CurrentWrapper, CurrentTitle, CurrentBody, CurrentFooter, CurrentBodySelf, CurrentBodyAgent, CurrentBodyMicro, CurrentBodyMore, TopVideoBox, CurrentVideo } from './style'
 import TimeControl from './comps/TimeControl'
 import videoChatAgora from '@/tools/hxVideo'
 import logo from '@/assets/img/qiye.png'
@@ -8,6 +8,7 @@ import event from '@/tools/event'
 import { visitorClose, getOfficalAccounts } from '@/assets/http/user'
 import { SYSTEM_VIDEO_TICKET_RECEIVED, SYSTEM_VIDEO_ARGO_END, SYSTEM_VIDEO_ARGO_REJECT } from '@/assets/constants/events'
 import profile from '@/tools/profile'
+import MediaPlayer from './comps/MediaPlayer/MediaPlayer'
 
 import ws from '@/ws'
 
@@ -23,10 +24,16 @@ export default function Video() {
     const [time, setTime] = useState(false) // 开始计时
     const [agentSound, setAgentSound] = useState(true) // 客服声音
     const [compInfo, setCompInfo] = useState({})
+    const [ localUser, setLocalUser ] = useState(null); // 本地用户音视频轨道保存
+    const [ currentChooseUser, setCurrentChooseUser ] = useState(null); // 当前在正中央播放的用户
 
     const [callId, setCallId] = useState(null)
     const [remoteUsers, setRemoteUsers] = useState([])
     const [ticketInfo, setTicketIfo] = useState(null)
+    const [idNameMap, setIdNameMap] = useState({})
+    const [agents, setAgents] = useState([])
+
+    const videoRef = useRef();
 
     // 发起、重新发起
     function handleStart() {
@@ -63,6 +70,9 @@ export default function Video() {
 
     // 接受视频
     const recived = useCallback(ticketInfo => {
+        agents.push(ticketInfo.agentTicket)
+        setAgents([...new Set(agents)])
+
         if (!serviceAgora) {
             setTicketIfo(ticketInfo)
             // setStep('current') // 进行中视频
@@ -90,8 +100,19 @@ export default function Video() {
 
                 setTime(true) // 开始计时
                 setStep('current')
-                serviceAgora.join(cfgAgora).then(() => {    
-                    serviceAgora.localVideoTrack && serviceAgora.localVideoTrack.play('visitor_video');
+                serviceAgora.join(cfgAgora).then(() => {
+                    let { localAudioTrack, localVideoTrack } = serviceAgora
+                    let localUser = { 
+                        isLocal: true, 
+                        // audioTrack: localAudioTrack,
+                        videoTrack: localVideoTrack,
+                        uid: cfgAgora.uid
+                    }
+          
+                    setLocalUser(localUser);
+                    setCurrentChooseUser(localUser);
+
+                    // serviceAgora.localVideoTrack && serviceAgora.localVideoTrack.play('visitor_video');
                 })
             }, err => {
                 noVisitorClose()
@@ -186,18 +207,13 @@ export default function Video() {
         serviceAgora.localVideoTrack.setMuted(face); // false 打开 true 关闭
     }
 
-    // 切换客服和访客视口
-    function handleChangePos() {
-        remoteUsers.length && setPos(!pos)
-    }
-
     const onRemoteUserChange = useCallback((remoteUsers) => {
         setRemoteUsers(remoteUsers);
     }, []);
 
     // 客服没接 visitorCancelInvitation 接通后就是 visitorRejectInvitation
-    const onUserLeft = useCallback(() => {
-        if (!remoteUsers.length) {
+    const onUserLeft = useCallback(user => {
+        if (!serviceAgora.remoteUsers.length) {
             serviceAgora.leave()
             setStep('start')
             setDesc('重新发起')
@@ -220,8 +236,13 @@ export default function Video() {
                     },
                 },
             })
+        } else {
+            let _remoteUsers = serviceAgora.remoteUsers || [];
+            if (user === currentChooseUser && !!_remoteUsers.length && (_remoteUsers[0] !== user)) {
+                setCurrentChooseUser(_remoteUsers[0]);
+            }
         }
-    }, [])
+    }, [currentChooseUser])
 
     function onErrorNotify(errorCode) {
         let errorCodeMap = {
@@ -243,13 +264,26 @@ export default function Video() {
     }
 
     useEffect(() => {
-        if (remoteUsers.length) {
-            var agent = remoteUsers[0]
-            agent.videoTrack &&  agent.videoTrack.play('agent_video')
-            agent.audioTrack && agent.audioTrack.play()
-            setAgentSound(!!agent.audioTrack)
+        if (remoteUsers.length && !currentChooseUser.isLocal) {
+            currentChooseUser?.videoTrack?.play(videoRef.current);
+            currentChooseUser?.audioTrack?.play();
         }
-    }, [remoteUsers])
+
+        if (remoteUsers.length) {
+            var id2name = {}
+            remoteUsers.forEach((user, idx) => {
+                id2name[user.uid] = agents[idx] && agents[idx].trueName
+            })
+            setIdNameMap(id2name)
+        }
+    }, [remoteUsers, agents])
+
+    useEffect(() => {
+        if (!videoRef.current) return;
+    
+        currentChooseUser?.audioTrack?.play();
+        currentChooseUser?.videoTrack?.play(videoRef.current); //本地播放视频
+      }, [currentChooseUser])
 
     useEffect(() => {
         event.on(SYSTEM_VIDEO_TICKET_RECEIVED, recived) // 监听接受
@@ -264,30 +298,43 @@ export default function Video() {
                     <span>{time  ? '通话中' : '等待接通中'}</span>
                     {time ? <TimeControl /> : ''}
                 </CurrentTitle>
-                <CurrentBody sound={sound} agentSound={agentSound}>
-                    <CurrentBodySelf onClick={handleChangePos} className={`${pos ? '' : 'pos'}`}>
-                        {pos ? null : (<CurrentBodyMicro className='self'>
-                            <span className={sound ? 'icon-microphone' : 'icon-microphone-close'}></span>
-                            </CurrentBodyMicro>)}
-                        <div className='info'>
-                            {pos ? (<CurrentBodyMicro className='self'>
-                            <span className={sound ? 'icon-microphone' : 'icon-microphone-close'}></span>
-                            </CurrentBodyMicro>) : null}
-                            <span>我</span>
-                        </div>
-                        <div id='visitor_video'></div>
-                    </CurrentBodySelf>
-                    {
-                        remoteUsers.length ? (<CurrentBodyAgent onClick={handleChangePos} className={`${pos ? 'pos' : ''}`}>
-                        {pos ? (<CurrentBodyMicro className='agent'><span className= {agentSound ? 'icon-microphone' : 'icon-microphone-close'}></span></CurrentBodyMicro>) : null}
-                        <div className='info'>
-                            {pos ? null : (<CurrentBodyMicro className='agent'><span className={agentSound ? 'icon-microphone' : 'icon-microphone-close'}></span></CurrentBodyMicro>)}
-                            <span>客服-{ticketInfo && ticketInfo.agentTicket ? ticketInfo.agentTicket.niceName : ''}</span>
-                        </div>
-                        <div id='agent_video'></div>
-                    </CurrentBodyAgent>) : null
-                    }
-                </CurrentBody>
+                <CurrentBodyMore>
+                    <TopVideoBox className='top'>
+                        {
+                            step === 'current' && !!currentChooseUser && remoteUsers
+                            .concat(localUser || [])
+                            .filter(({ uid }) => uid !== currentChooseUser?.uid)
+                            .map((user) => {
+                                let { isLocal = false, uid, videoTrack, hasAudio, audioTrack } = user;
+
+                              return <MediaPlayer
+                                bindClick={() => setCurrentChooseUser(user)}
+                                key={uid} 
+                                isLocal={isLocal}
+                                name={idNameMap[uid] || ''} 
+                                hasAudio={isLocal ? sound : hasAudio}
+                                audioTrack={audioTrack} 
+                                videoTrack={videoTrack} 
+                                />
+                            })
+                        }
+                    </TopVideoBox>
+                    <CurrentVideo>
+                        {step === 'current' && currentChooseUser && (<CurrentBodySelf>
+                            <div className='info'>
+                                <CurrentBodyMicro className='self'>
+                                    <span className={(currentChooseUser.isLocal ? sound : currentChooseUser.hasAudio) ? 'icon-microphone' : 'icon-microphone-close'}></span>
+                                </CurrentBodyMicro>
+                                <span>{
+                                    currentChooseUser ?  currentChooseUser.isLocal 
+                                    ? '我' 
+                                    : `客服-${idNameMap[currentChooseUser.uid] || ''}`  : ''    
+                                }</span>
+                            </div>
+                            <div id='visitor_video' ref={videoRef}></div>
+                        </CurrentBodySelf>)}
+                    </CurrentVideo>
+                </CurrentBodyMore>
                 <CurrentFooter>
                     <div onClick={handleSound}><span className={sound ? 'icon-sound' : 'icon-sound-close'}></span></div>
                     <div onClick={handleFace}><span className={face ? 'icon-face' : 'icon-face-close'}></span></div>
