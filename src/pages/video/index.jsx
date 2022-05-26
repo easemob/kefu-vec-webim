@@ -34,6 +34,7 @@ export default function Video() {
     const [agents, setAgents] = useState([])
 
     const videoRef = useRef();
+    const stepRef = useRef()
 
     // 发起、重新发起
     function handleStart() {
@@ -134,7 +135,7 @@ export default function Video() {
 
     // 结束
     const handleClose = useCallback(() => {
-        if (step === 'wait') {
+        if (stepRef.current.getAttribute('role') === 'wait') {
             setStep('start')
             setDesc('重新发起')
             setTip('感谢您的咨询，祝您生活愉快！')
@@ -194,7 +195,7 @@ export default function Video() {
                 return
             })
         }
-    }, [step])
+    }, [])
 
     // 声音
     function handleSound() {
@@ -355,7 +356,7 @@ export default function Video() {
                     </WaitAgentDesc>
                 </WaitAgent>
                 <WaitTip>{tip}</WaitTip>
-                <WaitOpera role={step}>
+                <WaitOpera role={step} ref={stepRef}>
                     <div>
                         {
                             step === 'start' ? <span onClick={handleStart} className='icon-answer'></span> : <span onClick={handleClose} className='icon-off'></span>
