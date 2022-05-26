@@ -71,8 +71,15 @@ export default function Video() {
 
     // 接受视频
     const recived = useCallback(ticketInfo => {
-        agents.push(ticketInfo.agentTicket)
-        setAgents([...new Set(agents)])
+        // agents.push(ticketInfo.agentTicket)
+        setAgents(agentsOld => {
+            if (!agentsOld.map(agent => agent.userId).includes(ticketInfo.agentTicket.userId)) {
+                agentsOld.push(ticketInfo.agentTicket)
+            }
+
+            return agentsOld
+        })
+        // setAgents([...new Set(agents)])
 
         if (!serviceAgora) {
             setTicketIfo(ticketInfo)
@@ -238,10 +245,16 @@ export default function Video() {
                 },
             })
         } else {
-            console.log(1111, user, currentChooseUser)
             let _remoteUsers = serviceAgora.remoteUsers || [];
             if (currentChooseUser && user === currentChooseUser && !!_remoteUsers.length && (_remoteUsers[0] !== user)) {
                 setCurrentChooseUser(_remoteUsers[0]);
+                // 客服名字处理
+                remoteUsers.forEach((item, idx) => {
+                    if (item.uid === user.uid) {
+                        agents.splice(idx, 1)
+                        setAgents(agents)
+                    }
+                })
             }
         }
     }, [currentChooseUser])
@@ -299,8 +312,6 @@ export default function Video() {
         event.on(SYSTEM_VIDEO_ARGO_END, handleClose) // 取消和挂断
         event.on(SYSTEM_VIDEO_ARGO_REJECT, handleClose) // 坐席拒接
     }, [])
-
-    console.log(11111, remoteUsers)
 
     return (
         <Wrapper>
