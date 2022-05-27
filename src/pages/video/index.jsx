@@ -253,13 +253,18 @@ export default function Video() {
 
         if (user && currentChooseUser) {
             // 客服名字处理
-            remoteUsers.forEach((item, idx) => {
-                if (item.uid === user.uid) {
-                    console.log(11111, remoteUsers, idx, agents)
-                    agents.splice(idx, 1)
-                    setAgents(agents)
-                }
-            })
+            var idx = _.findIndex(remoteUsers, user)
+            if (idx > -1) {
+                agents.splice(idx, 1)
+                setAgents(agents)
+            }
+            // remoteUsers.forEach((item, idx) => {
+            //     if (item.uid === user.uid) {
+            //         console.log(11111, remoteUsers, idx, agents)
+            //         agents.splice(idx, 1)
+            //         setAgents(agents)
+            //     }
+            // })
         }
     }, [currentChooseUser, remoteUsers, agents])
 
