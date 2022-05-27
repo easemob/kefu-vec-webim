@@ -1,9 +1,11 @@
 const TerserPlugin = require('terser-webpack-plugin') // js压缩
 const CssMinimizerPlugin = require('css-minimizer-webpack-plugin') // css压缩
 // var UglifyJsPlugin = require('uglifyjs-webpack-plugin');
+const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin; // 打包分析
 const { merge } = require('webpack-merge')
 const common = require('./webpack.base')
 const path = require('path')
+const webpack = require('webpack');
 const getPath = pathname => path.resolve(__dirname, pathname)
 
 var filterName = ['easemobvec']
@@ -28,6 +30,7 @@ var vec = merge(common, {
     // runtimeChunk: true,
     minimizer: [
       new TerserPlugin({
+        extractComments: false, // 禁止 license
         parallel: 4,
         terserOptions: {
           parse: {
@@ -70,23 +73,16 @@ var vec = merge(common, {
       // }),
     ],
   },
-})
-
-var easemob = merge(common, {
-  mode: 'production',
-  name: "easemob",
-	entry: [
-		"./src/pages/plugin/index.js",
-	],
-	output: {
-		filename: "easemob.js",
-		path: path.resolve(__dirname, '../'),
-		// 不能用umd模块输出的原因是：
-		// 监测到AMD Loader时只执行define，此时不会初始化模块，所以不会暴露到全局
-		// library: 'easemob-kefu-webim-plugin',
-		// libraryTarget: 'umd',
-		// umdNamedDefine: true,
-	},
+  plugins: [
+    // 打包体积分析
+    // new BundleAnalyzerPlugin(),
+    // Moment.js 是非常流行的，其 bundle 有极其巨大的本地文件
+    // 本项是一个非常实际的配置，可以定义你实际需要的语言种类，如果你不用 moment，那本项可以注释掉
+    // https://github.com/jmblog/how-to-optimize-momentjs-with-webpack
+    new webpack.IgnorePlugin({
+      resourceRegExp: /^\.\/locale$/, contextRegExp: /moment$/
+    }),
+  ],
 })
 
 module.exports = vec
