@@ -490,7 +490,7 @@ function _initConnection(){
 
 // 初始化配置
 commonConfig.setConfig({
-	configId: queryString.parse(location.search).configId || '5f958a98-f57e-4c0b-bcee-bdc9e7e7891a'
+	configId: queryString.parse(location.search).configId || ''
 })
 function initConfig() {
 	getConfig(commonConfig.getConfig().configId).then(res => {
