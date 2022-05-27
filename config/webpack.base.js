@@ -90,7 +90,8 @@ module.exports = {
     new htmlWebpackPlugin({
       title: '环信客服',
       filename: 'index.html',
-      template: getPath('../public/index.html')
+      template: getPath('../public/index.html'),
+      excludeChunks: ['easemobvec']
     }),
     new CleanWebpackPlugin(),
     new MiniCssExtractPlugin({
@@ -103,7 +104,8 @@ module.exports = {
     // 复制文件
     new CopyPlugin({
       patterns: [
-        { from: getPath('../src/libs'), to: getPath('../build/js') }
+        { from: getPath('../src/libs'), to: getPath('../build/js') },
+        { from: getPath('../public/demo.html'), to: getPath('../build')}
       ],
     }),
   ],

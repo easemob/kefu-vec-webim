@@ -6,13 +6,18 @@ const common = require('./webpack.base')
 const path = require('path')
 const getPath = pathname => path.resolve(__dirname, pathname)
 
+var filterName = ['easemobvec']
+
 var vec = merge(common, {
   mode: 'production',
-  entry: './src/index.js',
+  entry: {
+    main: './src/index.js',
+    easemobvec: './src/pages/plugin/index.js'
+  },
   output: {
     path: getPath('../build'),
     // [contenthash:8] - 本应用打包输出文件级别的更新，导致输出文件名变化
-    filename: 'js/[name]-[contenthash:8].js',
+    filename: info => filterName.includes(info.chunk.name) ? '[name].js' : 'js/[name]-[contenthash:8].js',
     // 编译前清除目录
     clean: true,
   },

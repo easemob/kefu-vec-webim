@@ -11,9 +11,13 @@ var vec = merge(common, {
   cache: {
     type: 'filesystem', // 使用文件缓存
   },
-  entry: './src/index.js',
+  entry: {
+    main: './src/index.js',
+    easemobvec: './src/pages/plugin/index.js'
+  },
   output: {
-    path: getPath('../build')
+    path: getPath('../build'),
+    filename: '[name].js'
   },
   devServer: {
     historyApiFallback: true,
@@ -53,23 +57,5 @@ var vec = merge(common, {
     },
   },
 })
-
-// var easemob = {
-//   mode: 'development',
-//   name: "easemob",
-//   devtool: 'eval-cheap-module-source-map',
-// 	entry: [
-// 		"./src/pages/plugin/index.js",
-// 	],
-// 	output: {
-// 		filename: "easemob.js",
-// 		path: path.resolve(__dirname, '../'),
-// 		// 不能用umd模块输出的原因是：
-// 		// 监测到AMD Loader时只执行define，此时不会初始化模块，所以不会暴露到全局
-// 		// library: 'easemob-kefu-webim-plugin',
-// 		// libraryTarget: 'umd',
-// 		// umdNamedDefine: true,
-// 	},
-// }
 
 module.exports = vec
