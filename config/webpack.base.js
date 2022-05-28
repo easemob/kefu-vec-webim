@@ -26,9 +26,11 @@ module.exports = {
       {
         test: /\.jsx?$/,
         use: 'babel-loader',
+        exclude: /node_modules/
       },
       {
         test: /\.(le|c)ss$/,
+        exclude: /node_modules/,
         use: [
           'style-loader',
           MiniCssExtractPlugin.loader,
@@ -40,6 +42,7 @@ module.exports = {
       },
       {
         test: /\.(png|jpe?g|svg|gif)$/,
+        exclude: /node_modules/,
         type: 'asset/inline',
       },
       {
@@ -51,6 +54,7 @@ module.exports = {
       },
       {
         test: /\.s[ac]ss$/i,
+        exclude: /node_modules/,
         use: [
           // 将 JS 字符串生成为 style 节点
           isDev ? 'style-loader' : MiniCssExtractPlugin.loader,
@@ -78,6 +82,7 @@ module.exports = {
 				test: [
 					/plugin(\\|\/)+index\.js$/
 				],
+        exclude: /node_modules/,
 				loader: "string-replace-loader",
         options: {
           search: "__WEBIM_SLASH_KEY_PATH__",

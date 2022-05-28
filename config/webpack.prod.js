@@ -1,6 +1,5 @@
 const TerserPlugin = require('terser-webpack-plugin') // js压缩
 const CssMinimizerPlugin = require('css-minimizer-webpack-plugin') // css压缩
-// var UglifyJsPlugin = require('uglifyjs-webpack-plugin');
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin; // 打包分析
 const { merge } = require('webpack-merge')
 const common = require('./webpack.base')
@@ -28,6 +27,7 @@ var vec = merge(common, {
   optimization: {
     // 通过配置 optimization.runtimeChunk = true，为运行时代码创建一个额外的 chunk，减少 entry chunk 体积，提高性能。
     // runtimeChunk: true,
+    minimize: true,
     minimizer: [
       new TerserPlugin({
         extractComments: false, // 禁止 license
@@ -55,23 +55,19 @@ var vec = merge(common, {
       new CssMinimizerPlugin({
         parallel: 4,
       }),
-      // new UglifyJsPlugin({
-      //   uglifyOptions: {
-      //     test: /\.js$/i,
-      //     comments: false,
-      //     sourceMap: true,
-      //     warnings: false,
-      //     parse: {},
-      //     compress: {},
-      //     mangle: true, // Note `mangle.properties` is `false` by default.
-      //     output: null,
-      //     toplevel: false,
-      //     nameCache: null,
-      //     ie8: false,
-      //     keep_fnames: false,
-      //   }
-      // }),
     ],
+    // node_modules 单独打包
+    splitChunks: {
+      cacheGroups:{
+          vendors:{//node_modules里的代码
+              test: /[\\/]node_modules[\\/]/,
+              chunks: "initial",
+              name:'vendors', //chunks name
+              priority: 10, //优先级
+              enforce: true
+          }
+      }
+  },
   },
   plugins: [
     // 打包体积分析
