@@ -1,0 +1,137 @@
+
+
+.tool-mid-box {
+  height: 32px;
+  display: flex;
+  border-radius: 4px;
+  justify-content: space-between;
+  padding-left: 6px;
+  padding-right: 6px;
+  background-color: white;
+}
+
+.tool-mid-box-left {
+  width: 40px;
+  display: flex;
+  border-radius: 4px;
+  background-color: white;
+  justify-content: space-between;
+  align-items: center;
+  flex-direction: column;
+  padding-bottom: 4px;
+  padding-top: 4px;
+  box-shadow:0 8px 24px 0 rgba(0,0,0,0.1);
+}
+
+.tool-box-cell {
+  width: 24px;
+  height: 24px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  position: relative;
+}
+
+.tool-box-cell-color {
+  width: 14px;
+  height: 14px;
+  border-radius: 8px;
+  border: 1px solid rgba(0, 0, 0, 0.24);
+}
+
+.tool-box-cell-subscript {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+}
+
+.tool-box-cell-box-left {
+  width: 32px;
+  height: 32px;
+  user-select: none;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 2px;
+  &:hover {
+    background: rgba(33,35,36,0.1);
+  }
+}
+
+.tool-box-cell-step-two {
+  height: 2px;
+  border-radius: 1px;
+  margin-top: -4px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.tool-box-cell-step-two {
+  height: 2px;
+  border-radius: 1px;
+  margin-top: -4px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.palette-box {
+  width: 188px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.palette-box-color {
+  width: 188px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.stroke-script {
+  width: 156px;
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 16px;
+  height: 17px;
+}
+
+.stroke-script-text {
+  height: 17px;
+  font-size: 12px;
+  font-family: PingFangSC-Regular, PingFang SC, sans-serif;
+  font-weight: 400;
+  color: rgba(33, 35, 36, 1);
+  line-height: 17px;
+}
+
+.draw-tool-box-title {
+  width: 100%;
+  div {
+    font-weight: bold;
+    margin-left: 16px;
+    margin-top: 8px;
+    margin-bottom: 8px;
+  }
+}
+
+.palette-stroke-under-layer {
+  width: 242px;
+  height: 32px;
+  position: absolute;
+  z-index: 1;
+}
+
+.palette-stroke-slider-mask {
+  width: 290px;
+  height: 32px;
+  position: absolute;
+  z-index: 3;
+  display: flex;
+  justify-content: center;
+}
+

@@ -5,15 +5,14 @@
   "main": "index.js",
   "private": true,
   "scripts": {
-    "dev": "webpack serve --config ./config/webpack.dev.js",
-    "build": "webpack --config ./config/webpack.prod.js"
+    "dev": "NODE_ENV=development webpack serve --config ./config/webpack.dev.js",
+    "build": "NODE_ENV=production webpack --config ./config/webpack.prod.js"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/easemob/kefu-vec-webim.git"
   },
   "author": "easemob",
-  "license": "ISC",
   "bugs": {
     "url": "https://github.com/easemob/kefu-vec-webim/issues"
   },
@@ -24,6 +23,7 @@
     "@babel/preset-env": "^7.17.10",
     "@babel/preset-react": "^7.16.7",
     "babel-loader": "^8.2.5",
+    "babel-preset-react-app": "^10.0.1",
     "clean-webpack-plugin": "^4.0.0",
     "colors": "^1.4.0",
     "copy-webpack-plugin": "^10.2.4",
@@ -33,6 +33,7 @@
     "html-webpack-plugin": "^5.5.0",
     "mini-css-extract-plugin": "^2.6.0",
     "node-sass": "^7.0.1",
+    "postcss-loader": "^3.0.0",
     "progress-bar-webpack-plugin": "^2.1.0",
     "sass-loader": "^12.6.0",
     "string-replace-loader": "^3.1.0",
@@ -40,7 +41,9 @@
     "webpack": "^5.72.1",
     "webpack-bundle-analyzer": "^4.5.0",
     "webpack-cli": "^4.9.2",
-    "webpack-dev-server": "^4.9.0"
+    "webpack-dev-server": "^4.9.0",
+    "webpack-import-map-plugin": "^1.0.0-alpha0",
+    "less-loader": "^6.2.0"
   },
   "dependencies": {
     "agora-rtc-plugin-virtual-background": "^1.1.0-beta.1",
@@ -52,6 +55,27 @@
     "react": "^18.1.0",
     "react-dom": "^18.1.0",
     "styled-components": "^5.3.5",
-    "underscore": "=1.8.3"
+    "underscore": "=1.8.3",
+    "@netless/combine-player": "^1.1.4",
+    "@netless/fetch-progress": "^0.0.1",
+    "@netless/iframe-bridge": "^2.1.6",
+    "@netless/ppt-plugin": "0.1.1",
+    "@netless/slide-prefetch": "^0.2.1",
+    "@netless/video-js-plugin": "0.3.1",
+    "@netless/white-audio-plugin": "^1.2.23",
+    "@netless/white-audio-plugin2": "^2.0.4",
+    "@netless/white-video-plugin": "^1.2.23",
+    "@netless/white-video-plugin2": "^2.1.2",
+    "@netless/window-manager": "^0.0.0-beta9",
+    "@netless/zip": "^0.0.6",
+    "react-burger-menu": "^2.7.1",
+    "ali-oss": "^6.17.1",
+    "rc-tween-one": "^3.0.6",
+    "react-dropzone": "^12.0.5",
+    "white-web-sdk": "2.15.16",
+    "react-device-detect": "^1.17.0",
+    "react-i18next": "^11.7.3",
+    "i18next": "^19.8.4",
+    "i18next-browser-languagedetector": "^6.0.1"
   }
 }

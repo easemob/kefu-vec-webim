@@ -12,6 +12,18 @@ var SLASH_KEY_PATH = KEY_PATH == "vec" ? "" : "/" + KEY_PATH;
 var isDev = process.env.mode === 'dev'
 
 const getPath = pathname => path.resolve(__dirname, pathname)
+const hasJsxRuntime = (() => {
+  if (process.env.DISABLE_NEW_JSX_TRANSFORM === 'true') {
+    return false;
+  }
+  try {
+    require.resolve('react/jsx-runtime'); // v17 引入
+    return true;
+  }
+  catch (e) {
+    return false;
+  }
+})();
 
 module.exports = {
   resolve: {
@@ -19,14 +31,38 @@ module.exports = {
     alias: {
       '@': getPath("../src")
     },
-    extensions: ['.js', '.jsx', '.json']
+    extensions: ['.js', '.jsx', '.json', '.ts', '.tsx']
   },
   module: {
     rules: [
       {
-        test: /\.jsx?$/,
-        use: 'babel-loader',
-        exclude: /node_modules/
+        test: /\.(js|mjs|jsx|ts|tsx)$/,
+        loader: require.resolve('babel-loader'),
+        exclude: /node_modules/,
+        options: {
+          customize: require.resolve('babel-preset-react-app/webpack-overrides'),
+          // preset 包含 JSX, Flow, TypeScript, ESnext
+          presets: [
+            [require.resolve('babel-preset-react-app'), {
+              runtime: hasJsxRuntime ? 'automatic' : 'classic',
+            }],
+          ],
+          // plugins: [
+          //   [require.resolve('babel-plugin-named-asset-import'), {
+          //     loaderMap: {
+          //       svg: {
+          //         ReactComponent: '@svgr/webpack?-svgo,+titleProp,+ref![path]',
+          //       },
+          //     },
+          //   }],
+          //   isEnvDevelopment && shouldUseReactRefresh && require.resolve('react-refresh/babel'),
+          // ].filter(Boolean),
+          // // 这是 `babel-loader` 给 webpack 的功能，不是 babel 自己的
+          // // 缓存路径 ./node_modules/.cache/babel-loader/
+          // cacheDirectory: true,
+          // cacheCompression: false, // #6846 告知了为什么 cacheCompression 要 disabled
+          // compact: isEnvProduction,
+        },
       },
       {
         test: /\.(le|c)ss$/,
@@ -68,7 +104,10 @@ module.exports = {
 				test: require.resolve("underscore"),
         loader: "expose-loader",
         options: {
-          exposes: ['_'],
+          exposes: {
+            globalName: "_",
+            override: true,
+          },
         },
 			},
       {
