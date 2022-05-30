@@ -103,7 +103,7 @@ function officalAccounts(params) {
 				+ "&appName=" + params.appName
 				+ "&userName=" + params.userName
 				+ "&token=" + params.token,
-			method: "GET",
+		method: "GET",
     })
 }
 
@@ -142,4 +142,12 @@ export function getOfficalAccounts() {
 			reject(err);
 		});
 	});
+}
+
+// 租户灰度
+export function grayScaleList(tenantId) {
+	return request({
+		url: `/v1/grayscale/tenants/${tenantId}`,
+		method: 'get'
+	})
 }

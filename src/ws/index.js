@@ -7,7 +7,7 @@ import Dict from '@/tools/Dict'
 import List from '@/tools/List'
 import commonConfig from '@/common/config'
 import { getConfig, getConfigOption, getRelevanceListConfig, tenantInfo } from '../assets/http/config'
-import { createVisitor, getToken, getOfficalAccounts } from '../assets/http/user'
+import { createVisitor, getToken, getOfficalAccounts, grayScaleList } from '../assets/http/user'
 import { SYSTEM_OFFLINE, HEART_BEAT_INTERVAL, SYSTEM_CHAT_CLOSED, SYSTEM_CLEAR_AGENTSTATE, SYSTEM_CLEAR_AGENTINPUTSTATE, SYSTEM_IS_PULL_HISTORY, SYSTEM_NEW_OFFICIAL_ACCOUNT_FOUND, SYSTEM_OFFICIAL_ACCOUNT_UPDATED, SYSTEM_VIDEO_TICKET_RECEIVED, SYSTEM_VIDEO_ARGO_END, SYSTEM_WHITE_BOARD_RECEIVED, WEBIM_CONNCTION_AUTH_ERROR, WEBIM_CONNCTION_CALLBACK_INNER_ERROR, SYSTEM_AGENT_INFO_UPDATE, SYSTEM_EVENT_MSG_TEXT, SYSTEM_VIDEO_ARGO_REJECT, SYSTEM_SESSION_TRANSFERED, SYSTEM_SESSION_TRANSFERING, SYSTEM_SESSION_CLOSED, SYSTEM_SESSION_OPENED,SESSION_STATE_PROCESSING,SYSTEM_SESSION_CREATED } from '@/assets/constants/events'
 import queryString from 'query-string'
 
@@ -514,9 +514,10 @@ function initRelevanceList(tenantId){
 			tenantId
 		}),
 		getRelevanceListConfig({tenantId}),
-		tenantInfo({tenantId})
+		tenantInfo({tenantId}),
+		grayScaleList(tenantId)
 	]).then(results => {
-		const [value, _relevanceList, info] = results
+		const [value, _relevanceList, info, grayScale] = results
 		if (value.status && value.status === 'OK') {
 			commonConfig.setConfig({
 				configOption: _.extend({}, commonConfig.getConfig().configOption, value),
@@ -530,6 +531,17 @@ function initRelevanceList(tenantId){
 		}
 
 		relevanceList = _relevanceList;
+	
+		// 灰度列表
+		if (grayScale.status && grayScale.status === 'OK') {
+			var garyRes = {}
+			grayScale.entities.forEach(item => {
+				garyRes[item.grayName] = item.status !== 'Disable'
+			})
+			profile.grayList = garyRes
+		} else {
+			profile.grayList = {}
+		}
 
 		return Promise.resolve([]);
 	}).then(results => {
