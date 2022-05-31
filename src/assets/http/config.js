@@ -2,7 +2,7 @@ import request from '@/tools/request'
 
 export function getConfig(id) {
     return request({
-        url: '/v1/webimplugin/settings/visitors/configs/' + id,
+        url: '/v1/kefurtc/visitor/plugin/webim/' + id,
         method: 'get'
     })
 }

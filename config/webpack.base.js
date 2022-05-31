@@ -7,9 +7,8 @@ const ProgressBarPlugin = require('progress-bar-webpack-plugin') // 编译进度
 const CopyPlugin = require("copy-webpack-plugin");
 
 // package 中的 KEY_PATH 必须填，当活文档 ??
-var KEY_PATH = process.env.KEY_PATH;
-var SLASH_KEY_PATH = KEY_PATH == "vec" ? "" : "/" + KEY_PATH;
-var isDev = process.env.mode === 'dev'
+var isDev = process.env.NODE_ENV === 'development'
+var SLASH_KEY_PATH = isDev ? "" : 'webim-vec/';
 
 const getPath = pathname => path.resolve(__dirname, pathname)
 
@@ -33,7 +32,7 @@ module.exports = {
         exclude: /node_modules/,
         use: [
           'style-loader',
-          MiniCssExtractPlugin.loader,
+          // MiniCssExtractPlugin.loader,
           'css-loader',
           'postcss-loader',
           // 当解析antd.less，必须写成下面格式，否则会报Inline JavaScript is not enabled错误
@@ -56,8 +55,9 @@ module.exports = {
         test: /\.s[ac]ss$/i,
         exclude: /node_modules/,
         use: [
+          'style-loader',
           // 将 JS 字符串生成为 style 节点
-          isDev ? 'style-loader' : MiniCssExtractPlugin.loader,
+          // isDev ? 'style-loader' : MiniCssExtractPlugin.loader,
           // 将 CSS 转化成 CommonJS 模块
           'css-loader',
           // 将 Sass 编译成 CSS
@@ -99,9 +99,9 @@ module.exports = {
       excludeChunks: ['easemobvec']
     }),
     new CleanWebpackPlugin(),
-    new MiniCssExtractPlugin({
-      filename: './css/[name].css',
-    }),
+    // new MiniCssExtractPlugin({
+    //   filename: './css/[name].css',
+    // }),
     // 进度条
     new ProgressBarPlugin({
       format: `  :msg [:bar] ${chalk.green.bold(':percent')} (:elapsed s)`,

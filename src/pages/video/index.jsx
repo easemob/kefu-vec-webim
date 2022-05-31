@@ -9,10 +9,12 @@ import { visitorClose, getOfficalAccounts } from '@/assets/http/user'
 import { SYSTEM_VIDEO_TICKET_RECEIVED, SYSTEM_VIDEO_ARGO_END, SYSTEM_VIDEO_ARGO_REJECT } from '@/assets/constants/events'
 import profile from '@/tools/profile'
 import MediaPlayer from './comps/MediaPlayer/MediaPlayer'
+import getToHost from '@/common/transfer'
 
 import ws from '@/ws'
 
 var serviceAgora = null
+var top = window.top === window.self // false 在iframe里面 true不在
 
 export default function Video() {
     const [step, setStep] = useState('start') // start: 发起和重新发起 wait等待接听中 current 视频中 off：挂断
@@ -287,6 +289,11 @@ export default function Video() {
         errorCodeMap[errorCode] && console.error(errorCodeMap[errorCode])
     }
 
+    // iframe最小化
+    const handleMini = () => {
+        getToHost.send({event: 'closeChat'})
+    }
+
     useEffect(() => {
         if (!serviceAgora?.client) return;
     
@@ -329,7 +336,8 @@ export default function Video() {
     }, [])
 
     return (
-        <Wrapper>
+        <Wrapper role={step}>
+            {!top && <span onClick={handleMini} className='icon-mini'></span>}
             <CurrentWrapper className={step === 'current' ? '' : 'hide'}>
                 <CurrentTitle>
                     <span>{time  ? '通话中' : '等待接通中'}</span>

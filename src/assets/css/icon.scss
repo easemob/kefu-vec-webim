@@ -86,3 +86,11 @@ $fs: 30px;
 		content: "\e6eb";
 	}
 }
+
+.icon-mini {
+	@extend %font-shell-base-newagent;
+	&:before {
+		@extend %font-base-newagent;
+		content: "\e606";
+	}
+}

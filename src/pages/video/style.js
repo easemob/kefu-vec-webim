@@ -1,6 +1,15 @@
 import styled from 'styled-components'
 
 export const Wrapper = styled.div`
+    position: reletive;
+    .icon-mini {
+        position: absolute;
+        top: ${props => props.role === 'current' ? '15px' : 0};
+        right: 0;
+        cursor: pointer;
+        color: ${props => props.role === 'current' ? 'gray' : 'white'};
+        z-index: 100;
+    }
 `
 
 export const WaitWrapper = styled.div`

@@ -7,8 +7,68 @@
     <title>Demo</title>
   </head>
   <body>
-    <button>按钮</button>
+    <button onclick="test()">按钮</button>
     <!--不支持提醒-->
-    <script src="easemobvec.js?configId=e450e339-f765-4a25-8baf-b802a5bc7515'"></script>
+    <script>
+    function test() {
+      window.easemobim.bind({ 
+        tenantId: 29762,
+        resources: true,
+        configId: '74f5576d-a4b8-418e-bf9c-3d9f707b9a6b',
+        onready: function(){ 
+          console.log("onready")
+          // sendCrmExt();
+        },
+        onclose: function(){
+          console.log("onclose")
+        },
+        onopen: function(){
+          console.log("onopen")
+        },
+        onEvaluationsubmit: function(){
+          console.log("onEvaluationsubmit")
+        },
+        onmessage: function(){
+          console.log("onmessage")
+        },
+        onsessionclosed: function(){
+          console.log("onsessionclosed")
+        },
+        onsessioncreat: function(){
+          console.log("oncreat")
+        }
+        // extMsg:{
+            //     cmd:{
+            //         updateVisitorInfoSrc:{
+            //             params:{
+            //                 uid: "cxn111111"
+            //             }
+            //         }
+            //     }
+            // },
+      });
+    }
+
+    window.easemobim = window.easemobim || {};
+    easemobim.config = {
+	configId: 'a17a19a3-d9c1-4e01-9215-2ae6141bc836',
+	// domain: '//sandbox.kefu.easemob.com',
+    visitor: {         
+        trueName: 'lixiaoleng3',
+        qq: 'lxl@qq.com',
+        phone: '13311111111',
+        companyName: 'easemob',
+        userNickname: 'lixiaoleng3',
+        description: 'suibian',
+        email: '123456@qq.com', 
+        tags:[  
+          'vip1',
+          'vip2'
+        ]
+	},
+};
+
+    </script>
+    <script src="easemobvec.js"></script>
   </body>
 </html>

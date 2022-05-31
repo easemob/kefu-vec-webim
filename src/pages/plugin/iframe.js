@@ -350,7 +350,7 @@ Iframe.prototype.set = function(config, callback){
 
 	utils.toggleClass(this.iframe, "easemobim-hide", this.config.hide);
 
-	this.iframe.src = config.path;
+	this.iframe.src = config.path + '/index.html?configId=' + this.config.configId + '&iframeId=' + this.iframe.id;
 	// this.shadow && (this.shadow.style.backgroundColor = shadowBackgroundColor);
 
 	this.ready = callback;
@@ -411,7 +411,8 @@ Iframe.prototype.close = function(){
 	}
 
 	utils.addClass(this.iframe, "easemobim-minimized");
-	utils.toggleClass(this.iframe, "easemobim-hide", this.config.hide);
+	utils.addClass(this.iframe, "easemobim-hide");
+	// utils.toggleClass(this.iframe, "easemobim-hide", this.config.hide);
 
 	this.down2Im && this.down2Im.send({ event: _const.EVENTS.CLOSE });
 	return this;
