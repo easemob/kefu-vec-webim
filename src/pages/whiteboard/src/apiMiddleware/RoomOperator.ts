@@ -1,4 +1,4 @@
-import Fetcher from "@/facetime/view/whiteboard/packages/fetch-middleware";
+import Fetcher from "../../packages/fetch-middleware";
 import { netlessToken } from "../appToken";
 import { region } from "../region";
 

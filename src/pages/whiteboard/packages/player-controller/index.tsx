@@ -1,6 +1,6 @@
 import * as React from "react";
 import {Player, PlayerPhase} from "white-web-sdk";
-import {Antd} from '@kefu/in-uikit'
+import {Dropdown, Menu} from 'antd'
 import {LoadingOutlined} from "@ant-design/icons";
 import "./index.less";
 import SeekSlider from "./SeekSlider";
@@ -8,7 +8,7 @@ import {displayWatch} from "./WatchDisplayer";
 import * as video_pause from "./image/video_pause.svg";
 import * as video_play from "./image/video_play.svg";
 import { CombinePlayer } from '@netless/combine-player/dist/Types';
-const { Dropdown, Menu } = Antd;
+// const { Dropdown, Menu } = Antd;
 
 export type PlayerControllerStates = {
     phase: PlayerPhase;

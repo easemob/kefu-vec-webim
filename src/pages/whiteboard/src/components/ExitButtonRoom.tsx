@@ -1,5 +1,5 @@
 import * as React from "react";
-import {Antd} from '@kefu/in-uikit';
+import {Modal, message, Tooltip} from 'antd';
 // import {RouteComponentProps} from "react-router";
 // import { withRouter } from "react-router-dom";
 import {Room} from "white-web-sdk";
@@ -12,7 +12,7 @@ import { LocalStorageRoomDataType } from "../HistoryPage";
 import { withTranslation, WithTranslation } from 'react-i18next';
 // import { getQueryH5Url } from "../tools/QueryGetter";
 // import { region } from "../region";
-const { Modal, message, Tooltip} = Antd;
+// const { Modal, message, Tooltip} = Antd;
 
 let { confirm } = Modal;
 

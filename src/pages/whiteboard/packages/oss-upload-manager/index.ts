@@ -11,7 +11,7 @@ import {v4 as uuidv4} from "uuid";
 import TaskOperator from "./fetch-middleware";
 // import default_cover from "./image/default_cover.svg";
 import axios from 'axios';
-import { StorageGlobals as Globals } from "@kefu/in-state";
+// import { StorageGlobals as Globals } from "@kefu/in-state";
 
 export type PPTDataType = {
     active: boolean,

@@ -1,8 +1,8 @@
 import {IframeBridge, DomEvents, IframeEvents} from "@netless/iframe-bridge";
 import {Room, RoomMember, RoomState} from "white-web-sdk";
-import {Antd} from '@kefu/in-uikit';
+import {message} from 'antd';
 import {createH5Scenes} from "./QueryGetter";
-const {message} = Antd;
+// const {message} = Antd;
 
 export class IframeAdapter {
     private bridge: IframeBridge;

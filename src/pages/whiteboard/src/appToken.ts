@@ -47,13 +47,21 @@ export type H5OSSCOnfigObjType = {
 };
 
 export const h5OssConfigObj = {
-    h5AccessKeyId: process.env.H5AK!,
-    h5AccessKeySecret: process.env.H5SK!,
-    h5Region: process.env.H5REGION!,
-    h5Bucket: process.env.H5BUCKET!,
-    h5Folder: process.env.H5FOLDER!,
-    h5SiteFolder: process.env.H5SITEFOLDER!,
-    h5Prefix: process.env.H5PREFIX!,
+    // h5AccessKeyId: process.env.H5AK!,
+    // h5AccessKeySecret: process.env.H5SK!,
+    // h5Region: process.env.H5REGION!,
+    // h5Bucket: process.env.H5BUCKET!,
+    // h5Folder: process.env.H5FOLDER!,
+    // h5SiteFolder: process.env.H5SITEFOLDER!,
+    // h5Prefix: process.env.H5PREFIX!,
+    // h5PrefixUs: "https://demo-h5-us.netless.group/",
+    h5AccessKeyId: "true",
+    h5AccessKeySecret: "true",
+    h5Region: "true",
+    h5Bucket: "true",
+    h5Folder: "true",
+    h5SiteFolder: "true",
+    h5Prefix: "true",
     h5PrefixUs: "https://demo-h5-us.netless.group/",
 };
 

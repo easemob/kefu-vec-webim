@@ -1,9 +1,9 @@
-import {Antd} from '@kefu/in-uikit';
+import {Select} from 'antd';
 import React from "react";
 import i18n from "../i18n";
 import { Language, Region, region, regions, setRegion } from "../region";
 import "./SwitchRegion.less";
-const { Select } = Antd;
+// const { Select } = Antd;
 
 const { Option } = Select;
 

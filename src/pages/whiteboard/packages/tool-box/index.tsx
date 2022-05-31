@@ -1,6 +1,6 @@
 import * as React from "react";
 import {ApplianceNames, Color, Room, RoomState} from "white-web-sdk";
-import {Antd} from '@kefu/in-uikit'
+import {Popover, Tooltip} from 'antd'
 import DrawTool from "./DrawTool";
 import ColorTool from "./ColorTool";
 import StrokeWidthTool from "./StrokeWidthTool";
@@ -39,7 +39,7 @@ import pentagram from "./image/pentagram.svg";
 import pentagramActive from "./image/pentagram-active.svg";
 import speechBalloon from "./image/speechBalloon.svg";
 import speechBalloonActive from "./image/speechBalloon-active.svg";
-const {Popover, Tooltip} = Antd;
+// const {Popover, Tooltip} = Antd;
 export type ApplianceNamesString = `${ApplianceNames}`;
 
 const zhCN: Record<ApplianceNamesString | "clear", string> = {

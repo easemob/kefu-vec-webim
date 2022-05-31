@@ -1,5 +1,5 @@
 import Fetcher from "../fetch-middleware/index";
-import { StorageGlobals as Globals } from "@kefu/in-state";
+// import { StorageGlobals as Globals } from "@kefu/in-state";
 
 export default class TaskOperator {
     private readonly fetcher: Fetcher;

@@ -1,8 +1,8 @@
-import {Antd} from '@kefu/in-uikit';
+import {Select} from 'antd';
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { languagesWithName } from "./i18n";
-const { Select } = Antd;
+// const { Select } = Antd;
 
 export const SwitchLanguage: React.FC = React.memo(() => {
     const { i18n } = useTranslation();

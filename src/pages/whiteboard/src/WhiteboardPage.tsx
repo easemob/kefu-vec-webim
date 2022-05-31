@@ -15,20 +15,20 @@ import {
     WhiteWebSdkConfiguration,
     InvisiblePlugin,
 } from "white-web-sdk";
-import ToolBox from "@/facetime/view/whiteboard/packages/tool-box";
-import RedoUndo from "@/facetime/view/whiteboard/packages/redo-undo";
-import PageController from "@/facetime/view/whiteboard/packages/page-controller";
-import ZoomController from "@/facetime/view/whiteboard/packages/zoom-controller";
-import OssUploadButton, { UploadType } from "@/facetime/view/whiteboard/packages/oss-upload-button";
+import ToolBox from "../packages/tool-box";
+import RedoUndo from "../packages/redo-undo";
+import PageController from "../packages/page-controller";
+import ZoomController from "../packages/zoom-controller";
+import OssUploadButton, { UploadType } from "../packages/oss-upload-button";
 import {videoPlugin} from "@netless/white-video-plugin";
 import {audioPlugin} from "@netless/white-audio-plugin";
 import {videoPlugin2} from "@netless/white-video-plugin2";
 import {audioPlugin2} from "@netless/white-audio-plugin2";
 import { videoJsPlugin } from "@netless/video-js-plugin"
-import PreviewController from "@/facetime/view/whiteboard/packages/preview-controller";
-import DocsCenter from "@/facetime/view/whiteboard/packages/docs-center";
-import {CursorTool} from "@/facetime/view/whiteboard/packages/cursor-tool";
-import {Antd} from '@kefu/in-uikit';
+import PreviewController from "../packages/preview-controller";
+import DocsCenter from "../packages/docs-center";
+import {CursorTool} from "../packages/cursor-tool";
+import {message, Tooltip} from 'antd';
 import {netlessWhiteboardApi} from "./apiMiddleware";
 import PageError from "./PageError";
 import LoadingPage from "./LoadingPage";
@@ -41,9 +41,9 @@ import "./WhiteboardPage.less";
 // import InviteButton from "./components/InviteButton";
 import ExitButtonRoom from "./components/ExitButtonRoom";
 import {Identity} from "./IndexPage";
-import OssDropUpload from "@/facetime/view/whiteboard/packages/oss-drop-upload";
+import OssDropUpload from "../packages/oss-drop-upload";
 import {pptData} from "./taskUuids";
-import {PPTDataType} from "@/facetime/view/whiteboard/packages/oss-upload-manager";
+import {PPTDataType} from "../packages/oss-upload-manager";
 import {v4 as uuidv4} from "uuid";
 import moment from "moment";
 import {LocalStorageRoomDataType} from "./HistoryPage";
@@ -57,8 +57,8 @@ import { SupplierAdapter } from "./tools/SupplierAdapter";
 import { withTranslation, WithTranslation } from "react-i18next";
 // import FloatLink from "./FloatLink";
 // import { SlidePrefetch } from "@netless/slide-prefetch";
-import { WhitePPTPlugin } from "@netless/ppt-plugin";
-const {message, Tooltip} = Antd;
+// import { WhitePPTPlugin } from "@netless/ppt-plugin";
+// const {message, Tooltip} = Antd;
 
 export type WhiteboardPageStates = {
     phase: RoomPhase;

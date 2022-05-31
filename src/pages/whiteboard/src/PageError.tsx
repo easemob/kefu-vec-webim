@@ -1,10 +1,10 @@
 import * as React from "react";
 import "./PageError.less";
 import room_not_find from "./assets/image/room_not_find.svg";
-import {Antd} from '@kefu/in-uikit';
+import {Button} from 'antd';
 // import { Link } from "react-router-dom";
 import { withTranslation, WithTranslation } from 'react-i18next';
-const {Button} = Antd;
+// const {Button} = Antd;
 
 class PageError extends React.Component<WithTranslation, {}> {
     public constructor(props: WithTranslation) {

@@ -1,16 +1,16 @@
 import * as React from "react";
-import { Link, withRouter } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { RouteComponentProps } from "react-router";
 import logo from "./assets/image/logo.png";
 import join from "./assets/image/join.svg";
 import create from "./assets/image/create.svg";
 import "./IndexPage.less";
-import {Antd} from '@kefu/in-uikit';
+import {Button, Input, Popover} from 'antd';
 import { withTranslation, WithTranslation } from "react-i18next";
 import { SwitchLanguage } from "./SwitchLanguage";
 import SwitchRegion from "./components/SwitchRegion";
 // import FloatLink from "./FloatLink";
-const { Button, Input, Popover } = Antd;
+// const { Button, Input, Popover } = Antd;
 
 export type IndexPageStates = {
     name: string;
@@ -182,4 +182,4 @@ class IndexPage extends React.Component<RouteComponentProps & WithTranslation, I
     };
 }
 
-export default withRouter(withTranslation()(IndexPage));
+export default withTranslation()(IndexPage);

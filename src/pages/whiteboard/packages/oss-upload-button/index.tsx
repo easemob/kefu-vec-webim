@@ -1,5 +1,5 @@
 import * as React from "react";
-import {Antd} from '@kefu/in-uikit'
+import {message, Popover, Upload} from 'antd'
 import * as OSS from "ali-oss";
 import type { WhitePPTPlugin } from "@netless/ppt-plugin";
 import { PPTProgressPhase, UploadManager } from "../oss-upload-manager";
@@ -14,7 +14,7 @@ import fileTransImg from "./image/file-trans-img.svg";
 import Video from "./image/video.svg";
 import Audio from "./image/audio.svg";
 import { v4 as uuidv4 } from "uuid";
-const { message, Popover, Upload } = Antd;
+// const { message, Popover, Upload } = Antd;
 
 type OSSConfigObjType = {
     accessKeyId: string;
