@@ -66,12 +66,12 @@ module.exports = {
       },
       {
         test: /\.(le|c)ss$/,
-        exclude: /node_modules/,
+        // exclude: /node_modules/,
         use: [
           'style-loader',
-          MiniCssExtractPlugin.loader,
+          // MiniCssExtractPlugin.loader,
           'css-loader',
-          'postcss-loader',
+          // 'postcss-loader',
           // 当解析antd.less，必须写成下面格式，否则会报Inline JavaScript is not enabled错误
           { loader: 'less-loader', options: { lessOptions: { javascriptEnabled: true } } },
         ],
@@ -90,10 +90,11 @@ module.exports = {
       },
       {
         test: /\.s[ac]ss$/i,
-        exclude: /node_modules/,
+        // exclude: /node_modules/,
         use: [
           // 将 JS 字符串生成为 style 节点
-          isDev ? 'style-loader' : MiniCssExtractPlugin.loader,
+          'style-loader',
+          // isDev ? 'style-loader' : MiniCssExtractPlugin.loader,
           // 将 CSS 转化成 CommonJS 模块
           'css-loader',
           // 将 Sass 编译成 CSS
