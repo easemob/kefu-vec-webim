@@ -8,7 +8,7 @@ const CopyPlugin = require("copy-webpack-plugin");
 
 // package 中的 KEY_PATH 必须填，当活文档 ??
 var isDev = process.env.NODE_ENV === 'development'
-var SLASH_KEY_PATH = isDev ? "" : 'webim-vec/';
+var SLASH_KEY_PATH = isDev ? "" : '/webim-vec/';
 
 const getPath = pathname => path.resolve(__dirname, pathname)
 
