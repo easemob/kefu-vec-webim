@@ -4,7 +4,7 @@ export const Wrapper = styled.div`
     position: reletive;
     .icon-mini {
         position: absolute;
-        top: ${props => props.role === 'current' ? '15px' : 0};
+        top: 0;
         right: 0;
         cursor: pointer;
         color: ${props => props.role === 'current' ? 'gray' : 'white'};
@@ -16,7 +16,7 @@ export const WaitWrapper = styled.div`
     max-width: 998px;
     margin: 0 auto;
     height: 100vh;
-    background-color: rgba(51, 51, 51, 1);
+    background-color: rgba(51, 51, 51, .8);
     color: #fff;
 `
 
@@ -25,7 +25,9 @@ export const WaitTitle = styled.div`
     box-sizing: border-box;
     padding: calc(15vh - 15px) 0;
     h2 {
+        font-size: 16px;
         height: 30px;
+        line-height: 30px;
         text-align: center;
         font-weight: normal;
     }
@@ -33,12 +35,13 @@ export const WaitTitle = styled.div`
 
 export const WaitAgent = styled.div`
     height: 30vh;
+    font-size: 13px;
 `
 export const WaitAgentLogo = styled.div`
     text-align: center;
     img {
-        height: 20vh;
-        width: 20vh;
+        height: 60px;
+        width: 60px;
         border-radius: 50%;
     }
 `
@@ -53,13 +56,14 @@ export const WaitTip = styled.p`
     padding: 0 10px;
     line-height: 20px;
     text-align: center;
+    font-size: 13px;
 `
 
 export const WaitOpera = styled.div`
     div {
         &:first-child {
-            width: 15vh;
-            height: 15vh;
+            width: 40px;
+            height: 40px;
             text-align: center;
             border-radius: 50%;
             margin: 0 auto;
@@ -72,13 +76,14 @@ export const WaitOpera = styled.div`
                 left: 50%;
                 transform: translate(-50%, -50%);
                 &::before {
-                    font-size: 50px;
+                    font-size: 35px;
                 }
             }
         }
         &:last-child {
             margin-top: 2vh;
             text-align: center;
+            font-size: 13px;
         }
     }
 `
@@ -95,6 +100,7 @@ export const CurrentTitle = styled.div`
     height: 10vh;
     line-height: 10vh;
     position: relative;
+    font-size: 13px;
     span {
         &:first-child {
             position: absolute;
@@ -251,9 +257,9 @@ export const CurrentFooter = styled.div`
     align-items: center;
     justify-content: center;
     div {
-        height: 7vh;
-        width: 7vh;
-        border-radius: 10px;
+        height: 8vh;
+        width: 8vh;
+        border-radius: 5px;
         border: 1px solid #d7d7d7;
         margin: 0 5px;
         position: relative;
