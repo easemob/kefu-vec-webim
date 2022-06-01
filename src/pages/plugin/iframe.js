@@ -350,7 +350,7 @@ Iframe.prototype.set = function(config, callback){
 
 	utils.toggleClass(this.iframe, "easemobim-hide", this.config.hide);
 
-	this.iframe.src = config.path + '/index.html?configId=' + this.config.configId + '&iframeId=' + this.iframe.id;
+	this.iframe.src = config.path + 'index.html?configId=' + this.config.configId + '&iframeId=' + this.iframe.id;
 	// this.shadow && (this.shadow.style.backgroundColor = shadowBackgroundColor);
 
 	this.ready = callback;
