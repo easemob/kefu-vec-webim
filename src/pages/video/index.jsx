@@ -344,7 +344,7 @@ export default function Video() {
 
     return (
         <Wrapper role={step} top={top}>
-            {!top && <span onClick={handleMini} className='icon-mini'></span>}
+            {!top && <span onClick={handleMini} className={step === 'current' ? 'icon-mini' : 'icon-close'}></span>}
             <CurrentWrapper className={step === 'current' ? '' : 'hide'}>
                 <CurrentTitle>
                     <span>{time  ? '通话中' : '等待接通中'}</span>
@@ -387,7 +387,7 @@ export default function Video() {
                         </CurrentBodySelf>)}
                     </CurrentVideo>
                 </CurrentBodyMore>
-                <CurrentFooter>
+                <CurrentFooter top={top}>
                     <div onClick={handleSound}><span className={sound ? 'icon-sound' : 'icon-sound-close'}></span></div>
                     <div onClick={handleFace}><span className={face ? 'icon-face' : 'icon-face-close'}></span></div>
                     <div onClick={handleClose}><span className='icon-off'></span></div>

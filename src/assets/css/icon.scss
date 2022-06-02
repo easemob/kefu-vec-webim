@@ -91,6 +91,14 @@ $fs: 25px;
 	@extend %font-shell-base-newagent;
 	&:before {
 		@extend %font-base-newagent;
-		content: "\e606";
+		content: "\e65c";
+	}
+}
+
+.icon-close {
+	@extend %font-shell-base-newagent;
+	&:before {
+		@extend %font-base-newagent;
+		content: "\e64f";
 	}
 }
