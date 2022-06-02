@@ -184,25 +184,38 @@ export default function Video() {
             serviceAgora = null
         } else {
             // 先请求接口在离开
-            visitorClose().then(res => {
-                if (res.status && res.status === 'OK') {
-                    setStep('start')
-                    setDesc('重新发起')
-                    setTip('感谢您的咨询，祝您生活愉快！')
-                    setCallId(null)
-                    setTime(false)
-                    setTicketIfo(null)
-                    setSound(true)
-                    setFace(true)
-                    setPos(true)
+            // visitorClose().then(res => {
+            //     if (res.status && res.status === 'OK') {
+            //         setStep('start')
+            //         setDesc('重新发起')
+            //         setTip('感谢您的咨询，祝您生活愉快！')
+            //         setCallId(null)
+            //         setTime(false)
+            //         setTicketIfo(null)
+            //         setSound(true)
+            //         setFace(true)
+            //         setPos(true)
 
-                    // 本地离开
-                    serviceAgora && serviceAgora.leave();
-                    serviceAgora = null
-                } 
-            }, err => {
-                return
-            })
+            //         // 本地离开
+            //         serviceAgora && serviceAgora.leave();
+            //         serviceAgora = null
+            //     }
+            // })
+
+            visitorClose()
+            setStep('start')
+            setDesc('重新发起')
+            setTip('感谢您的咨询，祝您生活愉快！')
+            setCallId(null)
+            setTime(false)
+            setTicketIfo(null)
+            setSound(true)
+            setFace(true)
+            setPos(true)
+
+            // 本地离开
+            serviceAgora && serviceAgora.leave();
+            serviceAgora = null
         }
     }, [])
 
@@ -330,7 +343,7 @@ export default function Video() {
     }, [])
 
     return (
-        <Wrapper role={step}>
+        <Wrapper role={step} top={top}>
             {!top && <span onClick={handleMini} className='icon-mini'></span>}
             <CurrentWrapper className={step === 'current' ? '' : 'hide'}>
                 <CurrentTitle>

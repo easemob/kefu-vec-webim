@@ -1,13 +1,7 @@
 import styled from 'styled-components'
 
 export const Wrapper = styled.div`
-    position: absolute;
-    width: 242px;
-    height: 307px;
-    right: ${props => props.top ? '10px' : 0};
-    bottom: ${props => props.top ? '10px' : 0};
-    border-radius: 4px;
-    box-shadow: 0px 0px 10px #ccc;
+    position: reletive;
     .icon-mini {
         position: absolute;
         top: 0;
@@ -19,18 +13,17 @@ export const Wrapper = styled.div`
 `
 
 export const WaitWrapper = styled.div`
-    max-width: 100%;
+    max-width: 998px;
     margin: 0 auto;
-    height: 100%;
-    border-radius: 4px;
+    height: 100vh;
     background-color: rgba(51, 51, 51, .8);
     color: #fff;
 `
 
 export const WaitTitle = styled.div`
-    height: 30%;
+    height: 30vh;
     box-sizing: border-box;
-    padding: calc(15% - 15px) 0;
+    padding: calc(15vh - 15px) 0;
     h2 {
         font-size: 16px;
         height: 30px;
@@ -41,7 +34,7 @@ export const WaitTitle = styled.div`
 `
 
 export const WaitAgent = styled.div`
-    height: 30%;
+    height: 30vh;
     font-size: 13px;
 `
 export const WaitAgentLogo = styled.div`
@@ -55,11 +48,11 @@ export const WaitAgentLogo = styled.div`
 
 export const WaitAgentDesc = styled.div`
     text-align: center;
-    margin-top: 2%;
+    margin-top: 2vh;
 `
 
 export const WaitTip = styled.p`
-    height: 15%;
+    height: 15vh;
     padding: 0 10px;
     line-height: 20px;
     text-align: center;
@@ -88,7 +81,7 @@ export const WaitOpera = styled.div`
             }
         }
         &:last-child {
-            margin-top: 2%;
+            margin-top: 2vh;
             text-align: center;
             font-size: 13px;
         }
@@ -100,31 +93,30 @@ export const WaitOpera = styled.div`
 export const CurrentWrapper = styled.div`
     max-width: 998px;
     margin: 0 auto;
-    height: 100%;
+    height: 100vh;
 `
 
 export const CurrentTitle = styled.div`
-    height: 10%;
+    height: 10vh;
+    line-height: 10vh;
     position: relative;
     font-size: 13px;
     span {
         &:first-child {
             position: absolute;
             left: 10px;
-            top: 50%;
-            transform: translateY(-50%);
         }
         &:nth-child(2) {
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            display: block;
+            width: 100%;
             height: 100%;
+            text-align: center;
         }
     }
 `
 
 export const CurrentBody = styled.div`
-    height: 80%;
+    height: 80vh;
     position: relative;
     div {
         cursor: pointer;
@@ -133,8 +125,8 @@ export const CurrentBody = styled.div`
     }
     .pos {
         position: absolute;
-        width: 20%;
-        height: 20%;
+        width: 20vh;
+        height: 20vh;
         top: 10px;
         left: 10px;
         > div {
@@ -260,13 +252,13 @@ export const CurrentBodyMicro = styled.div`
 `
 
 export const CurrentFooter = styled.div`
-    height: 10%;
+    height: 10vh;
     display: flex;
     align-items: center;
     justify-content: center;
     div {
-        height: 75%;
-        width: 10%;
+        height: 8vh;
+        width: 8vh;
         border-radius: 5px;
         border: 1px solid #d7d7d7;
         margin: 0 5px;
@@ -286,7 +278,7 @@ export const CurrentFooter = styled.div`
 `
 
 export const CurrentBodyMore = styled.div`
-    height: 80%;
+    height: 80vh;
     position: relative;
 `
 
