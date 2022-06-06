@@ -34,6 +34,7 @@ export default function Video() {
     const [ticketInfo, setTicketIfo] = useState(null)
     const [idNameMap, setIdNameMap] = useState({})
     const [agents, setAgents] = useState([])
+    const [ssid, setSsid] = useState('')
 
     const videoRef = useRef();
     const stepRef = useRef()
@@ -95,6 +96,7 @@ export default function Video() {
             }
             // callId 拒绝视频邀请要用
             setCallId(ticketInfo.callId)
+            setSsid(ticketInfo.ssid)
 
             serviceAgora = new videoChatAgora({
                 onErrorNotify,
@@ -183,26 +185,7 @@ export default function Video() {
             serviceAgora && serviceAgora.leave();
             serviceAgora = null
         } else {
-            // 先请求接口在离开
-            // visitorClose().then(res => {
-            //     if (res.status && res.status === 'OK') {
-            //         setStep('start')
-            //         setDesc('重新发起')
-            //         setTip('感谢您的咨询，祝您生活愉快！')
-            //         setCallId(null)
-            //         setTime(false)
-            //         setTicketIfo(null)
-            //         setSound(true)
-            //         setFace(true)
-            //         setPos(true)
-
-            //         // 本地离开
-            //         serviceAgora && serviceAgora.leave();
-            //         serviceAgora = null
-            //     }
-            // })
-
-            visitorClose()
+            visitorClose(ssid)
             setStep('start')
             setDesc('重新发起')
             setTip('感谢您的咨询，祝您生活愉快！')
@@ -212,12 +195,13 @@ export default function Video() {
             setSound(true)
             setFace(true)
             setPos(true)
+            setSsid('')
 
             // 本地离开
             serviceAgora && serviceAgora.leave();
             serviceAgora = null
         }
-    }, [])
+    }, [ssid, callId])
 
     // 声音
     function handleSound() {
