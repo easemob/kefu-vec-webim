@@ -1,0 +1,282 @@
+.easemobim-mobile-html {
+	position: relative !important;
+	width: 100% !important;
+	height: 100% !important;
+	padding: 0 !important;
+	margin: 0 !important;
+}
+
+.easemobim-mobile-body {
+	position: absolute;
+	top: 0 !important;
+	left: 0 !important;
+	width: 100% !important;
+	height: 100% !important;
+	overflow: hidden !important;
+	padding: 0 !important;
+	margin: 0 !important;
+	> * {
+		display: none !important;
+	}
+	> .easemobim-chat-panel {
+		display: block !important;
+	}
+}
+
+.easemobim-chat-panel {
+	z-index: 1000;
+	overflow: hidden;
+	position: fixed;
+	border: none;
+	width: 0;
+	height: 0;
+	// transition: all .01s;
+	box-shadow: 0 4px 8px rgba(0,0,0,.2);
+	border-radius: 4px;
+	&.easemobim-minimized {
+		border: none;
+		box-shadow: none;
+		height: 37px!important;
+		width: 104px!important;
+		&.easemobim-has-prompt {
+			width: 360px!important;
+			height: 270px!important;
+		}
+	}
+	&.easemobim-mobile {
+		position: absolute!important;
+		width: 100%!important;
+		height: 100%!important;
+		left: 0!important;
+		top: 0!important;
+		border-radius: 0;
+		box-shadow: none;
+		&.easemobim-minimized {
+			height: 0!important;
+			width: 0!important;
+		}
+	}
+	&.easemobim-hide {
+		visibility: hidden;
+		width: 1px!important;
+		height: 1px!important;
+		border: none;
+	}
+	&.easemobim-dragging {
+		box-shadow: 8px 8px 20px rgba(0,0,0,.3);
+		// display: none;
+	}
+	&.easemobim-big{
+		width: 720px;
+	}
+}
+.easemobim-iframe-shadow {
+	left: auto;
+	top: auto;
+	display: none;
+	cursor: move;
+	z-index: 16777270;
+	position: fixed;
+	border: none;
+	border-radius: 4px;
+	// box-shadow: 0 4px 8px rgba(0, 0, 0, .2);
+	border-radius: 4px;
+	background-size: 100% 100%;
+	background-repeat: no-repeat;
+	&.easemobim-dragging {
+		display: block;
+	}
+}
+
+.easemobim-prompt-wrapper {
+	display: none;
+	z-index: 16777271;
+	position: fixed;
+	width: 30px;
+	height: 30px;
+	padding: 10px;
+	top: 0;
+	bottom: 0;
+	margin: auto;
+	left: 0;
+	right: 0;
+	color: white;
+	background-color: #000;
+	text-align: center;
+	border-radius: 4px;
+	transition: all .5s;
+	opacity: .7;
+	box-sizing: content-box;
+
+	> .loading {
+		position: relative;
+		width: 30px;
+		height: 30px;
+		display: inline-block;
+		overflow: hidden;
+		margin: 0;
+		padding: 0;
+		animation: easemobim-loading-frame 1s linear infinite;
+	}
+}
+
+// loading animation key frame
+@keyframes easemobim-loading-frame {
+	from {
+		transform: rotate(0)
+	}
+	to {
+		transform: rotate(360deg)
+	}
+}
+
+.easemobim-pc-img-view {
+	display: none;
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	z-index: 16777270;
+
+	> .shadow {
+		position: fixed;
+		top: 0;
+		left: 0;
+		width: 100%;
+		height: 100%;
+		background-color: #000;
+		opacity: .5;
+	}
+	> img {
+		max-width: 100%;
+		max-height: 100%;
+		position: absolute;
+		margin: auto;
+		top: 0;
+		right: 0;
+		bottom: 0;
+		left: 0;
+	}
+}
+
+.easemob-invite-box{
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	width: 400px;
+	height: 200px;
+	border: 1px solid #e6eaf2;
+	padding: 0;
+	border-radius: 0;
+	margin-left: -200px;
+	margin-top: -100px;
+	background: #fff;
+	display: none;
+	z-index: 9999;
+	.invite-logo{
+		width: 100%;
+		height: 45px;
+		text-align: center;
+		margin-top: 30px;
+		>img{
+			max-width: 45px;
+			max-height: 45px;
+		}
+	}
+	.invite-text{
+		text-align: center;
+		margin: 0 20px;
+		color: gray;
+		font-size: 12px;
+		height: 65px;
+		line-height: 65px;
+		>span{
+			display: inline-block;
+			line-height: 25px;
+			vertical-align: middle;
+		}
+	}
+	.button{
+		position: absolute;
+		bottom: 0;
+		width: 100%;
+		height: 50px;
+		line-height: 50px;
+		border-radius: 0;
+		margin: 0;
+		text-align: center;
+		cursor: pointer;
+		color: #fff;
+		background-color: #1ba8ed;
+	}
+	>span{
+		position: absolute;
+		right: 15px;
+		top: 5px;
+		color: gray;
+		cursor: pointer;
+		font-size: 20px;
+	}
+	.theme_sky{
+		background-color:#42b8f4;
+	}
+	.theme_tree{
+		background-color: #00b45f;
+	}
+	.theme_house{
+		background-color: #b50e03;
+	}
+	.theme_cherry{
+		background-color: #FFA0BE;
+	}
+	.theme_orange{
+		background-color: #f49300;
+	}
+	.theme_grass{
+		background-color: #9ec100;
+	}
+	.theme_sea{
+		background-color: #00cccd;
+	}
+	.theme_mountion{
+		background-color: #5b799a;
+	}
+	.theme_moon{
+		background-color: #3977cf;
+	}
+	.theme_business{
+		background-color: #000000;
+	}
+	.theme_lake{
+		background-color: #06a89c;
+	}
+	.theme_science{
+		background-color: #2189FF;
+	}
+	&.easemob-mobile-invite-box{
+		width: 280px;
+		height: 140px;
+		margin-left: -140px;
+		margin-top: -70px;
+		.invite-logo{
+			margin-top: 20px;
+			height: 35px;
+			>img{
+				max-width: 35px;
+				max-height: 35px;
+			}
+		}
+		.invite-text{
+			margin: 0 5px;
+			color: gray;
+			font-size: 12px;
+			height: 45px;
+			line-height: 45px;
+		}
+		>div.button{
+			height: 35px;
+			line-height: 35px;
+		}
+	}
+}

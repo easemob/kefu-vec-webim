@@ -63,52 +63,15 @@ function handleConfig(configJson){
 
 	config.configName = configJson.configName;
 	config.channel = configJson.channel;
-	config.ui = configJson.ui;
-	config.toolbar = configJson.toolbar;
-	config.chat = configJson.chat;
 
 	config.appKey = configJson.channel.appKey;
 	config.to = configJson.channel.to;
 	// config.agentName = configJson.channel.agentName;
-	config.emgroup = configJson.channel.emgroup;
+	config.emgroup = configJson.channel.emgroup || '';
 
-	// config.buttonText = configJson.ui.buttonText;
-	// config.dialogHeight = configJson.ui.dialogHeight;
-	// config.dialogWidth = configJson.ui.dialogWidth;
-	// config.dialogPosition = configJson.ui.dialogPosition;
-	config.dragenable = configJson.ui.dragenable;
-	config.hide = configJson.ui.hide;
-	config.logo = configJson.ui.logo;
-	config.notice = configJson.ui.notice;
-	config.themeName = configJson.ui.themeName;
-
-	if(config.themeName && config.themeName.indexOf("theme_custom") > -1){
-		var arr = config.themeName.split("theme_custom"); 
-		var color = arr[1];
-		config.themeCustomColor = color;
-	}
-	else{
-		config.themeCustomColor = "";
-	}
-
-	config.autoConnect = configJson.toolbar.autoConnect;
-	// config.hideKeyboard = configJson.toolbar.hideKeyboard;
-	config.minimum = configJson.toolbar.minimum;
-	config.offDutyWord = configJson.toolbar.offDutyWord;
-	config.offDutyType = configJson.toolbar.offDutyType;
-	config.popupOnInitialized = configJson.toolbar.popupOnInitialized;
-	config.satisfaction = configJson.toolbar.satisfaction;
-	config.soundReminder = configJson.toolbar.soundReminder;
-	config.sendSmallVideo = configJson.toolbar.sendSmallVideo;
-	config.ticket = configJson.toolbar.ticket;
-
-	config.resources = configJson.chat.resources;
-	config.hideStatus = configJson.chat.hideStatus;
-	config.timeScheduleId = configJson.chat.timeScheduleId || 0;
 	config.options = configJson.options;
 	config.videoH5Status = "";
 	config.pageState = true;
-
 }
 
 function setConfig(extendConfig){

@@ -11,10 +11,12 @@ import profile from '@/tools/profile'
 import MediaPlayer from './comps/MediaPlayer/MediaPlayer'
 import WhiteboardPlayer from './comps/WhiteboardPlayer'
 import Whiteboard from '../whiteboard/src'
+import getToHost from '@/common/transfer'
 
 import ws from '@/ws'
 
 var serviceAgora = null
+var top = window.top === window.self // false 在iframe里面 true不在
 
 export default function Video() {
     const [step, setStep] = useState('start') // start: 发起和重新发起 wait等待接听中 current 视频中 off：挂断
@@ -340,6 +342,11 @@ export default function Video() {
         !!whiteboardRoomInfo && sendWhiteboardInvitation();
     }, [whiteboardRoomInfo]);
 
+    // iframe最小化
+    const handleMini = () => {
+        getToHost.send({event: 'closeChat'})
+    }
+
     useEffect(() => {
         if (!serviceAgora?.client) return;
     
@@ -412,7 +419,8 @@ export default function Video() {
     const isDisabledWhiteboard = !videoLinking || whiteboardVisible;
 
     return (
-        <Wrapper>
+        <Wrapper role={step}>
+            {!top && <span onClick={handleMini} className='icon-mini'></span>}
             <CurrentWrapper className={step === 'current' ? '' : 'hide'}>
                 <CurrentTitle>
                     <span>{time  ? '通话中' : '等待接通中'}</span>
