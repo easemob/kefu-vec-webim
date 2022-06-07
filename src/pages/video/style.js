@@ -115,7 +115,7 @@ export const CurrentWrapper = styled.div`
 export const CurrentTitle = styled.div`
     height: 10%;
     position: relative;
-    font-size: 13px;
+    font-size: 16px;
     span {
         &:first-child {
             position: absolute;
