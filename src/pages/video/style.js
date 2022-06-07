@@ -2,19 +2,23 @@ import styled from 'styled-components'
 
 export const Wrapper = styled.div`
     position: absolute;
-    width: 242px;
-    height: 307px;
+    width: ${props => props.top ? '650px' : '100%'};
+    height: ${props => props.top ? '650px' : '100%'};
     right: ${props => props.top ? '10px' : 0};
     bottom: ${props => props.top ? '10px' : 0};
     border-radius: 4px;
     box-shadow: 0px 0px 10px #ccc;
-    .icon-mini {
+    background-color: #fff;
+    .icon-mini, .icon-close {
         position: absolute;
-        top: 0;
-        right: 0;
+        top: 5px;
+        right: 5px;
         cursor: pointer;
-        color: ${props => props.role === 'current' ? 'gray' : 'white'};
+        color: #fff;
         z-index: 100;
+    }
+    .icon-mini {
+        color: #3689f7;
     }
 `
 
@@ -28,27 +32,25 @@ export const WaitWrapper = styled.div`
 `
 
 export const WaitTitle = styled.div`
-    height: 30%;
-    box-sizing: border-box;
-    padding: calc(15% - 15px) 0;
+    height: 20%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     h2 {
-        font-size: 16px;
-        height: 30px;
-        line-height: 30px;
-        text-align: center;
+        font-size: 25px;
         font-weight: normal;
     }
 `
 
 export const WaitAgent = styled.div`
     height: 30%;
-    font-size: 13px;
+    font-size: 16px;
 `
 export const WaitAgentLogo = styled.div`
     text-align: center;
+    height: 70%;
     img {
-        height: 60px;
-        width: 60px;
+        height: 100%;
         border-radius: 50%;
     }
 `
@@ -56,6 +58,7 @@ export const WaitAgentLogo = styled.div`
 export const WaitAgentDesc = styled.div`
     text-align: center;
     margin-top: 2%;
+    box-sizing: border-box;
 `
 
 export const WaitTip = styled.p`
@@ -63,14 +66,20 @@ export const WaitTip = styled.p`
     padding: 0 10px;
     line-height: 20px;
     text-align: center;
-    font-size: 13px;
+    font-size: 16px;
 `
 
 export const WaitOpera = styled.div`
+    height: 35%;
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
     div {
         &:first-child {
-            width: 40px;
-            height: 40px;
+            width: 90px;
+            height: 90px;
             text-align: center;
             border-radius: 50%;
             margin: 0 auto;
@@ -83,14 +92,14 @@ export const WaitOpera = styled.div`
                 left: 50%;
                 transform: translate(-50%, -50%);
                 &::before {
-                    font-size: 35px;
+                    font-size: 60px;
                 }
             }
         }
         &:last-child {
             margin-top: 2%;
             text-align: center;
-            font-size: 13px;
+            font-size: 16px;
         }
     }
 `
@@ -265,8 +274,8 @@ export const CurrentFooter = styled.div`
     align-items: center;
     justify-content: center;
     div {
-        height: 75%;
-        width: 10%;
+        height: 50px;
+        width: 50px;
         border-radius: 5px;
         border: 1px solid #d7d7d7;
         margin: 0 5px;
@@ -278,6 +287,9 @@ export const CurrentFooter = styled.div`
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
+            &::before {
+                font-size: 30px;
+            }
         }
         &:last-child, .icon-sound-close, .icon-face-close {
             color: #d7474a;
