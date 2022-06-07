@@ -180,6 +180,7 @@ function _ready(){
 			break;
 		case _const.EVENTS.CLOSE:
 			// 最小化聊天窗口
+			loading.hide();
 			me.close();
 			me.callbackApi.onclose();
 			break;
