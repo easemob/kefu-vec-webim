@@ -238,6 +238,7 @@ export default function Video() {
     const onUserLeft = useCallback(user => {
         if (!serviceAgora.remoteUsers.length) {
             serviceAgora.leave()
+            serviceAgora = null
             setStep('start')
             setDesc('重新发起')
             setTip('感谢您的咨询，祝您生活愉快！')
@@ -252,17 +253,17 @@ export default function Video() {
             setWhiteboardRoomInfo(null);
             setWhiteboardVisible(false);
 
-            ws.cancelVideo(callId, {
-                ext: {
-                    type: "agorartcmedia/video",
-                    targetSystem: 'kefurtc',
-                    msgtype: {
-                        visitorRejectInvitation: { // 客服挂断
-                            callId: callId
-                        }
-                    },
-                },
-            })
+            // ws.cancelVideo(callId, {
+            //     ext: {
+            //         type: "agorartcmedia/video",
+            //         targetSystem: 'kefurtc',
+            //         msgtype: {
+            //             visitorRejectInvitation: { // 客服挂断
+            //                 callId: callId
+            //             }
+            //         },
+            //     },
+            // })
         } else {
             let _remoteUsers = serviceAgora.remoteUsers || [];
             if (currentChooseUser && user === currentChooseUser && !!_remoteUsers.length && (_remoteUsers[0] !== user)) {

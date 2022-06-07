@@ -7,14 +7,21 @@
     <title>Demo</title>
   </head>
   <body>
+    configId:<input type="text" name="configId" value="" />
+    tenantId:<input type="text" name="tenantId" value="" />
     <button onclick="test()">按钮</button>
     <!--不支持提醒-->
     <script>
     function test() {
-      window.easemobim.bind({ 
-        tenantId: 29762,
+      var configId = document.getElementsByName("configId")[0].value
+      var tenantId = document.getElementsByName("tenantId")[0].value
+      if (!configId || !tenantId) {
+        alert('输入configId和tenantId')
+      } else {
+        window.easemobim.bind({ 
+        tenantId: tenantId,
         resources: true,
-        configId: '74f5576d-a4b8-418e-bf9c-3d9f707b9a6b',
+        configId: configId,
         onready: function(){ 
           console.log("onready")
           // sendCrmExt();
@@ -48,6 +55,8 @@
             // },
       });
     }
+      }
+      
 
     </script>
     <script src="easemobvec.js"></script>

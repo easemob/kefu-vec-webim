@@ -14,25 +14,206 @@ var handleConfig = commonConfig.handleConfig;
 // 收消息队列
 var receiveMsgDict = new Dict();
 
-export default class Ws {
+class Ws {
     state = {
         conn: null,
-        config: commonConfig.getConfig()
+        config: null
+    }
+
+    // 保持当前config最新
+    _initConfig = () => {
+        this.state.config = commonConfig.getConfig()
+    }
+
+    // 设置configId
+    setConfigId = () => {
+        commonConfig.setConfig({
+            configId: queryString.parse(location.search).configId || ''
+        })
+
+        this._initConfig()
+    }
+
+    initConfig = async () => {
+        this.setConfigId()
+        
+        const {status, entity} = await getConfig(commonConfig.getConfig().configId)
+        if (status === 'OK') {
+            entity.configJson = JSON.parse(entity.configJson)
+            entity.configJson.tenantId = entity.tenantId;
+            entity.configJson.configName = entity.configName;
+            handleConfig(entity.configJson);
+
+            this.initRelevanceList(entity.tenantId);
+        }
+    }
+
+    initRelevanceList = tenantId => {
+        // 获取关联信息（targetChannel）
+        var relevanceList;
+        Promise.all([
+            getConfigOption({
+                // configId: commonConfig.getConfig().configId,
+                configId: this.state.config.configId,
+                tenantId
+            }),
+            getRelevanceListConfig({tenantId}),
+            tenantInfo({tenantId}),
+            grayScaleList(tenantId)
+        ]).then(results => {
+            const [value, _relevanceList, info, grayScale] = results
+            if (value.status && value.status === 'OK') {
+                commonConfig.setConfig({
+                    configOption: _.extend({}, commonConfig.getConfig().configOption, value),
+                });
+            }
+    
+            if (info.status && info.status === 'OK') {
+                commonConfig.setConfig({
+                    tenantInfo: info.entity,
+                });
+            }
+    
+            relevanceList = _relevanceList;
+        
+            // 灰度列表
+            if (grayScale.status && grayScale.status === 'OK') {
+                var garyRes = {}
+                grayScale.entities.forEach(item => {
+                    garyRes[item.grayName] = item.status !== 'Disable'
+                })
+                profile.grayList = garyRes
+            } else {
+                profile.grayList = {}
+            }
+
+            this._initConfig()
+    
+            return Promise.resolve([]);
+        })
+        .then(results => {
+            this.handleCfgData(relevanceList, results);
+        }, () => {
+            this.handleCfgData(relevanceList || [], []);
+        })
+    }
+
+    // todo: rename this function
+    handleCfgData = relevanceList => {
+        var targetItem;
+        var appKey = this.state.config.appKey;
+        var splited = appKey.split("#");
+        var orgName = splited[0];
+        var appName = splited[1];
+        var toUser = this.state.config.toUser || this.state.config.to;
+
+        // toUser 转为字符串， todo: move it to handle config
+        typeof toUser === "number" && (toUser = toUser.toString());
+
+        if(appKey && toUser){
+            // appKey，imServiceNumber 都指定了
+            targetItem = relevanceList.find(item => item.orgName === orgName && item.appName === appName && item.imServiceNumber === toUser)
+        }
+
+        // 未指定appKey, toUser时，或未找到符合条件的关联时，默认使用关联列表中的第一项
+        if(!targetItem){
+            targetItem = targetItem || relevanceList[0];
+            // 防止关联列表是空的情况js报错（海外环境）
+            if(!targetItem){
+                targetItem = {
+                    imServiceNumber:""
+                }
+            }
+            console.log("mismatched channel, use default.");
+        }
+        commonConfig.setConfig({
+            logo: this.state.config.logo || { enabled: !!targetItem.tenantLogo, url: targetItem.tenantLogo },
+            toUser: targetItem.imServiceNumber,
+            orgName: targetItem.orgName,
+            appName: targetItem.appName,
+            channelId: targetItem.channelId,
+            appKey: targetItem.orgName + "#" + targetItem.appName,
+            restServer: this.state.config.restServer || targetItem.restDomain,
+            xmppServer: this.state.config.xmppServer || targetItem.xmppServer,
+            staticPath: this.state.config.staticPath || "",
+            offDutyWord: this.state.config.offDutyWord || '现在是下班时间。',
+            emgroup: this.state.config.emgroup || "",
+            timeScheduleId: this.state.config.timeScheduleId || 0,
+
+            user: this.state.config.user || {},
+            visitor: this.state.config.visitor || {},
+            routingRuleFlag: this.state.config.routingRuleFlag || "",
+            channel: this.state.config.channel || {},
+            ui: this.state.config.ui || {
+                H5Title: {}
+            },
+            toolbar: this.state.config.toolbar || {
+                sendAttachment: true,
+                sendSmallVideo: this.state.config.configId ? false : true,
+            },
+            chat: this.state.config.chat || {},
+            options: this.state.config.options || {
+                onlyCloseWindow: "true", // 访客离开下面的开关，默认不会传该值，默认为true 这样不影响之前的逻辑
+                onlyCloseSession: "true", // 访客离开下面的开关，默认不会传该值，默认为true 这样不影响之前的逻辑
+                showEnquiryButtonInAllTime: "false", //是否在所有时间段显示主动评价按钮,默认不会传该值，默认值为"false"，即只在坐席接待时显示主动评价按钮
+                closeSessionWhenCloseWindow: "false" // 是否在关闭聊窗的时候关闭会话，默认不会传该值，默认值为"false"
+            }
+        });
+
+        // fake patch: 老版本配置的字符串需要decode
+        if(this.state.config.offDutyWord){
+            try{
+                commonConfig.setConfig({
+                    offDutyWord: decodeURIComponent(this.state.config.offDutyWord)
+                });
+            }
+            catch(e){}
+        }
+
+        if(this.state.config.emgroup){
+            try{
+                commonConfig.setConfig({
+                    emgroup: decodeURIComponent(this.state.config.emgroup)
+                });
+            }
+            catch(e){}
+        }
+
+        // 获取企业头像和名称
+        // todo: rename to tenantName
+        profile.tenantAvatar = utils.getAvatarsFullPath(targetItem.tenantAvatar, this.state.config.domain);
+        profile.defaultAgentName = targetItem.tenantName;
+        profile.defaultAvatar = this.state.config.staticPath + "/img/default_avatar.png";
+
+        // 从这里开始区分是否进行创建用户
+        var cacheKeyName = (this.state.config.configId || (this.state.config.to + this.state.config.tenantId + this.state.config.emgroup));
+        if (utils.get(cacheKeyName)) {
+            commonConfig.setConfig({
+                user: {
+                    username: utils.get(cacheKeyName),
+                    password: utils.get('pass' + cacheKeyName)
+                }
+            })
+
+            this._initConfig()
+            this._initConnection()	
+        } else {
+            this.setUserInfo()
+        }
     }
 
     _open = tools.retryThrottle(() => {
-        
         var op = {
-            user: this.state.config.user.username,
-            appKey: this.state.config.appKey,
-            apiUrl: location.protocol + "//" + this.state.config.restServer
+            user: commonConfig.getConfig().user.username,
+            appKey: commonConfig.getConfig().appKey,
+            apiUrl: location.protocol + "//" + commonConfig.getConfig().restServer
         };
     
         if(profile.imToken !== null){
             op.accessToken = profile.imToken;
         }
         else{
-            op.pwd = this.state.config.user.password;
+            op.pwd = commonConfig.getConfig().user.password;
         }
     
         this.state.conn.open(op);
@@ -40,7 +221,7 @@ export default class Ws {
         resetTime: 10 * 60 * 1000,
         waitTime: 2000,
         retryLimit: 100 // 重连次数改为100次
-    })
+    });
 
     attemptToAppendOfficialAccount = officialAccountInfo => {
         var id = officialAccountInfo.official_account_id;
@@ -410,9 +591,10 @@ export default class Ws {
     }
 
     _initConnection = () => {
+        const {config} = this.state
         // init connection
         this.state.conn = new WebIM.connection({
-            url: this.state.config.xmppServer,
+            url: config.xmppServer,
             retry: true,
             isMultiLoginSessions: true,
             heartBeatWait: HEART_BEAT_INTERVAL,
@@ -444,7 +626,7 @@ export default class Ws {
                 this.handleMessage(message, { type: "cmd" });
             },
             onOnline: function(){
-                utils.isMobile && _open();
+                utils.isMobile && this._open();
             },
             onOffline: function(){
                 utils.isMobile && this.state.conn.close();
@@ -456,10 +638,10 @@ export default class Ws {
                 if(e.reconnect){
                     // _open();
                     // 在移动端会触发多次重连，导致自己多次登录，影响多端登录的判断
-                    !utils.isMobile && _open();
+                    !utils.isMobile && this._open();
                 }
                 else if(e.type === WEBIM_CONNCTION_AUTH_ERROR){
-                    _open();
+                    this._open();
                 }
                 // im sdk 会捕获回调中的异常，需要把出错信息打出来
                 else if(e.type === WEBIM_CONNCTION_CALLBACK_INNER_ERROR){
@@ -470,7 +652,7 @@ export default class Ws {
                 }
                 // 当多端登录挤掉上一个ws链接的时候给出提示
                 if(e.type == "Replaced by new connection"){
-                    if(this.state.config.tenantId == "66639"){
+                    if(config.tenantId == "66639"){
                         return false;
                     }
                     // 在收到多端登录信息时候，第二通道轮询暂且不清除。
@@ -489,186 +671,15 @@ export default class Ws {
         this._open();
     }
 
-    // 设置configId
-    setConfigId = () => {
-        commonConfig.setConfig({
-            configId: queryString.parse(location.search).configId || ''
-        })
-    }
-
-    initConfig = () => {
-        this.setConfigId()
-
-        getConfig(commonConfig.getConfig().configId).then(res => {
-            if (res.status && res.status === 'OK') {
-                var entity = res.entity
-                entity.configJson.tenantId = entity.tenantId;
-                entity.configJson.configName = entity.configName;
-                handleConfig(entity.configJson);
-    
-                this.initRelevanceList(entity.tenantId);
-            }
-        })
-    }
-
-    initRelevanceList = tenantId => {
-        // 获取关联信息（targetChannel）
-        var relevanceList;
-        Promise.all([
-            getConfigOption({
-                configId: commonConfig.getConfig().configId,
-                tenantId
-            }),
-            getRelevanceListConfig({tenantId}),
-            tenantInfo({tenantId}),
-            grayScaleList(tenantId)
-        ]).then(results => {
-            const [value, _relevanceList, info, grayScale] = results
-            if (value.status && value.status === 'OK') {
-                commonConfig.setConfig({
-                    configOption: _.extend({}, commonConfig.getConfig().configOption, value),
-                });
-            }
-    
-            if (info.status && info.status === 'OK') {
-                commonConfig.setConfig({
-                    tenantInfo: info.entity,
-                });
-            }
-    
-            relevanceList = _relevanceList;
-        
-            // 灰度列表
-            if (grayScale.status && grayScale.status === 'OK') {
-                var garyRes = {}
-                grayScale.entities.forEach(item => {
-                    garyRes[item.grayName] = item.status !== 'Disable'
-                })
-                profile.grayList = garyRes
-            } else {
-                profile.grayList = {}
-            }
-    
-            return Promise.resolve([]);
-        }).then(results => {
-            this.handleCfgData(relevanceList, results);
-        }, () => {
-            this.handleCfgData(relevanceList || [], []);
-        })
-    }
-
-    handleCfgData = relevanceList => {
-        var targetItem;
-        var appKey = commonConfig.getConfig().appKey;
-        var splited = appKey.split("#");
-        var orgName = splited[0];
-        var appName = splited[1];
-        var toUser = commonConfig.getConfig().toUser || commonConfig.getConfig().to;
-    
-        // toUser 转为字符串， todo: move it to handle config
-        typeof toUser === "number" && (toUser = toUser.toString());
-    
-        if(appKey && toUser){
-            // appKey，imServiceNumber 都指定了
-            targetItem = relevanceList.find(item => item.orgName === orgName && item.appName === appName && item.imServiceNumber === toUser)
-        }
-    
-        // 未指定appKey, toUser时，或未找到符合条件的关联时，默认使用关联列表中的第一项
-        if(!targetItem){
-            targetItem = targetItem || relevanceList[0];
-            // 防止关联列表是空的情况js报错（海外环境）
-            if(!targetItem){
-                targetItem = {
-                    imServiceNumber:""
-                }
-            }
-            console.log("mismatched channel, use default.");
-        }
-        commonConfig.setConfig({
-            logo: commonConfig.getConfig().logo || { enabled: !!targetItem.tenantLogo, url: targetItem.tenantLogo },
-            toUser: targetItem.imServiceNumber,
-            orgName: targetItem.orgName,
-            appName: targetItem.appName,
-            channelId: targetItem.channelId,
-            appKey: targetItem.orgName + "#" + targetItem.appName,
-            restServer: commonConfig.getConfig().restServer || targetItem.restDomain,
-            xmppServer: commonConfig.getConfig().xmppServer || targetItem.xmppServer,
-            staticPath: commonConfig.getConfig().staticPath || "",
-            offDutyWord: commonConfig.getConfig().offDutyWord || '现在是下班时间。',
-            emgroup: commonConfig.getConfig().emgroup || "",
-            timeScheduleId: commonConfig.getConfig().timeScheduleId || 0,
-    
-            user: commonConfig.getConfig().user || {},
-            visitor: commonConfig.getConfig().visitor || {},
-            routingRuleFlag: commonConfig.getConfig().routingRuleFlag || "",
-            channel: commonConfig.getConfig().channel || {},
-            ui: commonConfig.getConfig().ui || {
-                H5Title: {}
-            },
-            toolbar: commonConfig.getConfig().toolbar || {
-                sendAttachment: true,
-                sendSmallVideo:commonConfig.getConfig().configId ? false : true,
-            },
-            chat: commonConfig.getConfig().chat || {},
-            options: commonConfig.getConfig().options || {
-                onlyCloseWindow: "true", // 访客离开下面的开关，默认不会传该值，默认为true 这样不影响之前的逻辑
-                onlyCloseSession: "true", // 访客离开下面的开关，默认不会传该值，默认为true 这样不影响之前的逻辑
-                showEnquiryButtonInAllTime: "false", //是否在所有时间段显示主动评价按钮,默认不会传该值，默认值为"false"，即只在坐席接待时显示主动评价按钮
-                closeSessionWhenCloseWindow: "false" // 是否在关闭聊窗的时候关闭会话，默认不会传该值，默认值为"false"
-            }
-        });
-    
-        // fake patch: 老版本配置的字符串需要decode
-        if(commonConfig.getConfig().offDutyWord){
-            try{
-                commonConfig.setConfig({
-                    offDutyWord: decodeURIComponent(commonConfig.getConfig().offDutyWord)
-                });
-            }
-            catch(e){}
-        }
-    
-        if(commonConfig.getConfig().emgroup){
-            try{
-                commonConfig.setConfig({
-                    emgroup: decodeURIComponent(commonConfig.getConfig().emgroup)
-                });
-            }
-            catch(e){}
-        }
-    
-        // 获取企业头像和名称
-        // todo: rename to tenantName
-        profile.tenantAvatar = utils.getAvatarsFullPath(targetItem.tenantAvatar, commonConfig.getConfig().domain);
-        profile.defaultAgentName = targetItem.tenantName;
-        profile.defaultAvatar = commonConfig.getConfig().staticPath + "/img/default_avatar.png";
-    
-        // 从这里开始区分是否进行创建用户
-        var cacheKeyName = (commonConfig.getConfig().configId || (commonConfig.getConfig().to + commonConfig.getConfig().tenantId + commonConfig.getConfig().emgroup));
-        if (utils.get(cacheKeyName)) {
-            commonConfig.setConfig({
-                user: {
-                    username: utils.get(cacheKeyName),
-                    password: utils.get('pass' + cacheKeyName)
-                }
-            })
-    
-            this.state.config = commonConfig.getConfig()
-    
-            this._initConnection()
-        } else {
-            this.setUserInfo()
-        }
-    }
-
     setUserInfo = () => {
+        const {config} = this.state
         // 创建用户
         createVisitor({
-            appName: commonConfig.getConfig().appName,
-            imServiceNumber: commonConfig.getConfig().toUser,
-            orgName: commonConfig.getConfig().orgName,
+            appName: config.appName,
+            imServiceNumber: config.toUser,
+            orgName: config.orgName,
             specifiedUserName: '',
-            tenantId: commonConfig.getConfig().tenantId
+            tenantId: config.tenantId
         }).then(info => {
             commonConfig.setConfig({
                 user: {
@@ -678,10 +689,11 @@ export default class Ws {
             })
     
             // 设置cookie
-            var cacheKeyName = (commonConfig.getConfig().configId || (commonConfig.getConfig().to + commonConfig.getConfig().tenantId + commonConfig.getConfig().emgroup));
+            var cacheKeyName = (config.configId || (config.to + config.tenantId + config.emgroup));
             utils.set(cacheKeyName, info.userId);
             utils.set('pass' + cacheKeyName, info.userPassword);
-            
+
+            this._initConfig()
             this.getUserToken()
         })
     }
@@ -736,13 +748,14 @@ export default class Ws {
     }
 
     _setExt = msg => {
+        const {config} = this.state
         var officialAccount = profile.currentOfficialAccount || profile.systemOfficialAccount;
         var officialAccountId = officialAccount.official_account_id;
         var bindAgentUsername = officialAccount.bindAgentUsername;
         var bindSkillGroupName = officialAccount.bindSkillGroupName;
         var language = 'zh-CN';
         var customExtendMessage = commonConfig.customExtendMessage;
-        var rulaiExtendMessage = commonConfig.getConfig().rulaiExtendMessage;
+        var rulaiExtendMessage = config.rulaiExtendMessage;
     
         msg.body.ext = msg.body.ext || {};
         msg.body.ext.weichat = msg.body.ext.weichat || {};
@@ -774,12 +787,12 @@ export default class Ws {
         if(Object.keys(config.visitor).length){
             msg.body.ext.weichat.visitor = config.visitor;
             if(config.visitor && !config.visitor.userNickname){
-                msg.body.ext.weichat.visitor.userNickname = commonConfig.getConfig().userNicknameFlg;
+                msg.body.ext.weichat.visitor.userNickname = config.userNicknameFlg;
             }
         }
         else{
             msg.body.ext.weichat.visitor = {
-                userNickname:commonConfig.getConfig().userNicknameFlg
+                userNickname: config.userNicknameFlg
             }
         }
     
@@ -790,7 +803,7 @@ export default class Ws {
         else if(config.agentName){
             msg.body.ext.weichat.agentUsername = config.agentName;
         }
-    
+
         // set growingio id
         if(config.grUserId){
             msg.body.ext.weichat.visitor = msg.body.ext.weichat.visitor || {};
@@ -808,4 +821,6 @@ export default class Ws {
         }
     }
 }
+
+export default new Ws()
 
