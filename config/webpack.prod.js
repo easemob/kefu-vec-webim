@@ -57,17 +57,17 @@ var vec = merge(common, {
       }),
     ],
     // node_modules 单独打包
-    splitChunks: {
-      cacheGroups:{
-          vendors:{//node_modules里的代码
-              test: /[\\/]node_modules[\\/]/,
-              chunks: "initial",
-              name:'vendors', //chunks name
-              priority: 10, //优先级
-              enforce: true
-          }
-      }
-  },
+  //   splitChunks: {
+  //     cacheGroups:{
+  //         vendors:{//node_modules里的代码
+  //             test: /[\\/]node_modules[\\/]/,
+  //             chunks: "initial",
+  //             name:'vendors', //chunks name
+  //             priority: 10, //优先级
+  //             enforce: true
+  //         }
+  //     }
+  // },
   },
   plugins: [
     // 打包体积分析
