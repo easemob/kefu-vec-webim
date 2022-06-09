@@ -15,17 +15,21 @@ import ws from '@/ws'
 
 var serviceAgora = null
 var top = window.top === window.self // false 在iframe里面 true不在
+var config = commonConfig.getConfig()
 
 export default function Video() {
-    const [step, setStep] = useState('start') // start: 发起和重新发起 wait等待接听中 current 视频中 off：挂断
+    const [step, setStep] = useState(config.switch.skipWaitingPage ? 'wait' : 'start') // start: 发起和重新发起 wait等待接听中 current 视频中 off：挂断
     const [desc, setDesc] = useState('发起通话')
-    const [tip, setTip] = useState('您好！有什么需要帮助，可以发起视频通话进行咨询呦！')
-    const [sound, setSound] = useState(true) // 开关声音
-    const [face, setFace] = useState(true) // 开关视频
+    const [tip, setTip] = useState(config.style.waitingPrompt)
+    const [sound, setSound] = useState(!config.switch.visitorCameraOff) // 开关声音
+    const [face, setFace] = useState(!config.switch.visitorCameraOff) // 开关视频
     const [pos, setPos] = useState(true) // 默认展示自己
     const [time, setTime] = useState(false) // 开始计时
     const [agentSound, setAgentSound] = useState(true) // 客服声音
-    const [compInfo, setCompInfo] = useState({})
+    const [compInfo, setCompInfo] = useState({
+        name: config.tenantInfo.name,
+        avatar: config.tenantInfo.avatar,
+    })
     const [ localUser, setLocalUser ] = useState(null); // 本地用户音视频轨道保存
     const [ currentChooseUser, setCurrentChooseUser ] = useState(null); // 当前在正中央播放的用户
 
@@ -43,11 +47,7 @@ export default function Video() {
     function handleStart() {
         setStep('wait')
         setDesc('挂断')
-        setTip(`您好！您正在发起视频通话进行咨询。`)
-        setCompInfo({
-            name: commonConfig.getConfig().tenantInfo.name,
-            avatar: commonConfig.getConfig().tenantInfo.avatar,
-        })
+        setTip(config.style.callingPrompt)
 
         ws.sendText('邀请客服进行实时视频', {
             ext: {
@@ -56,12 +56,12 @@ export default function Video() {
                 msgtype: {
                     liveStreamInvitation: {
                         msg: '邀请客服进行实时视频',
-                        orgName: commonConfig.getConfig().orgName,
-                        appName: commonConfig.getConfig().appName,
-                        userName: commonConfig.getConfig().user.username,
-                        imServiceNumber: commonConfig.getConfig().toUser,
-                        restServer: commonConfig.getConfig().restServer,
-                        xmppServer: commonConfig.getConfig().xmppServer,
+                        orgName: config.orgName,
+                        appName: config.appName,
+                        userName: config.user.username,
+                        imServiceNumber: config.toUser,
+                        restServer: config.restServer,
+                        xmppServer: config.xmppServer,
                         resource: "webim",
                         isNewInvitation: true,
                         userAgent: navigator.userAgent,
@@ -124,6 +124,8 @@ export default function Video() {
                     setLocalUser(localUser);
                     setCurrentChooseUser(localUser);
 
+                    serviceAgora.localAudioTrack.setMuted(config.switch.visitorCameraOff)
+                    serviceAgora.localVideoTrack.setMuted(config.switch.visitorCameraOff)
                     // serviceAgora.localVideoTrack && serviceAgora.localVideoTrack.play('visitor_video');
                 })
             }, err => {
@@ -136,7 +138,7 @@ export default function Video() {
     const noVisitorClose = () => {
         setStep('start')
         setDesc('重新发起')
-        setTip('感谢您的咨询，祝您生活愉快！')
+        setTip(config.style.endingPrompt)
         setCallId(null)
 
         // 本地离开
@@ -149,12 +151,12 @@ export default function Video() {
         if (stepRef.current.getAttribute('role') === 'wait') {
             setStep('start')
             setDesc('重新发起')
-            setTip('感谢您的咨询，祝您生活愉快！')
+            setTip(config.style.endingPrompt)
             setCallId(null)
             setTime(false)
             setTicketIfo(null)
-            setSound(true)
-            setFace(true)
+            setSound(!config.switch.visitorCameraOff)
+            setFace(!config.switch.visitorCameraOff)
             setPos(true)
 
             ws.sendText('访客取消实时视频', { // 防止发的消息被翻译，归类为系统消息
@@ -188,12 +190,12 @@ export default function Video() {
             visitorClose(ssid)
             setStep('start')
             setDesc('重新发起')
-            setTip('感谢您的咨询，祝您生活愉快！')
+            setTip(config.style.endingPrompt)
             setCallId(null)
             setTime(false)
             setTicketIfo(null)
-            setSound(true)
-            setFace(true)
+            setSound(!config.switch.visitorCameraOff)
+            setFace(!config.switch.visitorCameraOff)
             setPos(true)
             setSsid('')
 
@@ -225,25 +227,13 @@ export default function Video() {
             serviceAgora = null
             setStep('start')
             setDesc('重新发起')
-            setTip('感谢您的咨询，祝您生活愉快！')
+            setTip(config.style.endingPrompt)
             setCallId(null)
             setTime(false)
             setTicketIfo(null)
-            setSound(true)
-            setFace(true)
+            setSound(!config.switch.visitorCameraOff)
+            setFace(!config.switch.visitorCameraOff)
             setPos(true)
-
-            // ws.cancelVideo(callId, {
-            //     ext: {
-            //         type: "agorartcmedia/video",
-            //         targetSystem: 'kefurtc',
-            //         msgtype: {
-            //             visitorRejectInvitation: { // 客服挂断
-            //                 callId: callId
-            //             }
-            //         },
-            //     },
-            // })
         } else {
             let _remoteUsers = serviceAgora.remoteUsers || [];
             if (currentChooseUser && user === currentChooseUser && !!_remoteUsers.length && (_remoteUsers[0] !== user)) {
@@ -293,6 +283,12 @@ export default function Video() {
     }, [onUserLeft]);
 
     useEffect(() => {
+        // 客服在中心
+        if (remoteUsers.length) {
+            var agentAll = remoteUsers.filter(({uid}) => uid !== localUser.uid)
+            agentAll.length && setCurrentChooseUser(agentAll[0])
+        }
+
         if (remoteUsers.length && !currentChooseUser.isLocal) {
             currentChooseUser?.videoTrack?.play(videoRef.current);
             currentChooseUser?.audioTrack?.play();
@@ -315,6 +311,11 @@ export default function Video() {
     }, [currentChooseUser])
 
     useEffect(() => {
+        // 直接发起视频通话
+        if (config.switch.skipWaitingPage) {
+            handleStart()
+        }
+
         event.on(SYSTEM_VIDEO_TICKET_RECEIVED, recived) // 监听接受
         event.on(SYSTEM_VIDEO_ARGO_END, handleClose) // 取消和挂断
         event.on(SYSTEM_VIDEO_ARGO_REJECT, handleClose) // 坐席拒接

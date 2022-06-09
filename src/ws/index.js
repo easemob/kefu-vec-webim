@@ -227,9 +227,7 @@ function _handleMessage(msg, options){
 	}
 
 	var myconfig = commonConfig.getConfig();
-	var themeCustomColor = myconfig.themeCustomColor;
 	
-
 	// ===========
 	// 消息结构构造
 	// ===========
@@ -494,24 +492,23 @@ function _initConnection(){
 commonConfig.setConfig({
 	configId: queryString.parse(location.search).configId || ''
 })
-function initConfig() {
-	getConfig(commonConfig.getConfig().configId).then(res => {
-		if (res.status && res.status === 'OK') {
-			var entity = res.entity
-			entity.configJson = JSON.parse(entity.configJson)
-			entity.configJson.tenantId = entity.tenantId;
-			entity.configJson.configName = entity.configName;
-			handleConfig(entity.configJson);
+async function initConfig() {
+	const {status, entity} = await getConfig(commonConfig.getConfig().configId)
+	if (status === 'OK') {
+		entity.configJson = JSON.parse(entity.configJson)
+		entity.configJson.tenantId = entity.tenantId;
+		entity.configJson.configName = entity.configName;
+		handleConfig(entity.configJson);
 
-			initRelevanceList(entity.tenantId);
-		}
-	})
+		await initRelevanceList(entity.tenantId);
+
+		console.log('config end')
+	}
 }
 
-function initRelevanceList(tenantId){
+async function initRelevanceList(tenantId){
 	// 获取关联信息（targetChannel）
-	var relevanceList;
-	Promise.all([
+	const [value, _relevanceList, info, grayScale] = await Promise.all([
 		getConfigOption({
 			configId: commonConfig.getConfig().configId,
 			tenantId
@@ -519,43 +516,36 @@ function initRelevanceList(tenantId){
 		getRelevanceListConfig({tenantId}),
 		tenantInfo({tenantId}),
 		grayScaleList(tenantId)
-	]).then(results => {
-		const [value, _relevanceList, info, grayScale] = results
-		if (value.status && value.status === 'OK') {
-			commonConfig.setConfig({
-				configOption: _.extend({}, commonConfig.getConfig().configOption, value),
-			});
-		}
+	])
 
-		if (info.status && info.status === 'OK') {
-			commonConfig.setConfig({
-				tenantInfo: info.entity,
-			});
-		}
+	if (value.status && value.status === 'OK') {
+		commonConfig.setConfig({
+			configOption: _.extend({}, commonConfig.getConfig().configOption, value),
+		});
+	}
 
-		relevanceList = _relevanceList;
-	
-		// 灰度列表
-		if (grayScale.status && grayScale.status === 'OK') {
-			var garyRes = {}
-			grayScale.entities.forEach(item => {
-				garyRes[item.grayName] = item.status !== 'Disable'
-			})
-			profile.grayList = garyRes
-		} else {
-			profile.grayList = {}
-		}
+	if (info.status && info.status === 'OK') {
+		commonConfig.setConfig({
+			tenantInfo: info.entity,
+		});
+	}
 
-		return Promise.resolve([]);
-	}).then(results => {
-		handleCfgData(relevanceList, results);
-	}, () => {
-		handleCfgData(relevanceList || [], []);
-	})
+	// 灰度列表
+	if (grayScale.status && grayScale.status === 'OK') {
+		var garyRes = {}
+		grayScale.entities.forEach(item => {
+			garyRes[item.grayName] = item.status !== 'Disable'
+		})
+		profile.grayList = garyRes
+	} else {
+		profile.grayList = {}
+	}
+
+	await handleCfgData(_relevanceList || [], []);
 }
 
 // todo: rename this function
-function handleCfgData(relevanceList){
+async function handleCfgData(relevanceList){
 	var targetItem;
 	var appKey = commonConfig.getConfig().appKey;
 	var splited = appKey.split("#");
@@ -654,58 +644,44 @@ function handleCfgData(relevanceList){
 		config = commonConfig.getConfig()
 
 		_initConnection()
-
-		// getOfficalAccounts().then(officialAccountList => {
-		// 	officialAccountList.forEach(_attemptToAppendOfficialAccount)
-
-		// 	if(!profile.ctaEnable){
-		// 		profile.currentOfficialAccount = profile.systemOfficialAccount;
-		// 	}
-
-		// 	_initConnection()
-		// })	
 	} else {
-		setUserInfo()
+		await setUserInfo()
 	}
 }
 
-function setUserInfo() {
+async function setUserInfo() {
 	// 创建用户
-	createVisitor({
+	var info = await createVisitor({
 		appName: commonConfig.getConfig().appName,
 		imServiceNumber: commonConfig.getConfig().toUser,
 		orgName: commonConfig.getConfig().orgName,
 		specifiedUserName: '',
 		tenantId: commonConfig.getConfig().tenantId
-	}).then(info => {
-		commonConfig.setConfig({
-			user: {
-				password: info.userPassword,
-				username: info.userId
-			}
-		})
-
-		// 设置cookie
-		var cacheKeyName = (commonConfig.getConfig().configId || (commonConfig.getConfig().to + commonConfig.getConfig().tenantId + commonConfig.getConfig().emgroup));
-		utils.set(cacheKeyName, info.userId);
-		utils.set('pass' + cacheKeyName, info.userPassword);
-		
-		getUserToken()
 	})
+
+	commonConfig.setConfig({
+		user: {
+			password: info.userPassword,
+			username: info.userId
+		}
+	})
+
+	// 设置cookie
+	var cacheKeyName = (commonConfig.getConfig().configId || (commonConfig.getConfig().to + commonConfig.getConfig().tenantId + commonConfig.getConfig().emgroup));
+	utils.set(cacheKeyName, info.userId);
+	utils.set('pass' + cacheKeyName, info.userPassword);
+	
+	await getUserToken()
 }
 
-function getUserToken() {
+async function getUserToken() {
 	if (profile.imToken) {
 		_initConnection()
 	} else {
-		getToken().then(resp => {
-			var token = resp.access_token;
-	
-			// cache token
-			profile.imToken = token;
-	
-			_initConnection()
-		})
+		var resp = await getToken()
+		// cache token
+		profile.imToken = resp.access_token;
+		_initConnection()
 	}
 }
 
@@ -818,11 +794,10 @@ function _setExt(msg){
 	}
 }
 
-
 export default {
     initConnection: initConfig,
     handleMessage: _handleMessage,
 	sendText: _sendText,
 	cancelVideo: _sendCmdExitVideo,
-	attemptToAppendOfficialAccount: _attemptToAppendOfficialAccount
+	attemptToAppendOfficialAccount: _attemptToAppendOfficialAccount,
 }

@@ -72,6 +72,12 @@ function handleConfig(configJson){
 	config.options = configJson.options;
 	config.videoH5Status = "";
 	config.pageState = true;
+
+	// 样式
+	config.style = configJson.styleSettings || {}
+
+	// 开关
+	config.switch = configJson.functionSettings || {}
 }
 
 function setConfig(extendConfig){
