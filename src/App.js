@@ -12,8 +12,7 @@ const Video = React.lazy(() => {
 
 export default function App() {
     return <React.Fragment>
-        <Suspense fallback={<Loading></Loading>}>
-        <Loading></Loading>
+        <Suspense fallback={<Loading />}>
             <Video />
         </Suspense>
     </React.Fragment>
