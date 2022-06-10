@@ -159,18 +159,6 @@ export default function Video() {
             setFace(!config.switch.visitorCameraOff)
             setPos(true)
 
-            ws.sendText('访客取消实时视频', { // 防止发的消息被翻译，归类为系统消息
-                ext: {
-                    type: "rtcmedia/video",
-                    targetSystem: 'kefurtc',
-                    msgtype: {
-                        visitorCancelInvitation: {
-                            msg: '访客取消实时视频',
-                            callId: callId,
-                        },
-                    },
-                },
-            })
             ws.cancelVideo(callId, {
                 ext: {
                     type: "agorartcmedia/video",
