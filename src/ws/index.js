@@ -124,7 +124,7 @@ function _handleMessage(msg, options){
 	videoTicket && (videoTicket.agentTicket = agent)
 	videoTicket && (videoTicket.ssid = ssid)
 
-	var agentRejectVideoTicket = utils.getDataByPath(msg, 'action');
+	var msgAction = utils.getDataByPath(msg, 'action');
 	var videoExtend = utils.getDataByPath(msg, "ext.msgtype.sendVisitorTicket.extend");
 	var whiteBoardTicket = utils.getDataByPath(msg, "ext.msgtype.roomData");
 	var videoEndArgo = utils.getDataByPath(msg, "ext.msgtype.videoPlayback");
@@ -213,7 +213,7 @@ function _handleMessage(msg, options){
 	else if(customMagicEmoji){
 		type = "customMagicEmoji";
 	}
-	else if (agentRejectVideoTicket) { // 客服拒接
+	else if (msgAction === 'AgentRejectKefuRtcRingingCall') { // 客服拒接
 		type = 'agentRejectVideoTicket';
 	}
 	else if(
@@ -303,6 +303,7 @@ function _handleMessage(msg, options){
 		break;
 	case 'agentRejectVideoTicket':
 		event.emit(SYSTEM_VIDEO_ARGO_REJECT);
+		break;
 	case "whiteBoardTicket":
 		message = msg;
 		message.type = "txt";
