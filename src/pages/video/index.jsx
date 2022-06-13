@@ -1,5 +1,5 @@
-import React, { useState, useCallback, useEffect, useRef, Suspense } from 'react'
-import { Wrapper, WaitWrapper, WaitTitle, WaitAgent, WaitAgentLogo, WaitAgentDesc, WaitTip, WaitOpera, CurrentWrapper, CurrentTitle, CurrentBody, CurrentFooter, CurrentBodySelf, CurrentBodyAgent, CurrentBodyMicro, CurrentBodyMore, TopVideoBox, CurrentVideo } from './style'
+import React, { useState, useCallback, useEffect, useRef } from 'react'
+import { Wrapper, WaitWrapper, WaitTitle, WaitAgent, WaitAgentLogo, WaitAgentDesc, WaitTip, WaitOpera, CurrentWrapper, CurrentTitle, CurrentFooter, CurrentBodySelf, CurrentBodyMicro, CurrentBodyMore, TopVideoBox, CurrentVideo } from './style'
 import TimeControl from './comps/TimeControl'
 import videoChatAgora from '@/tools/hxVideo'
 import logo from '@/assets/img/qiye.png'
@@ -23,9 +23,7 @@ export default function Video() {
     const [tip, setTip] = useState(config.style.waitingPrompt)
     const [sound, setSound] = useState(!config.switch.visitorCameraOff) // 开关声音
     const [face, setFace] = useState(!config.switch.visitorCameraOff) // 开关视频
-    const [pos, setPos] = useState(true) // 默认展示自己
     const [time, setTime] = useState(false) // 开始计时
-    const [agentSound, setAgentSound] = useState(true) // 客服声音
     const [compInfo, setCompInfo] = useState({
         name: config.tenantInfo.name,
         avatar: config.tenantInfo.avatar,
@@ -74,7 +72,6 @@ export default function Video() {
 
     // 接受视频
     const recived = useCallback(ticketInfo => {
-        // agents.push(ticketInfo.agentTicket)
         setAgents(agentsOld => {
             if (!agentsOld.map(agent => agent.userId).includes(ticketInfo.agentTicket.userId)) {
                 agentsOld.push(ticketInfo.agentTicket)
@@ -82,11 +79,9 @@ export default function Video() {
 
             return agentsOld
         })
-        // setAgents([...new Set(agents)])
 
         if (!serviceAgora) {
             setTicketIfo(ticketInfo)
-            // setStep('current') // 进行中视频
     
             var cfgAgora = {
                 appid: ticketInfo.appId,
@@ -101,14 +96,15 @@ export default function Video() {
             serviceAgora = new videoChatAgora({
                 onErrorNotify,
                 onRemoteUserChange,
-                onUserLeft})
-            // 获取访客信息 关闭信息的时候要用
+                onUserLeft
+            })
+            // 获取访客信息 关闭信息的时候要用 后续不掉用关闭接口可以去除
             getOfficalAccounts().then(officialAccountList => {
-                officialAccountList.forEach(ws.attemptToAppendOfficialAccount)
+                // officialAccountList.forEach(ws.attemptToAppendOfficialAccount)
 
-            	if(!profile.ctaEnable){
-            		profile.currentOfficialAccount = profile.systemOfficialAccount;
-            	}
+            	// if(!profile.ctaEnable){
+            	// 	profile.currentOfficialAccount = profile.systemOfficialAccount;
+            	// }
 
                 setTime(true) // 开始计时
                 setStep('current')
@@ -148,17 +144,7 @@ export default function Video() {
 
     // 结束
     const handleClose = useCallback(() => {
-        if (stepRef.current.getAttribute('role') === 'wait') {
-            setStep('start')
-            setDesc('重新发起')
-            setTip(config.style.endingPrompt)
-            setCallId(null)
-            setTime(false)
-            setTicketIfo(null)
-            setSound(!config.switch.visitorCameraOff)
-            setFace(!config.switch.visitorCameraOff)
-            setPos(true)
-
+        if (step === 'wait') {
             ws.cancelVideo(callId, {
                 ext: {
                     type: "agorartcmedia/video",
@@ -170,28 +156,24 @@ export default function Video() {
                     },
                 },
             })
-
-            // 本地离开
-            serviceAgora && serviceAgora.leave();
-            serviceAgora = null
         } else {
             visitorClose(ssid)
-            setStep('start')
-            setDesc('重新发起')
-            setTip(config.style.endingPrompt)
-            setCallId(null)
-            setTime(false)
-            setTicketIfo(null)
-            setSound(!config.switch.visitorCameraOff)
-            setFace(!config.switch.visitorCameraOff)
-            setPos(true)
-            setSsid('')
-
-            // 本地离开
-            serviceAgora && serviceAgora.leave();
-            serviceAgora = null
         }
-    }, [ssid, callId])
+
+        setStep('start')
+        setDesc('重新发起')
+        setTip(config.style.endingPrompt)
+        setCallId(null)
+        setTime(false)
+        setTicketIfo(null)
+        setSound(!config.switch.visitorCameraOff)
+        setFace(!config.switch.visitorCameraOff)
+        setSsid('')
+
+        // 本地离开
+        serviceAgora && serviceAgora.leave();
+        serviceAgora = null
+    }, [ssid, callId, step])
 
     // 声音
     function handleSound() {
@@ -221,7 +203,6 @@ export default function Video() {
             setTicketIfo(null)
             setSound(!config.switch.visitorCameraOff)
             setFace(!config.switch.visitorCameraOff)
-            setPos(true)
         } else {
             let _remoteUsers = serviceAgora.remoteUsers || [];
             if (currentChooseUser && user === currentChooseUser && !!_remoteUsers.length && (_remoteUsers[0] !== user)) {
