@@ -335,7 +335,6 @@ function Iframe(config){
 Iframe.prototype.set = function(config, callback){
 	var shadowBackgroundColor = "rgba(255,255,255,.4)";
 
-
 	this.config = utils.copy(config || this.config);
 
 	this.position = {
@@ -351,7 +350,7 @@ Iframe.prototype.set = function(config, callback){
 
 	utils.toggleClass(this.iframe, "easemobim-hide", this.config.hide);
 
-	this.iframe.src = config.path + '/index.html?configId=' + this.config.configId + '&iframeId=' + this.iframe.id;
+	this.iframe.src = config.path + '/index.html?configId=' + this.config.configId + '&iframeId=' + this.iframe.id + '&lang=' + this.config.lang;
 	// this.shadow && (this.shadow.style.backgroundColor = shadowBackgroundColor);
 
 	this.ready = callback;

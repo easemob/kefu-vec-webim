@@ -82,7 +82,8 @@ function reset(config){
 		domain: configData.domain || baseConfig.domain,
 		path: configData.path || (baseConfig.domain + "__WEBIM_SLASH_KEY_PATH__"),
 		staticPath: configData.staticPath || (baseConfig.domain + "__WEBIM_SLASH_KEY_PATH__"), // 用不到
-		guestId: utils.getStore("guestId") // 这个是别人种的cookie
+		guestId: utils.getStore("guestId"), // 这个是别人种的cookie
+		lang: baseConfig.json.lang || 'zh-CN' // 系统语言
 	});
 	// demo 页面点击联系客服带着 tenantId, 就删除 config 中的 configId, 否则 configId 存在就会用 configId 去渲染页面
 	// if(config.tenantId){

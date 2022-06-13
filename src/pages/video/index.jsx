@@ -7,9 +7,10 @@ import commonConfig from '@/common/config'
 import event from '@/tools/event'
 import { visitorClose, getOfficalAccounts } from '@/assets/http/user'
 import { SYSTEM_VIDEO_TICKET_RECEIVED, SYSTEM_VIDEO_ARGO_END, SYSTEM_VIDEO_ARGO_REJECT } from '@/assets/constants/events'
-import profile from '@/tools/profile'
+// import profile from '@/tools/profile'
 import MediaPlayer from './comps/MediaPlayer/MediaPlayer'
 import getToHost from '@/common/transfer'
+import intl from 'react-intl-universal'
 
 import ws from '@/ws'
 
@@ -350,7 +351,7 @@ export default function Video() {
             {/* 等待页面 */}
             <WaitWrapper className={step !== 'current' ? '' : 'hide'}>
                 <WaitTitle>
-                    <h2>视频客服</h2>
+                    <h2>视频客服-{intl.get('name')}</h2>
                 </WaitTitle>
                 <WaitAgent>
                     <WaitAgentLogo>
