@@ -20,7 +20,7 @@ var config = commonConfig.getConfig()
 
 export default function Video() {
     const [step, setStep] = useState(config.switch.skipWaitingPage ? 'wait' : 'start') // start: 发起和重新发起 wait等待接听中 current 视频中 off：挂断
-    const [desc, setDesc] = useState('发起通话')
+    const [desc, setDesc] = useState(intl.get('startVideo'))
     const [tip, setTip] = useState(config.style.waitingPrompt)
     const [sound, setSound] = useState(!config.switch.visitorCameraOff) // 开关声音
     const [face, setFace] = useState(!config.switch.visitorCameraOff) // 开关视频
@@ -45,16 +45,16 @@ export default function Video() {
     // 发起、重新发起
     function handleStart() {
         setStep('wait')
-        setDesc('挂断')
+        setDesc(intl.get('closeVideo'))
         setTip(config.style.callingPrompt)
 
-        ws.sendText('邀请客服进行实时视频', {
+        ws.sendText(intl.get('inviteAgentVideo'), {
             ext: {
                 type: "agorartcmedia/video",
                 targetSystem: 'kefurtc',
                 msgtype: {
                     liveStreamInvitation: {
-                        msg: '邀请客服进行实时视频',
+                        msg: intl.get('inviteAgentVideo'),
                         orgName: config.orgName,
                         appName: config.appName,
                         userName: config.user.username,
@@ -134,7 +134,7 @@ export default function Video() {
     // 无访客信息直接挂断，否则关闭需要的信息获取不到
     const noVisitorClose = () => {
         setStep('start')
-        setDesc('重新发起')
+        setDesc(intl.get('reStartVideo'))
         setTip(config.style.endingPrompt)
         setCallId(null)
 
@@ -162,7 +162,7 @@ export default function Video() {
         }
 
         setStep('start')
-        setDesc('重新发起')
+        setDesc(intl.get('reStartVideo'))
         setTip(config.style.endingPrompt)
         setCallId(null)
         setTime(false)
@@ -197,7 +197,7 @@ export default function Video() {
             serviceAgora.leave()
             serviceAgora = null
             setStep('start')
-            setDesc('重新发起')
+            setDesc(intl.get('reStartVideo'))
             setTip(config.style.endingPrompt)
             setCallId(null)
             setTime(false)
@@ -302,7 +302,7 @@ export default function Video() {
             {!top && <span onClick={handleMini} className={step === 'current' ? 'icon-mini' : 'icon-close'}></span>}
             <CurrentWrapper className={step === 'current' ? '' : 'hide'}>
                 <CurrentTitle>
-                    <span>{time  ? '通话中' : '等待接通中'}</span>
+                    <span>{time  ? intl.get('calling') : intl.get('waitCalling')}</span>
                     {time ? <TimeControl /> : ''}
                 </CurrentTitle>
                 <CurrentBodyMore>
@@ -334,8 +334,8 @@ export default function Video() {
                                 </CurrentBodyMicro>
                                 <span>{
                                     currentChooseUser ?  currentChooseUser.isLocal 
-                                    ? '我' 
-                                    : `客服-${idNameMap[currentChooseUser.uid] || ''}`  : ''    
+                                    ? intl.get('me') 
+                                    : `${intl.get('agent')}-${idNameMap[currentChooseUser.uid] || ''}`  : ''    
                                 }</span>
                             </div>
                             <div id='visitor_video' ref={videoRef}></div>
@@ -351,7 +351,7 @@ export default function Video() {
             {/* 等待页面 */}
             <WaitWrapper className={step !== 'current' ? '' : 'hide'}>
                 <WaitTitle>
-                    <h2>视频客服-{intl.get('name')}</h2>
+                    <h2>{intl.get('ptitle')}</h2>
                 </WaitTitle>
                 <WaitAgent>
                     <WaitAgentLogo>

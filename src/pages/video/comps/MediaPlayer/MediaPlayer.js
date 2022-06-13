@@ -1,4 +1,5 @@
 import React, { useRef, useEffect } from "react";
+import intl from 'react-intl-universal'
 import './MediaPlayer.scss';
 
 const MediaPlayer = ({ bindClick, hasAudio, isLocal, name: userName, ...props }) => {
@@ -22,7 +23,7 @@ const MediaPlayer = ({ bindClick, hasAudio, isLocal, name: userName, ...props })
     };
   }, [props.audioTrack]);
 
-  let _userName = isLocal ? '我' : `客服-${userName}`;
+  let _userName = isLocal ? intl.get('me') : `${intl.get('agent')}-${userName}`;
 
   return (
     <div 
