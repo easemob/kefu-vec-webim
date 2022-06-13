@@ -295,7 +295,7 @@ export default function Video() {
             event.off(SYSTEM_VIDEO_ARGO_END, handleClose) // 取消和挂断
             event.off(SYSTEM_VIDEO_ARGO_REJECT, handleClose) // 坐席拒接
         }
-    }, [])
+    }, [step])
 
     return (
         <Wrapper role={step} top={top}>
