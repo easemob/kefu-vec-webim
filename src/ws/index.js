@@ -302,7 +302,7 @@ function _handleMessage(msg, options){
 		event.emit(SYSTEM_VIDEO_ARGO_END, videoEndArgo);
 		break;
 	case 'agentRejectVideoTicket':
-		event.emit(SYSTEM_VIDEO_ARGO_REJECT);
+		event.emit(SYSTEM_VIDEO_ARGO_REJECT, {agentReject: true});
 		break;
 	case "whiteBoardTicket":
 		message = msg;

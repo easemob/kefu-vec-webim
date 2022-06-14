@@ -143,9 +143,9 @@ export default function Video() {
         serviceAgora = null
     }
 
-    // 结束
-    const handleClose = useCallback(() => {
-        if (step === 'wait') {
+    // 结束 1.访客等待挂断 2.访客接通挂断 3.坐席拒接
+    const handleClose = useCallback(e => {
+        if (step === 'wait' && e && !e.agentReject) {
             ws.cancelVideo(callId, {
                 ext: {
                     type: "agorartcmedia/video",
@@ -157,7 +157,7 @@ export default function Video() {
                     },
                 },
             })
-        } else {
+        } else if (step === 'current') {
             visitorClose(ssid)
         }
 
@@ -193,6 +193,8 @@ export default function Video() {
 
     // 客服没接 visitorCancelInvitation 接通后就是 visitorRejectInvitation
     const onUserLeft = useCallback(user => {
+        if (!serviceAgora) return
+
         if (!serviceAgora.remoteUsers.length) {
             serviceAgora.leave()
             serviceAgora = null
