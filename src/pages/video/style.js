@@ -4,8 +4,9 @@ export const Wrapper = styled.div`
     position: absolute;
     width: ${props => props.top ? '650px' : '100%'};
     height: ${props => props.top ? '650px' : '100%'};
-    right: ${props => props.top ? '10px' : 0};
-    bottom: ${props => props.top ? '10px' : 0};
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
     border-radius: 4px;
     box-shadow: 0px 0px 10px #ccc;
     background-color: #fff;
