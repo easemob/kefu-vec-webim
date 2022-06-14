@@ -281,11 +281,6 @@ export default function Video() {
     }, [currentChooseUser])
 
     useEffect(() => {
-        // 直接发起视频通话
-        if (config.switch.skipWaitingPage) {
-            handleStart()
-        }
-
         event.on(SYSTEM_VIDEO_TICKET_RECEIVED, recived) // 监听接受
         event.on(SYSTEM_VIDEO_ARGO_END, handleClose) // 取消和挂断
         event.on(SYSTEM_VIDEO_ARGO_REJECT, handleClose) // 坐席拒接
@@ -296,6 +291,13 @@ export default function Video() {
             event.off(SYSTEM_VIDEO_ARGO_REJECT, handleClose) // 坐席拒接
         }
     }, [step])
+
+    useEffect(() => {
+        // 直接发起视频通话
+        if (config.switch.skipWaitingPage) {
+            handleStart()
+        }
+    }, [])
 
     return (
         <Wrapper role={step} top={top}>
