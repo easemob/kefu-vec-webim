@@ -11,6 +11,7 @@ import { SYSTEM_VIDEO_TICKET_RECEIVED, SYSTEM_VIDEO_ARGO_END, SYSTEM_VIDEO_ARGO_
 import MediaPlayer from './comps/MediaPlayer/MediaPlayer'
 import getToHost from '@/common/transfer'
 import intl from 'react-intl-universal'
+import utils from '@/tools/utils'
 
 import ws from '@/ws'
 
@@ -302,7 +303,7 @@ export default function Video() {
     }, [])
 
     return (
-        <Wrapper role={step} top={top}>
+        <Wrapper role={step} top={top} className={utils.isMobile ? 'full_screen' : null}>
             {!top && <span onClick={handleMini} className={step === 'current' ? 'icon-mini' : 'icon-close'}></span>}
             <CurrentWrapper className={step === 'current' ? '' : 'hide'}>
                 <CurrentTitle>
