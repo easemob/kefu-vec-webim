@@ -234,29 +234,36 @@ export const CurrentBodySelf = styled.div`
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 14px;
+        font-size: 12px;
         z-index: 10;
         > div {
             display: inline-block;
-            background-color: #fff;
             color: #3689f7;
             width: 20px;
             height: 20px;
             border-radius: 50%;
             margin-right: 5px;
+            position: relative;
             span {
                 line-height: 20px;
+                width: 10px;
+                height: 13px;
+                transform: translate(5px, 4px);
+                background-color: #fff;
                 &::before {
                     font-size: 20px;
+                    transform: translate(-5px, -4px);
                 }
             }
         }
         > span {
-            height: 30px;
-            line-height: 30px;
             text-overflow: ellipsis;
             white-space: nowrap;
             overflow: hidden;
+            padding: 2px 10px;
+            color: #fff;
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 3px;
         }
     }
 `
