@@ -44,11 +44,11 @@ export const WaitTitle = styled.div`
 `
 
 export const WaitAgent = styled.div`
+    text-align: center;
     height: 30%;
     font-size: 16px;
 `
 export const WaitAgentLogo = styled.div`
-    text-align: center;
     height: 70%;
     img {
         height: 100%;
@@ -57,7 +57,6 @@ export const WaitAgentLogo = styled.div`
 `
 
 export const WaitAgentDesc = styled.div`
-    text-align: center;
     margin-top: 2%;
     box-sizing: border-box;
 `
@@ -101,6 +100,57 @@ export const WaitOpera = styled.div`
             margin-top: 2%;
             text-align: center;
             font-size: 16px;
+        }
+    }
+`
+
+export const InviteOpera = styled.div`
+    height: 35%;
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    .recive {
+        margin-right: 15%;
+        > div {
+            &:first-child {
+                background: linear-gradient(172deg, #5ef61e , #44d434);
+            }
+        }
+    }
+    .hung {
+        > div {
+            &:first-child {
+                background: linear-gradient(172deg, #f5515f , #e92744);
+            }
+        }
+    }
+    > div {
+        > div {
+            &:first-child {
+                width: 90px;
+                height: 90px;
+                text-align: center;
+                border-radius: 50%;
+                margin: 0 auto;
+                // background: linear-gradient(172deg, ${props => props.role === 'start' ? '#5ef61e' : '#f5515f'} , ${props => props.role === 'start' ? '#44d434' : '#e92744'});
+                position: relative;
+                cursor: pointer;
+                span {
+                    position: absolute;
+                    top: 50%;
+                    left: 50%;
+                    transform: translate(-50%, -50%);
+                    &::before {
+                        font-size: 60px;
+                    }
+                }
+            }
+            &:last-child {
+                margin-top: 2%;
+                text-align: center;
+                font-size: 16px;
+            }
         }
     }
 `

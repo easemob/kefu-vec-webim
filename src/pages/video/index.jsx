@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useEffect, useRef } from 'react'
-import { Wrapper, WaitWrapper, WaitTitle, WaitAgent, WaitAgentLogo, WaitAgentDesc, WaitTip, WaitOpera, CurrentWrapper, CurrentTitle, CurrentFooter, CurrentBodySelf, CurrentBodyMicro, CurrentBodyMore, TopVideoBox, CurrentVideo } from './style'
+import { Wrapper, WaitWrapper, WaitTitle, WaitAgent, WaitAgentLogo, WaitAgentDesc, WaitTip, WaitOpera, CurrentWrapper, CurrentTitle, CurrentFooter, CurrentBodySelf, CurrentBodyMicro, CurrentBodyMore, TopVideoBox, CurrentVideo, InviteOpera } from './style'
 import TimeControl from './comps/TimeControl'
 import videoChatAgora from '@/tools/hxVideo'
 import logo from '@/assets/img/qiye.png'
@@ -20,7 +20,7 @@ var top = window.top === window.self // false 在iframe里面 true不在
 var config = commonConfig.getConfig()
 
 export default function Video() {
-    const [step, setStep] = useState(config.switch.skipWaitingPage ? 'wait' : 'start') // start: 发起和重新发起 wait等待接听中 current 视频中 off：挂断
+    const [step, setStep] = useState(config.switch.skipWaitingPage ? 'wait' : 'start') // start: 发起和重新发起 wait等待接听中 current 视频中 off：挂断 invite:客服邀请
     const [desc, setDesc] = useState(intl.get('startVideo'))
     const [tip, setTip] = useState(config.style.waitingPrompt)
     const [sound, setSound] = useState(!config.switch.visitorCameraOff) // 开关声音
@@ -312,6 +312,8 @@ export default function Video() {
         }
     }, [])
 
+    var waitTitle = step === 'invite' ? intl.get('inviteTitle') : intl.get('ptitle')
+
     return (
         <Wrapper role={step} top={top} className={utils.isMobile ? 'full_screen' : null}>
             {!top && <span onClick={handleMini} className={step === 'current' ? 'icon-mini' : 'icon-close'}></span>}
@@ -367,9 +369,10 @@ export default function Video() {
             {/* 等待页面 */}
             <WaitWrapper className={step !== 'current' ? '' : 'hide'}>
                 <WaitTitle>
-                    <h2>{intl.get('ptitle')}</h2>
+                    <h2>{waitTitle}</h2>
                 </WaitTitle>
                 <WaitAgent>
+                    {step === 'invite' && <TimeControl />}
                     <WaitAgentLogo>
                         <img src={compInfo.avatar ? compInfo.avatar : logo}  />
                     </WaitAgentLogo>
@@ -378,14 +381,31 @@ export default function Video() {
                     </WaitAgentDesc>
                 </WaitAgent>
                 <WaitTip>{tip}</WaitTip>
-                <WaitOpera role={step} ref={stepRef}>
-                    <div>
-                        {
-                            step === 'start' ? <span onClick={handleStart} className='icon-answer'></span> : <span onClick={handleClose} className='icon-off'></span>
-                        }
-                    </div>
-                    <div>{desc}</div>
-                </WaitOpera>
+                {step === 'invite' ? (
+                    <InviteOpera>
+                        <div className='recive'>
+                            <div>
+                                <span className='icon-answer' onClick={() => console.log('接听')}></span>
+                            </div>
+                            <div>{intl.get('reciveVideo')}</div>
+                        </div>
+                        <div className='hung'>
+                            <div>
+                                <span className='icon-off' onClick={() => console.log('挂断')}></span>
+                            </div>
+                            <div>{intl.get('closeVideo')}</div>
+                        </div>
+                    </InviteOpera>
+                ) : (
+                    <WaitOpera role={step} ref={stepRef}>
+                        <div>
+                            {
+                                step === 'start' ? <span onClick={handleStart} className='icon-answer'></span> : <span onClick={handleClose} className='icon-off'></span>
+                            }
+                        </div>
+                        <div>{desc}</div>
+                    </WaitOpera>
+                )}
             </WaitWrapper>
         </Wrapper>
     )
