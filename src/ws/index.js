@@ -102,6 +102,38 @@ function _getOfficialAccountById(id){
 	return profile.officialAccountList.find(item => item.official_account_id === id)
 }
 
+// setTimeout(() => {
+// 	_handleMessage({
+// 		ext: {
+// 			msgtype: {
+// 				sendVisitorCallbackTicket: {
+// 					msg: "邀请你进行实时视频",
+// 					nickname: "video_hy1@easemob.com",
+// 					ticket: {
+// 						agentTicket: {
+// 							appId: "0e400b86d6ac439db7533aceace13cad",
+// 							callId: 15120,
+// 							channel: "7e015e6a-6366-4e67-85dd-68279c70c436",
+// 							niceName: "video_hy1@easemob.com",
+// 							token: "0060e400b86d6ac439db7533aceace13cadIABQ8BMRvnrkvrbNZr5s1jHIaUKs3RdpnW5tB7AcGpCD4ODknOOwt1B3IgARtKuEGQerYgQAAQAZB6tiAgAZB6tiAwAZB6tiBAAZB6ti",
+// 							trueName: "video_hy1@easemob.com",
+// 							uid: 2090
+// 						},
+// 						appId: "0e400b86d6ac439db7533aceace13cad",
+// 						callId: 15120,
+// 						channel: "7e015e6a-6366-4e67-85dd-68279c70c436",
+// 						isThirdAgent: false,
+// 						niceName: "webim-visitor-KWE4T28WBF9G8KV6F4C4",
+// 						token: "0060e400b86d6ac439db7533aceace13cadIACzAt/OOoCi7Hu/hY4cQyazm85AzXdNaOtVURJXG+gSIODknOOXOASvIgBoA55GGQerYgQAAQAZB6tiAgAZB6tiAwAZB6tiBAAZB6ti",
+// 						trueName: null,
+// 						uid: 3866
+// 					}
+// 				}
+// 			}
+// 		}
+// 	})
+// }, 5000)
+
 function _handleMessage(msg, options){
 	var opt = options || {};
 	var type = opt.type || (msg && msg.type);

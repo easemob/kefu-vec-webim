@@ -254,10 +254,32 @@ export default function Video() {
     }
 
     const callbackRecived = () => {
+        ws.cancelVideo(null, {
+            ext: {
+                type: "agorartcmedia/video",
+                targetSystem: 'kefurtc',
+                msgtype: {
+                    visitorAcceptInvitation : {
+                        msg: "访客接受视频邀请"
+                    }
+                },
+            },
+        })
         recived(ticketInfo)
     }
 
     const callbackReject = () => {
+        ws.cancelVideo(null, {
+            ext: {
+                type: "agorartcmedia/video",
+                targetSystem: 'kefurtc',
+                msgtype: {
+                    visitorRejectInvitation : {
+                        msg: "访访客拒绝视频邀请"
+                    }
+                },
+            },
+        })
         handleClose()
     }
 
