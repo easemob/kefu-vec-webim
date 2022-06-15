@@ -221,7 +221,20 @@ export const CurrentBodySelf = styled.div`
         height: 100%;
     }
     #visitor_video {
-        background-color: #000;
+        background-color: #EDF2F9;
+        > div {
+            z-index: 1;
+        }
+    }
+    .icon-smile {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        color: rgba(0,0,0,.65);
+        &::before {
+            font-size: 60px;
+        }
     }
     .icon-microphone-close {
         color: #FD3E3F;

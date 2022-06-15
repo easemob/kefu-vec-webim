@@ -60,6 +60,7 @@ const MediaPlayer = ({ bindClick, hasAudio, isLocal, name: userName, ...props })
         {_userName}
       </span>
       </p>
+      <span className="icon-smile"></span>
     </div>
   );
 }

@@ -73,18 +73,10 @@ export default function Video() {
     }
 
     // 接受视频
-    const recived = useCallback(ticketInfo => {
-        setAgents(agentsOld => {
-            if (!agentsOld.map(agent => agent.userId).includes(ticketInfo.agentTicket.userId)) {
-                agentsOld.push(ticketInfo.agentTicket)
-            }
-
-            return agentsOld
-        })
-
+    const recived = useCallback(async ticketInfo => {
         if (!serviceAgora) {
             setTicketIfo(ticketInfo)
-    
+
             var cfgAgora = {
                 appid: ticketInfo.appId,
                 channel: ticketInfo.channel,
@@ -101,35 +93,38 @@ export default function Video() {
                 onUserLeft
             })
             // 获取访客信息 关闭信息的时候要用 后续不掉用关闭接口可以去除
-            getOfficalAccounts().then(officialAccountList => {
-                // officialAccountList.forEach(ws.attemptToAppendOfficialAccount)
-
-            	// if(!profile.ctaEnable){
-            	// 	profile.currentOfficialAccount = profile.systemOfficialAccount;
-            	// }
-
+            const officialAccountList = await getOfficalAccounts()
+            if (officialAccountList.length >= 0) {
+                await serviceAgora.join(cfgAgora)
                 setTime(true) // 开始计时
                 setStep('current')
-                serviceAgora.join(cfgAgora).then(() => {
-                    let { localAudioTrack, localVideoTrack } = serviceAgora
-                    let localUser = { 
-                        isLocal: true, 
-                        // audioTrack: localAudioTrack,
-                        videoTrack: localVideoTrack,
-                        uid: cfgAgora.uid
-                    }
-          
-                    setLocalUser(localUser);
-                    setCurrentChooseUser(localUser);
 
-                    serviceAgora.localAudioTrack.setMuted(config.switch.visitorCameraOff)
-                    serviceAgora.localVideoTrack.setMuted(config.switch.visitorCameraOff)
-                    // serviceAgora.localVideoTrack && serviceAgora.localVideoTrack.play('visitor_video');
-                })
-            }, err => {
+                serviceAgora.localAudioTrack.setMuted(config.switch.visitorCameraOff)
+                serviceAgora.localVideoTrack.setMuted(config.switch.visitorCameraOff)
+                config.switch.visitorCameraOff && serviceAgora.closeLocalTrack('video')
+
+                let { localAudioTrack, localVideoTrack } = serviceAgora
+                let localUser = {
+                    isLocal: true, 
+                    // audioTrack: localAudioTrack,
+                    videoTrack: config.switch.visitorCameraOff ? null : localVideoTrack,
+                    uid: cfgAgora.uid
+                }
+
+                setLocalUser(localUser);
+                setCurrentChooseUser(localUser);
+            } else {
                 noVisitorClose()
-            })
+            }
         }
+
+        setAgents(agentsOld => {
+            if (!agentsOld.map(agent => agent.userId).includes(ticketInfo.agentTicket.userId)) {
+                agentsOld.push(ticketInfo.agentTicket)
+            }
+
+            return agentsOld
+        })
     }, [ticketInfo, serviceAgora])
 
     // 无访客信息直接挂断，否则关闭需要的信息获取不到
@@ -183,9 +178,24 @@ export default function Video() {
         serviceAgora.localAudioTrack.setMuted(sound); // false 打开 true 关闭
     }
 
-    function handleFace() {
+    const handleFace = async () => {
+        if (serviceAgora.localVideoTrack) {
+            serviceAgora.closeLocalTrack('video')
+            setLocalUser(user => {
+                user.videoTrack = null
+                return user
+            })
+        } else {
+            const localVideoTrack = await serviceAgora.createLocalVideoTrack()
+            serviceAgora.publish(localVideoTrack)
+            setLocalUser(user => {
+                user.videoTrack = localVideoTrack
+                return user
+            })
+            currentChooseUser.uid === localUser.uid && localVideoTrack.play(videoRef.current)
+        }
+        // serviceAgora.localVideoTrack.setMuted(face); // false 打开 true 关闭
         setFace(!face)
-        serviceAgora.localVideoTrack.setMuted(face); // false 打开 true 关闭
     }
 
     const onRemoteUserChange = useCallback((remoteUsers) => {
@@ -319,7 +329,7 @@ export default function Video() {
                             .map((user) => {
                                 let { isLocal = false, uid, videoTrack, hasAudio, audioTrack } = user;
 
-                              return <MediaPlayer
+                            return <MediaPlayer
                                 bindClick={() => setCurrentChooseUser(user)}
                                 key={uid} 
                                 isLocal={isLocal}
@@ -344,6 +354,7 @@ export default function Video() {
                                 }</span>
                             </div>
                             <div id='visitor_video' ref={videoRef}></div>
+                            <span className='icon-smile'></span>
                         </CurrentBodySelf>)}
                     </CurrentVideo>
                 </CurrentBodyMore>

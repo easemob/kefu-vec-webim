@@ -102,3 +102,11 @@ $fs: 25px;
 		content: "\e64f";
 	}
 }
+
+.icon-smile {
+	@extend %font-shell-base-newagent;
+	&:before {
+		@extend %font-base-newagent;
+		content: "\e600";
+	}
+}
