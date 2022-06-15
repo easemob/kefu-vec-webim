@@ -6,7 +6,7 @@ import logo from '@/assets/img/qiye.png'
 import commonConfig from '@/common/config'
 import event from '@/tools/event'
 import { visitorClose, getOfficalAccounts } from '@/assets/http/user'
-import { SYSTEM_VIDEO_TICKET_RECEIVED, SYSTEM_VIDEO_ARGO_END, SYSTEM_VIDEO_ARGO_REJECT } from '@/assets/constants/events'
+import { SYSTEM_VIDEO_TICKET_RECEIVED, SYSTEM_VIDEO_ARGO_END, SYSTEM_VIDEO_ARGO_REJECT, SYSTEM_VIDEO_CALLBACK_TICKET } from '@/assets/constants/events'
 // import profile from '@/tools/profile'
 import MediaPlayer from './comps/MediaPlayer/MediaPlayer'
 import getToHost from '@/common/transfer'
@@ -37,7 +37,7 @@ export default function Video() {
     const [remoteUsers, setRemoteUsers] = useState([])
     const [ticketInfo, setTicketIfo] = useState(null)
     const [idNameMap, setIdNameMap] = useState({})
-    const [agents, setAgents] = useState([])
+    const [agents, setAgents] = useState({})
     const [ssid, setSsid] = useState('')
 
     const videoRef = useRef();
@@ -73,7 +73,7 @@ export default function Video() {
     }
 
     // 接受视频
-    const recived = useCallback(async ticketInfo => {
+    const recived = async ticketInfo => {
         if (!serviceAgora) {
             setTicketIfo(ticketInfo)
 
@@ -118,14 +118,11 @@ export default function Video() {
             }
         }
 
-        setAgents(agentsOld => {
-            if (!agentsOld.map(agent => agent.userId).includes(ticketInfo.agentTicket.userId)) {
-                agentsOld.push(ticketInfo.agentTicket)
-            }
-
-            return agentsOld
-        })
-    }, [ticketInfo, serviceAgora])
+        // setAgents(agentsOld => {
+        //     return Object.assign({}, agentsOld, {[ticketInfo.agentTicket.uid]: ticketInfo.agentTicket})
+        // })
+        setIdNameMap(val => Object.assign({}, val, {[ticketInfo.agentTicket.uid]: ticketInfo.agentTicket.trueName}))
+    }
 
     // 无访客信息直接挂断，否则关闭需要的信息获取不到
     const noVisitorClose = () => {
@@ -223,16 +220,7 @@ export default function Video() {
                 setCurrentChooseUser(_remoteUsers[0]);
             }
         }
-
-        if (user && currentChooseUser) {
-            // 客服名字处理
-            var idx = _.findIndex(remoteUsers, user)
-            if (idx > -1) {
-                agents.splice(idx, 1)
-                setAgents(agents)
-            }
-        }
-    }, [currentChooseUser, remoteUsers, agents])
+    }, [currentChooseUser, remoteUsers])
 
     function onErrorNotify(errorCode) {
         let errorCodeMap = {
@@ -258,6 +246,21 @@ export default function Video() {
         getToHost.send({event: 'closeChat'})
     }
 
+    // 坐席回呼
+    const agentCallback = ticketInfo => {
+        setTicketIfo(ticketInfo)
+        setStep('invite')
+        setTip('客服正在邀请您进行视频通话')
+    }
+
+    const callbackRecived = () => {
+        recived(ticketInfo)
+    }
+
+    const callbackReject = () => {
+        handleClose()
+    }
+
     useEffect(() => {
         if (!serviceAgora?.client) return;
     
@@ -276,15 +279,7 @@ export default function Video() {
             currentChooseUser?.videoTrack?.play(videoRef.current);
             currentChooseUser?.audioTrack?.play();
         }
-
-        if (remoteUsers.length) {
-            var id2name = {}
-            remoteUsers.forEach((user, idx) => {
-                id2name[user.uid] = agents[idx] && agents[idx].trueName
-            })
-            setIdNameMap(id2name)
-        }
-    }, [remoteUsers, agents])
+    }, [remoteUsers])
 
     useEffect(() => {
         if (!videoRef.current) return;
@@ -297,11 +292,13 @@ export default function Video() {
         event.on(SYSTEM_VIDEO_TICKET_RECEIVED, recived) // 监听接受
         event.on(SYSTEM_VIDEO_ARGO_END, handleClose) // 取消和挂断
         event.on(SYSTEM_VIDEO_ARGO_REJECT, handleClose) // 坐席拒接
+        event.on(SYSTEM_VIDEO_CALLBACK_TICKET, agentCallback) // 坐席回呼
 
         return () => {
             event.off(SYSTEM_VIDEO_TICKET_RECEIVED, recived) // 监听接受
             event.off(SYSTEM_VIDEO_ARGO_END, handleClose) // 取消和挂断
             event.off(SYSTEM_VIDEO_ARGO_REJECT, handleClose) // 坐席拒接
+            event.off(SYSTEM_VIDEO_CALLBACK_TICKET, agentCallback)
         }
     }, [step])
 
@@ -385,13 +382,13 @@ export default function Video() {
                     <InviteOpera>
                         <div className='recive'>
                             <div>
-                                <span className='icon-answer' onClick={() => console.log('接听')}></span>
+                                <span className='icon-answer' onClick={callbackRecived}></span>
                             </div>
                             <div>{intl.get('reciveVideo')}</div>
                         </div>
                         <div className='hung'>
                             <div>
-                                <span className='icon-off' onClick={() => console.log('挂断')}></span>
+                                <span className='icon-off' onClick={callbackReject}></span>
                             </div>
                             <div>{intl.get('closeVideo')}</div>
                         </div>
