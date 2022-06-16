@@ -46,6 +46,7 @@ export default function Video() {
     const [idNameMap, setIdNameMap] = useState({})
     const [agents, setAgents] = useState({})
     const [ssid, setSsid] = useState('')
+    const [timer, setTimer] = useState(null)
 
     const videoRef = useRef();
     const stepRef = useRef()
@@ -56,27 +57,28 @@ export default function Video() {
         setDesc(intl.get('closeVideo'))
         setTip(config.style.callingPrompt)
 
-        ws.sendText(intl.get('inviteAgentVideo'), {
-            ext: {
-                type: "agorartcmedia/video",
-                targetSystem: 'kefurtc',
-                msgtype: {
-                    liveStreamInvitation: {
-                        msg: intl.get('inviteAgentVideo'),
-                        orgName: config.orgName,
-                        appName: config.appName,
-                        userName: config.user.username,
-                        imServiceNumber: config.toUser,
-                        restServer: config.restServer,
-                        xmppServer: config.xmppServer,
-                        resource: "webim",
-                        isNewInvitation: true,
-                        userAgent: navigator.userAgent,
+        setTimer(setTimeout(() => {
+            ws.sendText(intl.get('inviteAgentVideo'), {
+                ext: {
+                    type: "agorartcmedia/video",
+                    targetSystem: 'kefurtc',
+                    msgtype: {
+                        liveStreamInvitation: {
+                            msg: intl.get('inviteAgentVideo'),
+                            orgName: config.orgName,
+                            appName: config.appName,
+                            userName: config.user.username,
+                            imServiceNumber: config.toUser,
+                            restServer: config.restServer,
+                            xmppServer: config.xmppServer,
+                            resource: "webim",
+                            isNewInvitation: true,
+                            userAgent: navigator.userAgent,
+                        },
                     },
                 },
-            },
-        }
-        )
+            })
+        }, 1000))
     }
 
     // 接受视频
@@ -335,6 +337,10 @@ export default function Video() {
         // 直接发起视频通话
         if (config.switch.skipWaitingPage) {
             handleStart()
+        }
+
+        return () => {
+            clearTimeout(timer)
         }
     }, [])
 
