@@ -298,7 +298,7 @@ export default function Video() {
         }
 
         if (remoteUsers.length && !currentChooseUser.isLocal) {
-            currentChooseUser?.videoTrack?.play(videoRef.current);
+            currentChooseUser?.videoTrack?.play(videoRef.current, {fit: "contain"});
             currentChooseUser?.audioTrack?.play();
         }
     }, [remoteUsers])
@@ -307,7 +307,7 @@ export default function Video() {
         if (!videoRef.current) return;
     
         currentChooseUser?.audioTrack?.play();
-        currentChooseUser?.videoTrack?.play(videoRef.current); //本地播放视频
+        currentChooseUser?.videoTrack?.play(videoRef.current, !currentChooseUser.isLocal ? {fit: "contain"} : null); //本地播放视频
     }, [currentChooseUser])
 
     useEffect(() => {

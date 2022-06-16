@@ -274,6 +274,7 @@ export const CurrentBodySelf = styled.div`
         background-color: #EDF2F9;
         > div {
             z-index: 1;
+            background-color: #EDF2F9 !important;
         }
     }
     .icon-smile {
