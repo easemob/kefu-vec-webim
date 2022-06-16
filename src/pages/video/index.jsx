@@ -12,7 +12,6 @@ import MediaPlayer from './comps/MediaPlayer/MediaPlayer'
 import getToHost from '@/common/transfer'
 import intl from 'react-intl-universal'
 import utils from '@/tools/utils'
-import VConsole from 'vconsole'
 
 import ws from '@/ws'
 
@@ -20,7 +19,12 @@ var serviceAgora = null
 var top = window.top === window.self // false 在iframe里面 true不在
 var config = commonConfig.getConfig()
 
-const vConsole = new VConsole()
+// 沙箱打开vconsole
+if (window.location.origin.indexOf('localhost') > -1 || window.location.origin.indexOf('sandbox') > -1) {
+    import('vconsole').then(({default: VConsole }) => {
+        new VConsole()
+    })
+}
 
 export default function Video() {
     const [step, setStep] = useState(config.switch.skipWaitingPage ? 'wait' : 'start') // start: 发起和重新发起 wait等待接听中 current 视频中 off：挂断 invite:客服邀请
