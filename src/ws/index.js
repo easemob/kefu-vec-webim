@@ -135,6 +135,7 @@ function _getOfficialAccountById(id){
 // }, 5000)
 
 function _handleMessage(msg, options){
+	console.log('ws msg', msg)
 	var opt = options || {};
 	var type = opt.type || (msg && msg.type);
 	var noPrompt = opt.noPrompt;
