@@ -274,7 +274,6 @@ export const CurrentBodySelf = styled.div`
         background-color: #EDF2F9;
         > div {
             z-index: 1;
-            background-color: #EDF2F9 !important;
         }
     }
     .icon-smile {
@@ -282,7 +281,7 @@ export const CurrentBodySelf = styled.div`
         top: 50%;
         left: 50%;
         transform: translate(-50%, -50%);
-        color: rgba(0,0,0,.65);
+        color: rgba(0, 0, 0, .2);
         &::before {
             font-size: 60px;
         }
