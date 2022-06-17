@@ -2,3 +2,6 @@
 /build
 /*.zip
 .DS_Store
+src/.DS_Store
+src/assets/.DS_Store
+src/pages/.DS_Store
