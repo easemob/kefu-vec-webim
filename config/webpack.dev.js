@@ -7,10 +7,10 @@ const getPath = pathname => path.resolve(__dirname, pathname)
 var vec = merge(common, {
   mode: 'development',
   // 开发工具，开启 source map，编译调试
-  devtool: 'eval-cheap-module-source-map',
-  cache: {
-    type: 'filesystem', // 使用文件缓存
-  },
+  // devtool: 'eval-cheap-module-source-map',
+  // cache: {
+  //   type: 'filesystem', // 使用文件缓存
+  // },
   entry: {
     main: './src/index.js',
     easemobvec: './src/pages/plugin/index.js'

@@ -192,7 +192,7 @@ function _handleMessage(msg, options){
 	}
 	targetOfficialAccount = _getOfficialAccountById(officialAccountId);
 
-	if(targetOfficialAccount.agentState == "Online"){
+	if(targetOfficialAccount && targetOfficialAccount.agentState == "Online"){
 		profile.isAgentStateOnline = true;
 	}
 	// ===========
@@ -349,7 +349,7 @@ function _handleMessage(msg, options){
 		message.type = "txt";
 		message.data = (msg && msg.data) || "";
 		// message.brief = textParser.getTextMessageBrief(message.data,isReceived);
-		!isHistory && event.emit(SYSTEM_WHITE_BOARD_RECEIVED, [whiteBoardTicket]);
+		event.emit(SYSTEM_WHITE_BOARD_RECEIVED, whiteBoardTicket);
 		break;
 	default:
 		console.error("unexpected msg type");

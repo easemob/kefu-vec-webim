@@ -95,7 +95,7 @@ $fs: 25px;
 	}
 }
 
-.icon-close {
+.icon-close, .icon-close-modal {
 	@extend %font-shell-base-newagent;
 	&:before {
 		@extend %font-base-newagent;
@@ -116,5 +116,13 @@ $fs: 25px;
 	&:before {
 		@extend %font-base-newagent;
 		content: "\e63a";
+	}
+}
+
+.icon-white-board {
+	@extend %font-shell-base-newagent;
+	&:before {
+		@extend %font-base-newagent;
+		content: "\e6a5";
 	}
 }

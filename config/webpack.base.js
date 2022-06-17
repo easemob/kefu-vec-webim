@@ -21,6 +21,10 @@ module.exports = {
     extensions: ['.js', '.jsx', '.json']
   },
   module: {
+    //解决Critical dependency: require function is used in a way in which dependencies cannot be statically extracted的问题
+    unknownContextCritical : false,
+    //解决the request of a dependency is an expression
+    exprContextCritical: false,
     rules: [
       {
         test: /\.jsx?$/,
@@ -68,7 +72,10 @@ module.exports = {
 				test: require.resolve("underscore"),
         loader: "expose-loader",
         options: {
-          exposes: ['_'],
+          exposes: {
+            globalName: '_',
+            override: true
+          },
         },
 			},
       {

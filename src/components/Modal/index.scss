@@ -1,0 +1,78 @@
+.hide {
+    display: none;
+}
+.v-modal-wrapper {
+    color: #000000d9;
+    .v-modal-mask {
+        position: fixed;
+        inset: 0;
+        z-index: 1000;
+        height: 100%;
+        background-color: #00000073;
+    }
+    .v-modal-content {
+        width: 50%;
+        height: 20%;
+        position: fixed;
+        z-index: 1001;
+        left: 50%;
+        top: 20%;
+        transform: translateX(-50%);
+        background-color: #fff;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        > div {
+            padding: 0 10px;
+        }
+        .v-modal-title {
+            display: flex;
+            height: 30%;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid rgba($color: #000000, $alpha: .06);
+            box-sizing: border-box;
+            > span {
+                &:first-child {
+                    font-weight: 600;
+                }
+                &:last-child {
+                    cursor: pointer;
+                    color: #00000073;
+                    &::before {
+                        font-size: 25px;
+                    }
+                }
+            }
+        }
+        .v-modal-body {
+            flex-grow: 1;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-sizing: border-box;
+        }
+        .v-modal-footer {
+            height: 30%;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            border-top: 1px solid rgba($color: #000000, $alpha: .06);
+            > span {
+                padding: 3px 15px;
+                border-radius: 2px;
+                cursor: pointer;
+            }
+            .cancel {
+                border: 1px solid #ccc;
+            }
+            .ok {
+                background-color: #2189ff;
+                color: #fff;
+                border: 1px solid #2189ff;
+                margin-left: 10px;
+            }
+        }
+    }
+} 
