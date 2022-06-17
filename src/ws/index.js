@@ -310,7 +310,7 @@ function _handleMessage(msg, options){
 		message.type = "txt";
 		message.data = (msg && msg.data) || "";
 		// message.brief = textParser.getTextMessageBrief(message.data,isReceived);
-		!isHistory && event.emit(SYSTEM_WHITE_BOARD_RECEIVED, whiteBoardTicket);
+		!isHistory && event.emit(SYSTEM_WHITE_BOARD_RECEIVED, [whiteBoardTicket]);
 		break;
 	default:
 		console.error("unexpected msg type");

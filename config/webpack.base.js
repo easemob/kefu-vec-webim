@@ -11,18 +11,6 @@ var isDev = process.env.NODE_ENV === 'development'
 var SLASH_KEY_PATH = isDev ? "" : '/webim-vec';
 
 const getPath = pathname => path.resolve(__dirname, pathname)
-const hasJsxRuntime = (() => {
-  if (process.env.DISABLE_NEW_JSX_TRANSFORM === 'true') {
-    return false;
-  }
-  try {
-    require.resolve('react/jsx-runtime'); // v17 引入
-    return true;
-  }
-  catch (e) {
-    return false;
-  }
-})();
 
 module.exports = {
   resolve: {
@@ -30,47 +18,23 @@ module.exports = {
     alias: {
       '@': getPath("../src")
     },
-    extensions: ['.js', '.jsx', '.json', '.ts', '.tsx']
+    extensions: ['.js', '.jsx', '.json']
   },
   module: {
     rules: [
       {
-        test: /\.(js|mjs|jsx|ts|tsx)$/,
-        loader: require.resolve('babel-loader'),
-        exclude: /node_modules/,
-        options: {
-          customize: require.resolve('babel-preset-react-app/webpack-overrides'),
-          // preset 包含 JSX, Flow, TypeScript, ESnext
-          presets: [
-            [require.resolve('babel-preset-react-app'), {
-              runtime: hasJsxRuntime ? 'automatic' : 'classic',
-            }],
-          ],
-          // plugins: [
-          //   [require.resolve('babel-plugin-named-asset-import'), {
-          //     loaderMap: {
-          //       svg: {
-          //         ReactComponent: '@svgr/webpack?-svgo,+titleProp,+ref![path]',
-          //       },
-          //     },
-          //   }],
-          //   isEnvDevelopment && shouldUseReactRefresh && require.resolve('react-refresh/babel'),
-          // ].filter(Boolean),
-          // // 这是 `babel-loader` 给 webpack 的功能，不是 babel 自己的
-          // // 缓存路径 ./node_modules/.cache/babel-loader/
-          // cacheDirectory: true,
-          // cacheCompression: false, // #6846 告知了为什么 cacheCompression 要 disabled
-          // compact: isEnvProduction,
-        },
+        test: /\.jsx?$/,
+        use: 'babel-loader',
+        exclude: /node_modules/
       },
       {
         test: /\.(le|c)ss$/,
-        // exclude: /node_modules/,
+        exclude: /node_modules/,
         use: [
           'style-loader',
-          // MiniCssExtractPlugin.loader,
+          MiniCssExtractPlugin.loader,
           'css-loader',
-          // 'postcss-loader',
+          'postcss-loader',
           // 当解析antd.less，必须写成下面格式，否则会报Inline JavaScript is not enabled错误
           { loader: 'less-loader', options: { lessOptions: { javascriptEnabled: true } } },
         ],
@@ -89,11 +53,10 @@ module.exports = {
       },
       {
         test: /\.s[ac]ss$/i,
-        // exclude: /node_modules/,
+        exclude: /node_modules/,
         use: [
-          'style-loader',
           // 将 JS 字符串生成为 style 节点
-          // isDev ? 'style-loader' : MiniCssExtractPlugin.loader,
+          isDev ? 'style-loader' : MiniCssExtractPlugin.loader,
           // 将 CSS 转化成 CommonJS 模块
           'css-loader',
           // 将 Sass 编译成 CSS
@@ -104,10 +67,7 @@ module.exports = {
 				test: require.resolve("underscore"),
         loader: "expose-loader",
         options: {
-          exposes: {
-            globalName: "_",
-            override: true,
-          },
+          exposes: ['_'],
         },
 			},
       {

@@ -6,12 +6,9 @@ import logo from '@/assets/img/qiye.png'
 import commonConfig from '@/common/config'
 import event from '@/tools/event'
 import { visitorClose, getOfficalAccounts } from '@/assets/http/user'
-import { SYSTEM_VIDEO_TICKET_RECEIVED, SYSTEM_VIDEO_ARGO_END, SYSTEM_VIDEO_ARGO_REJECT, SYSTEM_WHITE_BOARD_RECEIVED } from '@/assets/constants/events'
+import { SYSTEM_VIDEO_TICKET_RECEIVED, SYSTEM_VIDEO_ARGO_END, SYSTEM_VIDEO_ARGO_REJECT } from '@/assets/constants/events'
 import profile from '@/tools/profile'
 import MediaPlayer from './comps/MediaPlayer/MediaPlayer'
-import WhiteboardPlayer from './comps/WhiteboardPlayer'
-import Whiteboard from '../whiteboard/src'
-import getToHost from '@/common/transfer'
 
 import ws from '@/ws'
 
@@ -36,10 +33,6 @@ export default function Video() {
     const [ticketInfo, setTicketIfo] = useState(null)
     const [idNameMap, setIdNameMap] = useState({})
     const [agents, setAgents] = useState([])
-    let [whiteboardUser, setWhiteboardUser] = useState(null);
-    let [whiteboardVisible, setWhiteboardVisible] = useState(false);
-    let [whiteboardRoomInfo, setWhiteboardRoomInfo] = useState(null);
-    const [ssid, setSsid] = useState('')
 
     const videoRef = useRef();
     const stepRef = useRef()
@@ -161,10 +154,6 @@ export default function Video() {
             setSound(true)
             setFace(true)
             setPos(true)
-            /* 重置白板信息 */
-            setWhiteboardUser(null);
-            setWhiteboardRoomInfo(null);
-            setWhiteboardVisible(false);
 
             ws.sendText('访客取消实时视频', { // 防止发的消息被翻译，归类为系统消息
                 ext: {
@@ -241,10 +230,6 @@ export default function Video() {
             setSound(true)
             setFace(true)
             setPos(true)
-            /* 重置白板信息 */
-            setWhiteboardUser(null);
-            setWhiteboardRoomInfo(null);
-            setWhiteboardVisible(false);
 
             // ws.cancelVideo(callId, {
             //     ext: {
@@ -271,6 +256,13 @@ export default function Video() {
                 agents.splice(idx, 1)
                 setAgents(agents)
             }
+            // remoteUsers.forEach((item, idx) => {
+            //     if (item.uid === user.uid) {
+            //         console.log(11111, remoteUsers, idx, agents)
+            //         agents.splice(idx, 1)
+            //         setAgents(agents)
+            //     }
+            // })
         }
     }, [currentChooseUser, remoteUsers, agents])
 
@@ -293,67 +285,12 @@ export default function Video() {
         errorCodeMap[errorCode] && console.error(errorCodeMap[errorCode])
     }
 
-    // 白板
-    const receiveWhiteBoard = info => {
-        setWhiteboardRoomInfo(val => ({ ...val, ...info }));
-        setWhiteboardVisible(true);
-    }
-
-    /* 发送白板邀请 */
-    const sendWhiteboardInvitation = () => {
-        ws.cancelVideo(callId, {
-            ext: {
-                type: "agorartcmedia/video",
-                msgtype: {
-                    whiteboardInvitaion:{
-                        callId: callId
-                    }
-                },
-            },
-        });
-    }
-
-    /* 通话中打开白板 */
-    const bindWhiteboardClick = useCallback(_.debounce(async () => {
-        if (whiteboardVisible) {
-            return setWhiteboardVisible(false); // 关闭白版
-        } else {
-            sendWhiteboardInvitation(); 
-        }
-    }, 1000), [whiteboardVisible]);
-
-    /*打开白版 */
-    const showWhiteboard = () => {
-        let user = {
-            isWhiteboard: true,
-            uid: Math.ceil(Math.random() * 1000)
-        };
-        setWhiteboardUser(user)
-        setCurrentChooseUser(user);
-    }
-
-    const onUserJoined = useCallback((user) => {
-        !!whiteboardRoomInfo && sendWhiteboardInvitation();
-    }, [whiteboardRoomInfo]);
-
-    // iframe最小化
-    const handleMini = () => {
-        getToHost.send({event: 'closeChat'})
-    }
-
     useEffect(() => {
         if (!serviceAgora?.client) return;
     
         serviceAgora.client.on('user-left', onUserLeft);
         return () => void serviceAgora?.client?.off('user-left', onUserLeft);
     }, [onUserLeft]);
-
-    useEffect(() => {
-        if (!serviceAgora?.client) return;
-    
-        serviceAgora.client.on('user-joined', onUserJoined);
-        return () => void serviceAgora?.client?.off('user-joined', onUserJoined);
-      }, [onUserJoined]);
 
     useEffect(() => {
         if (remoteUsers.length && !currentChooseUser.isLocal) {
@@ -371,46 +308,23 @@ export default function Video() {
     }, [remoteUsers, agents])
 
     useEffect(() => {
-        if (currentChooseUser?.isWhiteboard && whiteboardVisible) {
-            setWhiteboardRoomInfo((val) => ({ ...val, domNode: videoRef.current }));
-        }
-
         if (!videoRef.current) return;
     
         currentChooseUser?.audioTrack?.play();
         currentChooseUser?.videoTrack?.play(videoRef.current); //本地播放视频
-    }, [currentChooseUser, whiteboardVisible])
-
-    useEffect(() => {
-        if (stepRef.current.getAttribute('role') === 'current') return;
-    
-        if (whiteboardVisible) { //打开
-          showWhiteboard();
-        } else { //关闭
-          setWhiteboardRoomInfo(null);
-          setWhiteboardUser(null);
-          if (currentChooseUser?.isWhiteboard) {
-            setCurrentChooseUser(remoteUsers[0] || localUser);
-          }
-        }
-    }, [whiteboardVisible])
+    }, [currentChooseUser])
 
     useEffect(() => {
         event.on(SYSTEM_VIDEO_TICKET_RECEIVED, recived) // 监听接受
         event.on(SYSTEM_VIDEO_ARGO_END, handleClose) // 取消和挂断
         event.on(SYSTEM_VIDEO_ARGO_REJECT, handleClose) // 坐席拒接
-        event.on(SYSTEM_WHITE_BOARD_RECEIVED, receiveWhiteBoard) // 白板
 
         return () => {
             event.off(SYSTEM_VIDEO_TICKET_RECEIVED, recived) // 监听接受
             event.off(SYSTEM_VIDEO_ARGO_END, handleClose) // 取消和挂断
             event.off(SYSTEM_VIDEO_ARGO_REJECT, handleClose) // 坐席拒接
-            event.off(SYSTEM_WHITE_BOARD_RECEIVED, receiveWhiteBoard) // 白板
         }
     }, [])
-
-    let videoLinking = stepRef.current && stepRef.current.getAttribute('role') === 'current' && !!remoteUsers.length; //通话中 有其他人加入
-    const isDisabledWhiteboard = !videoLinking || whiteboardVisible;
 
     return (
         <Wrapper role={step} top={top}>
@@ -420,29 +334,16 @@ export default function Video() {
                     <span>{time  ? '通话中' : '等待接通中'}</span>
                     {time ? <TimeControl /> : ''}
                 </CurrentTitle>
-                {
-                    whiteboardVisible && <Whiteboard 
-                        {...whiteboardRoomInfo}
-                        onCloseWhiteBoard={() => setWhiteboardVisible(false)}
-                    />
-                }
                 <CurrentBodyMore>
                     <TopVideoBox className='top'>
                         {
                             step === 'current' && !!currentChooseUser && remoteUsers
-                            .concat(whiteboardUser || [])
                             .concat(localUser || [])
                             .filter(({ uid }) => uid !== currentChooseUser?.uid)
                             .map((user) => {
-                                let {isWhiteboard = false, isLocal = false, uid, videoTrack, hasAudio, audioTrack } = user;
+                                let { isLocal = false, uid, videoTrack, hasAudio, audioTrack } = user;
 
-                              return isWhiteboard 
-                              ? <WhiteboardPlayer 
-                                  key={uid} 
-                                  setWhiteboardRoomInfo={setWhiteboardRoomInfo}
-                                  bindClick={() => setCurrentChooseUser(user)}
-                                />
-                              : <MediaPlayer
+                              return <MediaPlayer
                                 bindClick={() => setCurrentChooseUser(user)}
                                 key={uid} 
                                 isLocal={isLocal}
@@ -470,10 +371,9 @@ export default function Video() {
                         </CurrentBodySelf>)}
                     </CurrentVideo>
                 </CurrentBodyMore>
-                <CurrentFooter top={top} board={isDisabledWhiteboard}>
+                <CurrentFooter>
                     <div onClick={handleSound}><span className={sound ? 'icon-sound' : 'icon-sound-close'}></span></div>
                     <div onClick={handleFace}><span className={face ? 'icon-face' : 'icon-face-close'}></span></div>
-                    <div onClick={() => void (!isDisabledWhiteboard && bindWhiteboardClick())}><span className={isDisabledWhiteboard ? 'icon-white-board-close' : 'icon-white-board'}></span></div>
                     <div onClick={handleClose}><span className='icon-off'></span></div>
                 </CurrentFooter>
             </CurrentWrapper>
