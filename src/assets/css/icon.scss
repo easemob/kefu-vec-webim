@@ -126,3 +126,11 @@ $fs: 25px;
 		content: "\e6a5";
 	}
 }
+
+.icon-desktop-share {
+	@extend %font-shell-base-newagent;
+	&:before {
+		@extend %font-base-newagent;
+		content: "\e6ff";
+	}
+}

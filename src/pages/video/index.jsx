@@ -64,6 +64,7 @@ export default function Video() {
     const [whiteboardVisible, setWhiteboardVisible] = useState(false);
     const [whiteboardRoomInfo, setWhiteboardRoomInfo] = useState(null);
     const [isModalVisible, setIsModalVisible] = useState(false);
+    let [ callingScreenSwitch, setCallingScreenSwitch ] = useState(false);
 
     const videoRef = useRef();
     const stepRef = useRef()
@@ -222,6 +223,8 @@ export default function Video() {
     }
 
     const handleFace = async () => {
+        if (callingScreenSwitch) return onDesktopControl();
+
         if (serviceAgora.localVideoTrack) {
             serviceAgora.closeLocalTrack('video')
             setLocalUser(user => {
@@ -277,6 +280,7 @@ export default function Video() {
         ws.cancelVideo(callId, {
             ext: {
                 type: "agorartcmedia/video",
+                targetSystem: 'kefurtc',
                 msgtype: {
                     whiteboardInvitaion:{
                         callId: callId
@@ -373,6 +377,48 @@ export default function Video() {
         setIsModalVisible(false)
     }
 
+    /* 桌面分享绑定事件 */
+    const onDesktopControl = _.debounce(function() {
+        if (whiteboardVisible) return;
+        let _hxAgoraVideo = serviceAgora
+
+        if (callingScreenSwitch) {
+            setFace(true);
+            setCallingScreenSwitch(false);
+            _hxAgoraVideo.client.unpublish(_hxAgoraVideo.localScreenTrack);
+            _hxAgoraVideo.localScreenTrack?.off('track-ended')
+            _hxAgoraVideo.closeLocalTrack('screen'); //关闭屏幕分享
+
+            _hxAgoraVideo.publish(_hxAgoraVideo.localVideoTrack);
+            _hxAgoraVideo.localVideoTrack.setMuted(false);
+            let user = { ...localUser, videoTrack:  _hxAgoraVideo.localVideoTrack };
+            setLocalUser(user);
+            currentChooseUser.isLocal && setCurrentChooseUser(user);
+        } else {
+            _hxAgoraVideo.createScreenVideoTrack()
+            .then((localScreenTrack) => {
+                if (!localScreenTrack) return;
+                setCallingScreenSwitch(true);
+                setFace(false);
+
+                _hxAgoraVideo.client.unpublish(_hxAgoraVideo.localVideoTrack);
+                _hxAgoraVideo.localVideoTrack.stop();
+                _hxAgoraVideo.publish(localScreenTrack);
+                let user = { ...localUser, videoTrack:  localScreenTrack };
+                setLocalUser(user);
+                currentChooseUser.isLocal && setCurrentChooseUser(user);
+            })
+        }
+    }, 1000);
+
+    useEffect(() => {
+        if (!serviceAgora?.localScreenTrack) return;
+
+        /* 用户通过浏览器提供的关系屏幕共享按钮 */
+        serviceAgora.localScreenTrack.removeAllListeners('track-ended')
+        serviceAgora.localScreenTrack.on('track-ended', onDesktopControl)
+    }, [callingScreenSwitch]);
+
     useEffect(() => {
         if (!serviceAgora?.client) return;
     
@@ -454,22 +500,22 @@ export default function Video() {
 
     const App = useCallback(() => {
         const fastboard = useFastboard(() => ({
-          sdkConfig: {
-            appIdentifier: whiteboardRoomInfo.appIdentifier,
-            region: "cn-hz", // "cn-hz" | "us-sv" | "sg" | "in-mum" | "gb-lon"
-          },
-          joinRoom: {
-            uid: whiteboardUser && whiteboardUser.uid || Math.ceil(Math.random() * 1000) + '',
-            uuid: whiteboardRoomInfo.roomUUID,
-            roomToken: whiteboardRoomInfo.roomToken,
-          },
+            sdkConfig: {
+                appIdentifier: whiteboardRoomInfo.appIdentifier,
+                region: "cn-hz", // "cn-hz" | "us-sv" | "sg" | "in-mum" | "gb-lon"
+            },
+            joinRoom: {
+                uid: whiteboardUser && whiteboardUser.uid || Math.ceil(Math.random() * 1000) + '',
+                uuid: whiteboardRoomInfo.roomUUID,
+                roomToken: whiteboardRoomInfo.roomToken,
+            },
         }));
 
         const [uiConfig] = useState(() => ({
-          page_control: { enable: true },
-          redo_undo: { enable: true },
-          toolbar: { enable: true },
-          zoom_control: { enable: true },
+            page_control: { enable: true },
+            redo_undo: { enable: true },
+            toolbar: { enable: true },
+            zoom_control: { enable: true }
         }));
 
         // return <Fastboard app={fastboard} language="en" theme="light" config={uiConfig} />
@@ -488,6 +534,8 @@ export default function Video() {
     }, [whiteboardRoomInfo, whiteboardUser, whiteboardVisible])
 
     var waitTitle = step === 'invite' ? intl.get('inviteTitle') : intl.get('ptitle')
+    let videoLinking = step === 'current' && !!remoteUsers.length; //通话中 有其他人加入
+    var isDisabledWhiteboard = !videoLinking || callingScreenSwitch || whiteboardVisible;
 
     return (
         <React.Fragment>
@@ -548,7 +596,8 @@ export default function Video() {
                     <CurrentFooter top={top}>
                         <div onClick={handleSound}><span className={sound ? 'icon-sound' : 'icon-sound-close'}></span></div>
                         <div onClick={handleFace}><span className={face ? 'icon-face' : 'icon-face-close'}></span></div>
-                        <div onClick={!whiteboardVisible ? bindWhiteboardClick : null}><span className={`icon-white-board ${whiteboardVisible  ? 'gray' : ''}`}></span></div>
+                        {top && <div onClick={onDesktopControl}><span className={`icon-desktop-share ${whiteboardVisible ? 'gray' : ''}`}></span></div>}
+                        <div onClick={() => void (!isDisabledWhiteboard && bindWhiteboardClick())}><span className={`icon-white-board ${isDisabledWhiteboard  ? 'gray' : ''}`}></span></div>
                         <div onClick={handleClose}><span className='icon-off'></span></div>
                     </CurrentFooter>
                     <VecModal
