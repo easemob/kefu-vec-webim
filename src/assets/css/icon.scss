@@ -87,14 +87,6 @@ $fs: 25px;
 	}
 }
 
-.icon-white-board, .icon-white-board-close {
-	@extend %font-shell-base-newagent;
-	&:before {
-		@extend %font-base-newagent;
-		content: "\e6a5";
-	}
-}
-
 .icon-mini {
 	@extend %font-shell-base-newagent;
 	&:before {
@@ -110,3 +102,10 @@ $fs: 25px;
 		content: "\e64f";
 	}
 }
+
+.icon-smile {
+	@extend %font-shell-base-newagent;
+	&:before {
+		@extend %font-base-newagent;
+		content: "\e600";
+	}

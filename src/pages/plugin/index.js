@@ -11,9 +11,9 @@ var _config = {};
 var iframe;
 var bind;
 
-window.easemobim = window.easemobim || {};
-window.easemobim.config = window.easemobim.config || {};
-window.easemobim.version = "__WEBIM_PLUGIN_VERSION__";
+window.easemobvec = window.easemobvec || {};
+window.easemobvec.config = window.easemobvec.config || {};
+window.easemobvec.version = "__WEBIM_PLUGIN_VERSION__";
 
 import './plugin-scss/easemob.scss'
 
@@ -22,7 +22,7 @@ if(
 	&& !window.localStorage
 	&& !document.querySelector
 ){
-	easemobim.bind = function(){
+	easemobvec.bind = function(){
 		alert("您使用的IE浏览器版本过低，请使用IE8以上版本的IE浏览器或Chrome浏览器"); // eslint-disable-line no-alert
 	};
 	throw new Error("unsupported browser.");
@@ -67,7 +67,7 @@ function reset(config){
 	// 由于存在 cookie 跨域问题，所以从配置传过去
 	var configData = _.extend({}, DEFAULT_CONFIG, { grUserId: utils.get("gr_user_id") });
 	config = config || {};
-	configData = _.extend({}, configData, easemobim.config, config);
+	configData = _.extend({}, configData, easemobvec.config, config);
 
 	hide = utils.convertFalse(configData.hide) !== "" ? configData.hide : baseConfig.json.hide;
 	resources = utils.convertFalse(_config.resources) !== "" ? configData.resources : baseConfig.json.resources;
@@ -82,7 +82,8 @@ function reset(config){
 		domain: configData.domain || baseConfig.domain,
 		path: configData.path || (baseConfig.domain + "__WEBIM_SLASH_KEY_PATH__"),
 		staticPath: configData.staticPath || (baseConfig.domain + "__WEBIM_SLASH_KEY_PATH__"), // 用不到
-		guestId: utils.getStore("guestId") // 这个是别人种的cookie
+		guestId: utils.getStore("guestId"), // 这个是别人种的cookie
+		lang: baseConfig.json.lang || 'zh-CN' // 系统语言
 	});
 	// demo 页面点击联系客服带着 tenantId, 就删除 config 中的 configId, 否则 configId 存在就会用 configId 去渲染页面
 	// if(config.tenantId){
@@ -131,12 +132,12 @@ function getScriptConfig(){
  * @param: {String} 技能组名称，选填
  * 兼容旧版接口，建议使用easemobim.bind方法
  */
-window.easemobIM = function(group){
-	easemobim.bind({ emgroup: group });
-};
-window.easemobIMS = function(tenantId, group){
-	easemobim.bind({ tenantId: tenantId, emgroup: group });
-};
+// window.easemobIM = function(group){
+// 	easemobvec.bind({ emgroup: group });
+// };
+// window.easemobIMS = function(tenantId, group){
+// 	easemobvec.bind({ tenantId: tenantId, emgroup: group });
+// };
 
 /*
  * @param: {Object} config
@@ -170,14 +171,14 @@ bind = function(config, autoLoad){
 			tenantList[cacheKeyName] = iframe;
 			iframe.set(_config, iframe.close);
 			// 访客上报用后失效
-			easemobim.config.eventCollector = false;
+			easemobvec.config.eventCollector = false;
 		}
 	}
 	// 用户点击的
 	else{
 		// 防止空参数调用异常
 		config = config || {};
-		config.emgroup = config.emgroup || easemobim.config.emgroup || "";
+		config.emgroup = config.emgroup || easemobvec.config.emgroup || "";
 
 		cacheKeyName = config.configId || (config.tenantId + config.emgroup);
 
@@ -225,7 +226,7 @@ bind = function(config, autoLoad){
 };
 
 // open api1: send custom extend message
-easemobim.sendExt = function(ext){
+easemobvec.sendExt = function(ext){
 	if(iframe){
 		iframe.send({
 			ext: ext
@@ -245,7 +246,7 @@ easemobim.sendExt = function(ext){
  * }
  */
 
-easemobim.sendText = function(msg){
+ easemobvec.sendText = function(msg){
 	if(iframe){
 		iframe.sendText(msg);
 	}
@@ -254,23 +255,23 @@ easemobim.sendText = function(msg){
 	}
 };
 
-easemobim.minimize = function(){
+easemobvec.minimize = function(){
 	if(iframe){
 		iframe.close();
 	}
 };
-easemobim.restore = function(){
+easemobvec.restore = function(){
 	if(iframe){
 		iframe.open();
 	}
 };
 // 隐藏默认联系客服按钮
-easemobim.hideDefaultBtn = function(){
+easemobvec.hideDefaultBtn = function(){
 	if(iframe){
 		iframe.hideDefaultBtn();
 	}
 };
-easemobim.setDefaultConfig = function(config){
+easemobvec.setDefaultConfig = function(config){
 	if(iframe){
 		iframe.open();
 		config && iframe._updatePosition(config);
@@ -279,7 +280,7 @@ easemobim.setDefaultConfig = function(config){
 
 
 // user click
-window.easemobim.bind = function(config){
+window.easemobvec.bind = function(config){
 	bind(config, false);
 };
 

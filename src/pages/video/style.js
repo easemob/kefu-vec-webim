@@ -4,8 +4,9 @@ export const Wrapper = styled.div`
     position: absolute;
     width: ${props => props.top ? '650px' : '100%'};
     height: ${props => props.top ? '650px' : '100%'};
-    right: ${props => props.top ? '10px' : 0};
-    bottom: ${props => props.top ? '10px' : 0};
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
     border-radius: 4px;
     box-shadow: 0px 0px 10px #ccc;
     background-color: #fff;
@@ -43,11 +44,11 @@ export const WaitTitle = styled.div`
 `
 
 export const WaitAgent = styled.div`
+    text-align: center;
     height: 30%;
     font-size: 16px;
 `
 export const WaitAgentLogo = styled.div`
-    text-align: center;
     height: 70%;
     img {
         height: 100%;
@@ -56,7 +57,6 @@ export const WaitAgentLogo = styled.div`
 `
 
 export const WaitAgentDesc = styled.div`
-    text-align: center;
     margin-top: 2%;
     box-sizing: border-box;
 `
@@ -100,6 +100,57 @@ export const WaitOpera = styled.div`
             margin-top: 2%;
             text-align: center;
             font-size: 16px;
+        }
+    }
+`
+
+export const InviteOpera = styled.div`
+    height: 35%;
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    .recive {
+        margin-right: 15%;
+        > div {
+            &:first-child {
+                background: linear-gradient(172deg, #5ef61e , #44d434);
+            }
+        }
+    }
+    .hung {
+        > div {
+            &:first-child {
+                background: linear-gradient(172deg, #f5515f , #e92744);
+            }
+        }
+    }
+    > div {
+        > div {
+            &:first-child {
+                width: 90px;
+                height: 90px;
+                text-align: center;
+                border-radius: 50%;
+                margin: 0 auto;
+                // background: linear-gradient(172deg, ${props => props.role === 'start' ? '#5ef61e' : '#f5515f'} , ${props => props.role === 'start' ? '#44d434' : '#e92744'});
+                position: relative;
+                cursor: pointer;
+                span {
+                    position: absolute;
+                    top: 50%;
+                    left: 50%;
+                    transform: translate(-50%, -50%);
+                    &::before {
+                        font-size: 60px;
+                    }
+                }
+            }
+            &:last-child {
+                margin-top: 2%;
+                text-align: center;
+                font-size: 16px;
+            }
         }
     }
 `
@@ -220,7 +271,21 @@ export const CurrentBodySelf = styled.div`
         height: 100%;
     }
     #visitor_video {
-        background-color: #000;
+        background-color: #EDF2F9;
+        > div {
+            z-index: 1;
+            background-color: #EDF2F9 !important;
+        }
+    }
+    .icon-smile {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        color: rgba(0,0,0,.65);
+        &::before {
+            font-size: 60px;
+        }
     }
     .icon-microphone-close {
         color: #FD3E3F;
@@ -233,29 +298,36 @@ export const CurrentBodySelf = styled.div`
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 14px;
+        font-size: 12px;
         z-index: 10;
         > div {
             display: inline-block;
-            background-color: #fff;
             color: #3689f7;
             width: 20px;
             height: 20px;
             border-radius: 50%;
             margin-right: 5px;
+            position: relative;
             span {
                 line-height: 20px;
+                width: 10px;
+                height: 13px;
+                transform: translate(5px, 4px);
+                background-color: #fff;
                 &::before {
                     font-size: 20px;
+                    transform: translate(-5px, -4px);
                 }
             }
         }
         > span {
-            height: 30px;
-            line-height: 30px;
             text-overflow: ellipsis;
             white-space: nowrap;
             overflow: hidden;
+            padding: 2px 10px;
+            color: #fff;
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 3px;
         }
     }
 `

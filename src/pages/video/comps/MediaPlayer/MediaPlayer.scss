@@ -1,6 +1,17 @@
 .video-player {
-  background-color: black;
-  
+  background-color: #EDF2F9;
+  box-shadow: 0px 0px 10px #ccc;
+  > div {
+    z-index: 1;
+  }
+  .icon-smile {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: rgba(0,0,0,.65);
+  }
+
   .icon-microphone, .icon-microphone-close {
     z-index: 100;
     color: #0087FF;

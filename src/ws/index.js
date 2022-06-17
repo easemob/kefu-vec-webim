@@ -8,7 +8,7 @@ import List from '@/tools/List'
 import commonConfig from '@/common/config'
 import { getConfig, getConfigOption, getRelevanceListConfig, tenantInfo } from '../assets/http/config'
 import { createVisitor, getToken, grayScaleList } from '../assets/http/user'
-import { SYSTEM_OFFLINE, HEART_BEAT_INTERVAL, SYSTEM_CHAT_CLOSED, SYSTEM_CLEAR_AGENTSTATE, SYSTEM_CLEAR_AGENTINPUTSTATE, SYSTEM_IS_PULL_HISTORY, SYSTEM_NEW_OFFICIAL_ACCOUNT_FOUND, SYSTEM_OFFICIAL_ACCOUNT_UPDATED, SYSTEM_VIDEO_TICKET_RECEIVED, SYSTEM_VIDEO_ARGO_END, SYSTEM_WHITE_BOARD_RECEIVED, WEBIM_CONNCTION_AUTH_ERROR, WEBIM_CONNCTION_CALLBACK_INNER_ERROR, SYSTEM_AGENT_INFO_UPDATE, SYSTEM_EVENT_MSG_TEXT, SYSTEM_VIDEO_ARGO_REJECT, SYSTEM_SESSION_TRANSFERED, SYSTEM_SESSION_TRANSFERING, SYSTEM_SESSION_CLOSED, SYSTEM_SESSION_OPENED,SESSION_STATE_PROCESSING,SYSTEM_SESSION_CREATED } from '@/assets/constants/events'
+import { SYSTEM_OFFLINE, HEART_BEAT_INTERVAL, SYSTEM_CHAT_CLOSED, SYSTEM_CLEAR_AGENTSTATE, SYSTEM_CLEAR_AGENTINPUTSTATE, SYSTEM_IS_PULL_HISTORY, SYSTEM_NEW_OFFICIAL_ACCOUNT_FOUND, SYSTEM_OFFICIAL_ACCOUNT_UPDATED, SYSTEM_VIDEO_TICKET_RECEIVED, SYSTEM_VIDEO_ARGO_END, SYSTEM_WHITE_BOARD_RECEIVED, WEBIM_CONNCTION_AUTH_ERROR, WEBIM_CONNCTION_CALLBACK_INNER_ERROR, SYSTEM_AGENT_INFO_UPDATE, SYSTEM_EVENT_MSG_TEXT, SYSTEM_VIDEO_ARGO_REJECT, SYSTEM_SESSION_TRANSFERED, SYSTEM_SESSION_TRANSFERING, SYSTEM_SESSION_CLOSED, SYSTEM_SESSION_OPENED,SESSION_STATE_PROCESSING,SYSTEM_SESSION_CREATED, SYSTEM_VIDEO_CALLBACK_TICKET } from '@/assets/constants/events'
 import queryString from 'query-string'
 
 var handleConfig = commonConfig.handleConfig;
@@ -102,7 +102,40 @@ function _getOfficialAccountById(id){
 	return profile.officialAccountList.find(item => item.official_account_id === id)
 }
 
+// setTimeout(() => {
+// 	_handleMessage({
+// 		ext: {
+// 			msgtype: {
+// 				sendVisitorCallbackTicket: {
+// 					msg: "邀请你进行实时视频",
+// 					nickname: "video_hy1@easemob.com",
+// 					ticket: {
+// 						agentTicket: {
+// 							appId: "0e400b86d6ac439db7533aceace13cad",
+// 							callId: 15120,
+// 							channel: "7e015e6a-6366-4e67-85dd-68279c70c436",
+// 							niceName: "video_hy1@easemob.com",
+// 							token: "0060e400b86d6ac439db7533aceace13cadIABQ8BMRvnrkvrbNZr5s1jHIaUKs3RdpnW5tB7AcGpCD4ODknOOwt1B3IgARtKuEGQerYgQAAQAZB6tiAgAZB6tiAwAZB6tiBAAZB6ti",
+// 							trueName: "video_hy1@easemob.com",
+// 							uid: 2090
+// 						},
+// 						appId: "0e400b86d6ac439db7533aceace13cad",
+// 						callId: 15120,
+// 						channel: "7e015e6a-6366-4e67-85dd-68279c70c436",
+// 						isThirdAgent: false,
+// 						niceName: "webim-visitor-KWE4T28WBF9G8KV6F4C4",
+// 						token: "0060e400b86d6ac439db7533aceace13cadIACzAt/OOoCi7Hu/hY4cQyazm85AzXdNaOtVURJXG+gSIODknOOXOASvIgBoA55GGQerYgQAAQAZB6tiAgAZB6tiAwAZB6tiBAAZB6ti",
+// 						trueName: null,
+// 						uid: 3866
+// 					}
+// 				}
+// 			}
+// 		}
+// 	})
+// }, 5000)
+
 function _handleMessage(msg, options){
+	console.log('ws msg', msg)
 	var opt = options || {};
 	var type = opt.type || (msg && msg.type);
 	var noPrompt = opt.noPrompt;
@@ -119,12 +152,13 @@ function _handleMessage(msg, options){
 	var officialAccount = utils.getDataByPath(msg, "ext.weichat.official_account");
 	var officialAccountId = officialAccount && officialAccount.official_account_id;
 	var videoTicket = utils.getDataByPath(msg, "ext.msgtype.sendVisitorTicket.ticket");
+	var videoCallbackTicket = utils.getDataByPath(msg, "ext.msgtype.sendVisitorCallbackTicket.ticket"); // 坐席外呼
 	var agent = utils.getDataByPath(msg, "ext.weichat.agent");
 	var ssid = utils.getDataByPath(msg, 'ext.weichat.service_session.serviceSessionId')
-	videoTicket && (videoTicket.agentTicket = agent)
 	videoTicket && (videoTicket.ssid = ssid)
+	videoCallbackTicket && (videoCallbackTicket.ssid = ssid)
 
-	var agentRejectVideoTicket = utils.getDataByPath(msg, 'action');
+	var msgAction = utils.getDataByPath(msg, 'action');
 	var videoExtend = utils.getDataByPath(msg, "ext.msgtype.sendVisitorTicket.extend");
 	var whiteBoardTicket = utils.getDataByPath(msg, "ext.msgtype.roomData");
 	var videoEndArgo = utils.getDataByPath(msg, "ext.msgtype.videoPlayback");
@@ -204,6 +238,9 @@ function _handleMessage(msg, options){
 	else if(videoTicket){
 		type = "rtcVideoTicket";
 	}
+	else if (videoCallbackTicket) {
+		type = 'videoCallbackTicket'
+	} 
 	else if(videoEndArgo){
 		type = "videoEndArgo";
 	}
@@ -213,7 +250,7 @@ function _handleMessage(msg, options){
 	else if(customMagicEmoji){
 		type = "customMagicEmoji";
 	}
-	else if (agentRejectVideoTicket) { // 客服拒接
+	else if (msgAction === 'AgentRejectKefuRtcRingingCall') { // 客服拒接
 		type = 'agentRejectVideoTicket';
 	}
 	else if(
@@ -227,9 +264,7 @@ function _handleMessage(msg, options){
 	}
 
 	var myconfig = commonConfig.getConfig();
-	var themeCustomColor = myconfig.themeCustomColor;
 	
-
 	// ===========
 	// 消息结构构造
 	// ===========
@@ -288,6 +323,9 @@ function _handleMessage(msg, options){
 	case "rtcVideoTicket":
 		event.emit(SYSTEM_VIDEO_TICKET_RECEIVED, videoTicket);
 		break;
+	case 'videoCallbackTicket':
+		event.emit(SYSTEM_VIDEO_CALLBACK_TICKET, videoCallbackTicket)
+		break;
 	// case "satisfactionEvaluation":
     // case "robotList":
     // case "transferManualGuide":
@@ -304,7 +342,8 @@ function _handleMessage(msg, options){
 		event.emit(SYSTEM_VIDEO_ARGO_END, videoEndArgo);
 		break;
 	case 'agentRejectVideoTicket':
-		event.emit(SYSTEM_VIDEO_ARGO_REJECT);
+		event.emit(SYSTEM_VIDEO_ARGO_REJECT, {agentReject: true});
+		break;
 	case "whiteBoardTicket":
 		message = msg;
 		message.type = "txt";
@@ -494,24 +533,23 @@ function _initConnection(){
 commonConfig.setConfig({
 	configId: queryString.parse(location.search).configId || ''
 })
-function initConfig() {
-	getConfig(commonConfig.getConfig().configId).then(res => {
-		if (res.status && res.status === 'OK') {
-			var entity = res.entity
-			entity.configJson = JSON.parse(entity.configJson)
-			entity.configJson.tenantId = entity.tenantId;
-			entity.configJson.configName = entity.configName;
-			handleConfig(entity.configJson);
+async function initConfig() {
+	const {status, entity} = await getConfig(commonConfig.getConfig().configId)
+	if (status === 'OK') {
+		entity.configJson = JSON.parse(entity.configJson)
+		entity.configJson.tenantId = entity.tenantId;
+		entity.configJson.configName = entity.configName;
+		handleConfig(entity.configJson);
 
-			initRelevanceList(entity.tenantId);
-		}
-	})
+		await initRelevanceList(entity.tenantId);
+
+		console.log('config end')
+	}
 }
 
-function initRelevanceList(tenantId){
+async function initRelevanceList(tenantId){
 	// 获取关联信息（targetChannel）
-	var relevanceList;
-	Promise.all([
+	const [value, _relevanceList, info, grayScale] = await Promise.all([
 		getConfigOption({
 			configId: commonConfig.getConfig().configId,
 			tenantId
@@ -519,43 +557,36 @@ function initRelevanceList(tenantId){
 		getRelevanceListConfig({tenantId}),
 		tenantInfo({tenantId}),
 		grayScaleList(tenantId)
-	]).then(results => {
-		const [value, _relevanceList, info, grayScale] = results
-		if (value.status && value.status === 'OK') {
-			commonConfig.setConfig({
-				configOption: _.extend({}, commonConfig.getConfig().configOption, value),
-			});
-		}
+	])
 
-		if (info.status && info.status === 'OK') {
-			commonConfig.setConfig({
-				tenantInfo: info.entity,
-			});
-		}
+	if (value.status && value.status === 'OK') {
+		commonConfig.setConfig({
+			configOption: _.extend({}, commonConfig.getConfig().configOption, value),
+		});
+	}
 
-		relevanceList = _relevanceList;
-	
-		// 灰度列表
-		if (grayScale.status && grayScale.status === 'OK') {
-			var garyRes = {}
-			grayScale.entities.forEach(item => {
-				garyRes[item.grayName] = item.status !== 'Disable'
-			})
-			profile.grayList = garyRes
-		} else {
-			profile.grayList = {}
-		}
+	if (info.status && info.status === 'OK') {
+		commonConfig.setConfig({
+			tenantInfo: info.entity,
+		});
+	}
 
-		return Promise.resolve([]);
-	}).then(results => {
-		handleCfgData(relevanceList, results);
-	}, () => {
-		handleCfgData(relevanceList || [], []);
-	})
+	// 灰度列表
+	if (grayScale.status && grayScale.status === 'OK') {
+		var garyRes = {}
+		grayScale.entities.forEach(item => {
+			garyRes[item.grayName] = item.status !== 'Disable'
+		})
+		profile.grayList = garyRes
+	} else {
+		profile.grayList = {}
+	}
+
+	await handleCfgData(_relevanceList || [], []);
 }
 
 // todo: rename this function
-function handleCfgData(relevanceList){
+async function handleCfgData(relevanceList){
 	var targetItem;
 	var appKey = commonConfig.getConfig().appKey;
 	var splited = appKey.split("#");
@@ -654,58 +685,44 @@ function handleCfgData(relevanceList){
 		config = commonConfig.getConfig()
 
 		_initConnection()
-
-		// getOfficalAccounts().then(officialAccountList => {
-		// 	officialAccountList.forEach(_attemptToAppendOfficialAccount)
-
-		// 	if(!profile.ctaEnable){
-		// 		profile.currentOfficialAccount = profile.systemOfficialAccount;
-		// 	}
-
-		// 	_initConnection()
-		// })	
 	} else {
-		setUserInfo()
+		await setUserInfo()
 	}
 }
 
-function setUserInfo() {
+async function setUserInfo() {
 	// 创建用户
-	createVisitor({
+	var info = await createVisitor({
 		appName: commonConfig.getConfig().appName,
 		imServiceNumber: commonConfig.getConfig().toUser,
 		orgName: commonConfig.getConfig().orgName,
 		specifiedUserName: '',
 		tenantId: commonConfig.getConfig().tenantId
-	}).then(info => {
-		commonConfig.setConfig({
-			user: {
-				password: info.userPassword,
-				username: info.userId
-			}
-		})
-
-		// 设置cookie
-		var cacheKeyName = (commonConfig.getConfig().configId || (commonConfig.getConfig().to + commonConfig.getConfig().tenantId + commonConfig.getConfig().emgroup));
-		utils.set(cacheKeyName, info.userId);
-		utils.set('pass' + cacheKeyName, info.userPassword);
-		
-		getUserToken()
 	})
+
+	commonConfig.setConfig({
+		user: {
+			password: info.userPassword,
+			username: info.userId
+		}
+	})
+
+	// 设置cookie
+	var cacheKeyName = (commonConfig.getConfig().configId || (commonConfig.getConfig().to + commonConfig.getConfig().tenantId + commonConfig.getConfig().emgroup));
+	utils.set(cacheKeyName, info.userId);
+	utils.set('pass' + cacheKeyName, info.userPassword);
+	
+	await getUserToken()
 }
 
-function getUserToken() {
+async function getUserToken() {
 	if (profile.imToken) {
 		_initConnection()
 	} else {
-		getToken().then(resp => {
-			var token = resp.access_token;
-	
-			// cache token
-			profile.imToken = token;
-	
-			_initConnection()
-		})
+		var resp = await getToken()
+		// cache token
+		profile.imToken = resp.access_token;
+		_initConnection()
 	}
 }
 
@@ -818,11 +835,10 @@ function _setExt(msg){
 	}
 }
 
-
 export default {
     initConnection: initConfig,
     handleMessage: _handleMessage,
 	sendText: _sendText,
 	cancelVideo: _sendCmdExitVideo,
-	attemptToAppendOfficialAccount: _attemptToAppendOfficialAccount
+	attemptToAppendOfficialAccount: _attemptToAppendOfficialAccount,
 }
