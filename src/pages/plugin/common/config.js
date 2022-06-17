@@ -1,5 +1,4 @@
-var utils = require("@/common/utils");
-var profile = require("@/app/tools/profile");
+var utils = require("./utils");
 var config = {};
 
 function h5_mode_init(){

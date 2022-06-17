@@ -110,3 +110,11 @@ $fs: 25px;
 		content: "\e600";
 	}
 }
+
+.icon-logo {
+	@extend %font-shell-base-newagent;
+	&:before {
+		@extend %font-base-newagent;
+		content: "\e63a";
+	}
+}

@@ -2,6 +2,7 @@ require("underscore");
 var utils = require("./common/utils");
 var loading = require("./loading");
 var Iframe = require("./iframe");
+var configB = require('./common/config')
 var tenantList = {};
 var DEFAULT_CONFIG;
 
@@ -83,7 +84,7 @@ function reset(config){
 		path: configData.path || (baseConfig.domain + "__WEBIM_SLASH_KEY_PATH__"),
 		staticPath: configData.staticPath || (baseConfig.domain + "__WEBIM_SLASH_KEY_PATH__"), // 用不到
 		guestId: utils.getStore("guestId"), // 这个是别人种的cookie
-		lang: baseConfig.json.lang || 'zh-CN' // 系统语言
+		lang: configData.initLanguage || baseConfig.json.initLanguage || 'zh-CN' // 系统语言
 	});
 	// demo 页面点击联系客服带着 tenantId, 就删除 config 中的 configId, 否则 configId 存在就会用 configId 去渲染页面
 	// if(config.tenantId){
@@ -192,7 +193,7 @@ bind = function(config, autoLoad){
 		}
 
 		iframe = tenantList[cacheKeyName];
-		
+
 		if(iframe){
 			iframe.open();
 		}
@@ -285,7 +286,7 @@ window.easemobvec.bind = function(config){
 };
 
 // auto load
-// bind({}, true);
+bind({}, true);
 
 
 // support cmd & amd

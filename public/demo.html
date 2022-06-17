@@ -7,8 +7,8 @@
     <title>Demo</title>
   </head>
   <body>
-    configId:<input type="text" name="configId" value="" />
-    tenantId:<input type="text" name="tenantId" value="" />
+    configId:<input type="text" name="configId" value="74f5576d-a4b8-418e-bf9c-3d9f707b9a6b" />
+    tenantId:<input type="text" name="tenantId" value="29762" />
     <button onclick="test()">按钮</button>
     <!--不支持提醒-->
     <script>
@@ -18,8 +18,10 @@
       if (!configId || !tenantId) {
         alert('输入configId和tenantId')
       } else {
-        window.easemobvec.bind({ 
+        window.easemobvec.bind({
         tenantId: tenantId,
+        hide: true,
+        initLanguage: 'en-US',
         resources: true,
         configId: configId,
         onready: function(){ 
@@ -56,9 +58,7 @@
       });
         }
       }
-     
-
     </script>
-    <script src="easemobvec.js?configId=74f5576d-a4b8-418e-bf9c-3d9f707b9a6b&lang=en-US"></script>
+    <script src="easemobvec.js?configId=74f5576d-a4b8-418e-bf9c-3d9f707b9a6b&initLanguage=en-US"></script>
   </body>
 </html>

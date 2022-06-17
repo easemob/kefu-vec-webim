@@ -11,3 +11,7 @@
     max-height: 100% !important;
     height: 100% !important;
 }
+
+.vc-switch {
+    bottom: 100px !important; // vconsole在iframe样式下问题
+}

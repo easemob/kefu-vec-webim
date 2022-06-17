@@ -390,3 +390,24 @@ export const CurrentVideo = styled.div`
     position: relative;
 `
 
+export const DefaultConnect = styled.div`
+    position: fixed;
+    z-index: 2001;
+    top: 5px;
+    span {
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: #2189ff;
+        color: #fff;
+        width: 90px;
+        height: 30px;
+        line-height: 30px;
+        border-radius: 4px;
+        text-decoration: none;
+        font-size: 13px;
+    }
+`
+
+
