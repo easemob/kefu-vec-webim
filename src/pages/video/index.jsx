@@ -596,7 +596,7 @@ export default function Video() {
                     <CurrentFooter top={top}>
                         <div onClick={handleSound}><span className={sound ? 'icon-sound' : 'icon-sound-close'}></span></div>
                         <div onClick={handleFace}><span className={face ? 'icon-face' : 'icon-face-close'}></span></div>
-                        {top && <div onClick={onDesktopControl}><span className={`icon-desktop-share ${whiteboardVisible ? 'gray' : ''}`}></span></div>}
+                        {!utils.isMobile && top && <div onClick={onDesktopControl}><span className={`icon-desktop-share ${whiteboardVisible ? 'gray' : ''}`}></span></div>}
                         <div onClick={() => void (!isDisabledWhiteboard && bindWhiteboardClick())}><span className={`icon-white-board ${isDisabledWhiteboard  ? 'gray' : ''}`}></span></div>
                         <div onClick={handleClose}><span className='icon-off'></span></div>
                     </CurrentFooter>
