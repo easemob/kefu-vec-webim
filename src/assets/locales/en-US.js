@@ -9,5 +9,9 @@ export default {
     me: 'Me',
     agent: 'Agent',
     ptitle: 'Video Customer Service',
-    inviteTitle: 'Video Call'
+    inviteTitle: 'Video Call',
+    upload_img: 'Upload Img',
+    upload_video: 'Upload Video',
+    upload_audio: 'Upload Audio',
+    close_white: 'Quit'
 }

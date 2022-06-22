@@ -17,7 +17,11 @@ import { useFastboard, Fastboard } from "@netless/fastboard-react"
 import { createPortal } from 'react-dom'
 import WhiteboardPlayer from './comps/WhiteboardPlayer'
 import exitSvg from '@/assets/img/exit.svg'
+import imageSvg from '@/assets/img/image.svg'
+import videoSvg from '@/assets/img/video.svg'
+import audioSvg from '@/assets/img/audio.svg'
 import VecModal from '@/components/Modal'
+import Upload from 'rc-upload'
 
 import ws from '@/ws'
 
@@ -524,14 +528,49 @@ export default function Video() {
             <Fastboard app={fastboard} language="en" theme="light" config={uiConfig} />
             <RoomControllerBox>
                 <RoomControllerMidBox>
-                    <PagePreviewCell>
+                    <PagePreviewCell title={intl.get('upload_img')}>
+                        <Upload 
+                            action={`/v1/agorartc/tenant/${config.tenantId}/whiteboard/call/${callId}/conversion/upload`}
+                            multiple={true}
+                            onStart={file => console.log('onStart', file, file.name)}
+                            onSuccess={ret => fastboard.insertImage(ret.entity)}
+                            onError={err => console.log('onError', err)}
+                        >
+                            <img src={imageSvg} />
+                        </Upload>
+                    </PagePreviewCell>
+                    <PagePreviewCell title={intl.get('upload_video')}>
+                        <Upload
+                            action={`/v1/agorartc/tenant/${config.tenantId}/whiteboard/call/${callId}/conversion/upload`}
+                            multiple={true}
+                            accept=".mp4"
+                            onStart={file => console.log('onStart', file, file.name)}
+                            onSuccess={ret => fastboard.insertMedia('', ret.entity)}
+                            onError={err => console.log('onError', err)}
+                        >
+                            <img src={videoSvg} />
+                        </Upload>
+                    </PagePreviewCell>
+                    <PagePreviewCell title={intl.get('upload_audio')}>
+                        <Upload 
+                            action={`/v1/agorartc/tenant/${config.tenantId}/whiteboard/call/${callId}/conversion/upload`}
+                            multiple={true}
+                            accept=".mp3"
+                            onStart={file => console.log('onStart', file, file.name)}
+                            onSuccess={ret => fastboard.insertMedia('', ret.entity)}
+                            onError={err => console.log('onError', err)}
+                        >
+                            <img src={audioSvg} />
+                        </Upload>
+                    </PagePreviewCell>
+                    <PagePreviewCell title={intl.get('close_white')}>
                         <img src={exitSvg} onClick={() => setIsModalVisible(true)} />
                     </PagePreviewCell>
                 </RoomControllerMidBox>
             </RoomControllerBox>
         </RoomWhite>
         , whiteboardRoomInfo.domNode || videoRef.current)
-    }, [whiteboardRoomInfo, whiteboardUser, whiteboardVisible])
+    }, [whiteboardRoomInfo, whiteboardUser, whiteboardVisible, callId])
 
     var waitTitle = step === 'invite' ? intl.get('inviteTitle') : intl.get('ptitle')
     let videoLinking = step === 'current' && !!remoteUsers.length; //通话中 有其他人加入
@@ -575,7 +614,7 @@ export default function Video() {
                             }
                         </TopVideoBox>
                         <CurrentVideo>
-                            {step === 'current' && currentChooseUser && (<CurrentBodySelf>
+                            {step === 'current' && currentChooseUser && (<CurrentBodySelf isMobile={utils.isMobile}>
                                 {!currentChooseUser.isWhiteboard && <div className='info'>
                                     <CurrentBodyMicro className='self'>
                                         <span className={(currentChooseUser.isLocal ? sound : currentChooseUser.hasAudio) ? 'icon-microphone' : 'icon-microphone-close'}></span>

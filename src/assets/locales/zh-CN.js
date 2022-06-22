@@ -9,5 +9,9 @@ export default {
     me: '我',
     agent: '客服',
     ptitle: '视频客服',
-    inviteTitle: '视频通话'
+    inviteTitle: '视频通话',
+    upload_img: '上传图片',
+    upload_video: '上传视频',
+    upload_audio: '上传音频',
+    close_white: '退出白板'
 }

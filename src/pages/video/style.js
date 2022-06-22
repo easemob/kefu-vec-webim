@@ -278,7 +278,7 @@ export const CurrentBodySelf = styled.div`
         .fastboard-react-div {
             box-shadow: 0px 0px 4.5px #ddd;
             .netless-window-manager-wrapper {
-                height: 100% !important;
+                height: ${props => props.isMobile ? '75%' : '345px'} !important;
                 background-color: #fff;
             }
         }
