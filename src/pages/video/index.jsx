@@ -628,7 +628,7 @@ export default function Video() {
                                 <div id='visitor_video' ref={videoRef}>
                                     {whiteboardVisible && <App />}
                                 </div>
-                                <span className='icon-smile'></span>
+                                {!currentChooseUser.videoTrack && <span className='icon-smile'></span>}
                             </CurrentBodySelf>)}
                         </CurrentVideo>
                     </CurrentBodyMore>

@@ -272,9 +272,9 @@ export const CurrentBodySelf = styled.div`
     }
     #visitor_video {
         background-color: #EDF2F9;
-        > div {
-            z-index: 1;
-        }
+        // > div {
+        //     z-index: 1;
+        // }
         .fastboard-react-div {
             box-shadow: 0px 0px 4.5px #ddd;
             .netless-window-manager-wrapper {
