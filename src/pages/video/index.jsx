@@ -6,7 +6,7 @@ import logo from '@/assets/img/qiye.png'
 import commonConfig from '@/common/config'
 import event from '@/tools/event'
 import { visitorClose, getOfficalAccounts } from '@/assets/http/user'
-import { SYSTEM_VIDEO_TICKET_RECEIVED, SYSTEM_VIDEO_ARGO_END, SYSTEM_VIDEO_ARGO_REJECT, SYSTEM_VIDEO_CALLBACK_TICKET, SYSTEM_WHITE_BOARD_RECEIVED } from '@/assets/constants/events'
+import { SYSTEM_VIDEO_TICKET_RECEIVED, SYSTEM_VIDEO_ARGO_END, SYSTEM_VIDEO_ARGO_REJECT, SYSTEM_VIDEO_CALLBACK_TICKET, SYSTEM_WHITE_BOARD_RECEIVED, SYSTEM_AGENT_CANCALCALLBACK } from '@/assets/constants/events'
 // import profile from '@/tools/profile'
 import MediaPlayer from './comps/MediaPlayer/MediaPlayer'
 import getToHost from '@/common/transfer'
@@ -481,6 +481,7 @@ export default function Video() {
         event.on(SYSTEM_VIDEO_ARGO_REJECT, handleClose) // 坐席拒接
         event.on(SYSTEM_VIDEO_CALLBACK_TICKET, agentCallback) // 坐席回呼
         event.on(SYSTEM_WHITE_BOARD_RECEIVED, receiveWhiteBoard) // 白板
+        event.on(SYSTEM_AGENT_CANCALCALLBACK, handleClose)
 
         return () => {
             event.off(SYSTEM_VIDEO_TICKET_RECEIVED, recived) // 监听接受
@@ -488,6 +489,7 @@ export default function Video() {
             event.off(SYSTEM_VIDEO_ARGO_REJECT, handleClose) // 坐席拒接
             event.off(SYSTEM_VIDEO_CALLBACK_TICKET, agentCallback)
             event.off(SYSTEM_WHITE_BOARD_RECEIVED, receiveWhiteBoard) // 白板
+            event.off(SYSTEM_AGENT_CANCALCALLBACK, handleClose)
         }
     }, [step])
 

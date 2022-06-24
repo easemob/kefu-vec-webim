@@ -8,7 +8,7 @@ import List from '@/tools/List'
 import commonConfig from '@/common/config'
 import { getConfig, getConfigOption, getRelevanceListConfig, tenantInfo } from '../assets/http/config'
 import { createVisitor, getToken, grayScaleList } from '../assets/http/user'
-import { SYSTEM_OFFLINE, HEART_BEAT_INTERVAL, SYSTEM_CHAT_CLOSED, SYSTEM_CLEAR_AGENTSTATE, SYSTEM_CLEAR_AGENTINPUTSTATE, SYSTEM_IS_PULL_HISTORY, SYSTEM_NEW_OFFICIAL_ACCOUNT_FOUND, SYSTEM_OFFICIAL_ACCOUNT_UPDATED, SYSTEM_VIDEO_TICKET_RECEIVED, SYSTEM_VIDEO_ARGO_END, SYSTEM_WHITE_BOARD_RECEIVED, WEBIM_CONNCTION_AUTH_ERROR, WEBIM_CONNCTION_CALLBACK_INNER_ERROR, SYSTEM_AGENT_INFO_UPDATE, SYSTEM_EVENT_MSG_TEXT, SYSTEM_VIDEO_ARGO_REJECT, SYSTEM_SESSION_TRANSFERED, SYSTEM_SESSION_TRANSFERING, SYSTEM_SESSION_CLOSED, SYSTEM_SESSION_OPENED,SESSION_STATE_PROCESSING,SYSTEM_SESSION_CREATED, SYSTEM_VIDEO_CALLBACK_TICKET } from '@/assets/constants/events'
+import { SYSTEM_OFFLINE, HEART_BEAT_INTERVAL, SYSTEM_CHAT_CLOSED, SYSTEM_CLEAR_AGENTSTATE, SYSTEM_CLEAR_AGENTINPUTSTATE, SYSTEM_IS_PULL_HISTORY, SYSTEM_NEW_OFFICIAL_ACCOUNT_FOUND, SYSTEM_OFFICIAL_ACCOUNT_UPDATED, SYSTEM_VIDEO_TICKET_RECEIVED, SYSTEM_VIDEO_ARGO_END, SYSTEM_WHITE_BOARD_RECEIVED, WEBIM_CONNCTION_AUTH_ERROR, WEBIM_CONNCTION_CALLBACK_INNER_ERROR, SYSTEM_AGENT_INFO_UPDATE, SYSTEM_EVENT_MSG_TEXT, SYSTEM_VIDEO_ARGO_REJECT, SYSTEM_SESSION_TRANSFERED, SYSTEM_SESSION_TRANSFERING, SYSTEM_SESSION_CLOSED, SYSTEM_SESSION_OPENED,SESSION_STATE_PROCESSING,SYSTEM_SESSION_CREATED, SYSTEM_VIDEO_CALLBACK_TICKET, SYSTEM_AGENT_CANCALCALLBACK } from '@/assets/constants/events'
 import queryString from 'query-string'
 
 var handleConfig = commonConfig.handleConfig;
@@ -131,6 +131,7 @@ function _handleMessage(msg, options){
 	var whiteBoardTicket = utils.getDataByPath(msg, "ext.msgtype.roomData");
 	var videoEndArgo = utils.getDataByPath(msg, "ext.msgtype.videoPlayback");
 	var customMagicEmoji = utils.getDataByPath(msg, "ext.msgtype.customMagicEmoji");
+	var agentCancelCallback = utils.getDataByPath(msg, 'ext.msgtype.agentCancelCallback')
 	var targetOfficialAccount;
 	var message;
 	msg.fileLength = msg.fileLength || msg.file_length || (msg.ext&& msg.ext.file_length) || "";
@@ -220,6 +221,9 @@ function _handleMessage(msg, options){
 	}
 	else if (msgAction === 'AgentRejectKefuRtcRingingCall') { // 客服拒接
 		type = 'agentRejectVideoTicket';
+	}
+	else if (agentCancelCallback) {
+		type = 'agentCancelCallback'
 	}
 	else if(
 		isReceived
@@ -318,6 +322,9 @@ function _handleMessage(msg, options){
 		message.data = (msg && msg.data) || "";
 		// message.brief = textParser.getTextMessageBrief(message.data,isReceived);
 		event.emit(SYSTEM_WHITE_BOARD_RECEIVED, whiteBoardTicket);
+		break;
+	case 'agentCancelCallback':
+		event.emit(SYSTEM_AGENT_CANCALCALLBACK, agentCancelCallback);
 		break;
 	default:
 		console.error("unexpected msg type");

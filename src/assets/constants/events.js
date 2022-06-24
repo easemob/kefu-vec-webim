@@ -46,5 +46,4 @@ export const SYSTEM_SESSION_TRANSFERING = "ServiceSessionTransferedToAgentQueueE
 export const SYSTEM_VIDEO_ARGO_REJECT = 'agent.reject.visitor_video' // 坐席拒接
 
 export const SESSION_STATE_PROCESSING = 'Processing'
-
-
+export const SYSTEM_AGENT_CANCALCALLBACK = 'agent_cancel_callback'
