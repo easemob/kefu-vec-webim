@@ -13,5 +13,10 @@ export default {
     upload_img: '上传图片',
     upload_video: '上传视频',
     upload_audio: '上传音频',
-    close_white: '退出白板'
+    close_white: '退出白板',
+    rate_five: '非常满意',
+    rate_four: '满意',
+    rate_three: '一般',
+    rate_two: '不满意',
+    rate_one: '非常不满意'
 }

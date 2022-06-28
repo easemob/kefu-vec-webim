@@ -13,5 +13,10 @@ export default {
     upload_img: 'Upload Img',
     upload_video: 'Upload Video',
     upload_audio: 'Upload Audio',
-    close_white: 'Quit'
+    close_white: 'Quit',
+    rate_five: 'Very Satisfied',
+    rate_four: 'Satisfy',
+    rate_three: 'Generally',
+    rate_two: 'Dissatisfied',
+    rate_one: 'Very Dissatisfied'
 }

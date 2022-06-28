@@ -1,0 +1,61 @@
+.enquiry-container {
+    height: 100%;
+    background-color: rgba(71, 71, 71, 1);
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    align-items: center;
+    .score-container {
+        // height: 50%;
+        width: calc(100% - 20px);
+        margin-bottom: 10px;
+        border-radius: 4px;
+        background-color: #fff;
+        box-sizing: border-box;
+        padding: 15px;
+        display: flex;
+        flex-direction: column;
+        .score-title {
+            font-size: 14px;
+            color: #555;
+            margin-bottom: 5px;
+            text-overflow: ellipsis;
+            overflow: hidden;
+            white-space: nowrap;
+        }
+        .score-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 10px;
+            .adm-rate-box {
+                margin: 0 8px;
+            }
+            .score-desc {
+                margin: 5px 0;
+                color: #ffd21e;
+            }
+            .score-tags {
+                .adm-tag {
+                    background-color: rgba(241, 241, 241, 1);
+                    color: #555;
+                    border: none;
+                    padding: 8px;
+                    font-size: 14px;
+                }
+            }
+        }
+        .adm-text-area {
+            background-color: rgba(241, 241, 241, 1);
+            padding: 5px;
+            margin-bottom: 20px;
+            textarea {
+                font-size: 14px;
+            }
+        }
+        .button {
+            text-align: right;
+            margin-top: auto;
+        }
+    }
+}

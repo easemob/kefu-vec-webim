@@ -22,6 +22,7 @@ import videoSvg from '@/assets/img/video.svg'
 import audioSvg from '@/assets/img/audio.svg'
 import VecModal from '@/components/Modal'
 import Upload from 'rc-upload'
+import Enquiry from './comps/Enquiry'
 
 import ws from '@/ws'
 
@@ -42,7 +43,7 @@ if (window.location.origin.indexOf('localhost') > -1 || window.location.origin.i
 }
 
 export default function Video() {
-    const [step, setStep] = useState(config.switch.skipWaitingPage ? 'wait' : 'start') // start: 发起和重新发起 wait等待接听中 current 视频中 off：挂断 invite:客服邀请
+    const [step, setStep] = useState(config.switch.skipWaitingPage ? 'wait' : 'enquiry') // start: 发起和重新发起 wait等待接听中 current 视频中 invite:客服邀请 enquiry: 评价
     const [desc, setDesc] = useState(intl.get('startVideo'))
     const [tip, setTip] = useState(config.style.waitingPrompt)
     const [sound, setSound] = useState(!config.switch.visitorCameraOff) // 开关声音
@@ -650,7 +651,7 @@ export default function Video() {
                     </VecModal>
                 </CurrentWrapper>
                 {/* 等待页面 */}
-                <WaitWrapper className={step !== 'current' ? '' : 'hide'}>
+                <WaitWrapper className={!['enquiry', 'current'].includes(step) ? '' : 'hide'}>
                     <WaitTitle>
                         <h2>{waitTitle}</h2>
                     </WaitTitle>
@@ -690,6 +691,7 @@ export default function Video() {
                         </WaitOpera>
                     )}
                 </WaitWrapper>
+                {step === 'enquiry' && <Enquiry />}
             </Wrapper>
             <DefaultConnect onClick={handleConnect} className={hideDefaultButton || top || show ? 'hide' : ''}>
                 <span className='icon-logo'>联系客服</span>
