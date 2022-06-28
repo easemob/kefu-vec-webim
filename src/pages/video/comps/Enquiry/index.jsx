@@ -50,6 +50,8 @@ export default function Enquiry(props) {
     		targetSystem: "kefurtc",
 			msgtype: {
 				visitorEnquiry: {
+					tenantId: props.tenantId,
+					rtcSessionId: props.rtcSessionId,
 					comment,
 					score,
 					tags: tags.map(item => ({id: item.id, tagName: item.tagName}))
@@ -60,7 +62,7 @@ export default function Enquiry(props) {
 		props.handleSendWs && props.handleSendWs(ext)
 		setVisibleMask(true)
 
-        // console.log(1111, e, comment, score, tags)
+        // console.log(1111, e, comment, score, tags, ext)
     }
 
     const handleTag = tag => {
@@ -85,6 +87,9 @@ export default function Enquiry(props) {
     props.enquiryOptions.forEach(item => options[item.optionName] = item.optionValue)
 
     return <div className="enquiry-container">
+		<div className="score-top">
+			<span>通话已结束</span>
+		</div>
 		<div className="score-wrapper">
 			<div className="score-container">
 				{options.EnquiryInviteMsg && <span title={options.EnquiryInviteMsg} className="score-title">{options.EnquiryInviteMsg}</span>}
