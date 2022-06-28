@@ -1,154 +1,154 @@
-import React, {useState, useEffect} from "react";
-import { Rate, Tag, TextArea, Button, Space } from 'antd-mobile'
+import React, {useState} from "react";
+import { Rate, Tag, TextArea, Button, Space, Toast } from 'antd-mobile'
 import intl from 'react-intl-universal'
 import './index.scss'
 
-var props = {
-    "enquiryTags": {
-      "2": [
-        {
-          "id": 6,
-          "tenantId": 29676,
-          "score": 2,
-          "tagName": "最多是诗歌汉字啊几十",
-          "createDateTime": "2022-06-15 10:37:30",
-          "updateDateTime": "2022-06-15 10:37:30"
-        }
-      ],
-      "3": [
-        {
-          "id": 3,
-          "tenantId": 29676,
-          "score": 3,
-          "tagName": "最多是诗歌汉字啊几十",
-          "createDateTime": "2022-06-15 10:27:09",
-          "updateDateTime": "2022-06-15 10:27:09"
-        },
-        {
-          "id": 4,
-          "tenantId": 29676,
-          "score": 3,
-          "tagName": "最多是诗歌汉字啊几十",
-          "createDateTime": "2022-06-15 10:27:20",
-          "updateDateTime": "2022-06-15 10:27:20"
-        },
-        {
-            "id": 5,
-            "tenantId": 29676,
-            "score": 3,
-            "tagName": "最多是诗歌汉字啊几十",
-            "createDateTime": "2022-06-15 10:27:20",
-            "updateDateTime": "2022-06-15 10:27:20"
-        },
-        {
-            "id": 7,
-            "tenantId": 29676,
-            "score": 3,
-            "tagName": "最多是诗歌汉字啊几十",
-            "createDateTime": "2022-06-15 10:27:20",
-            "updateDateTime": "2022-06-15 10:27:20"
-        },
-        {
-            "id": 8,
-            "tenantId": 29676,
-            "score": 3,
-            "tagName": "最多是诗歌汉字啊几十",
-            "createDateTime": "2022-06-15 10:27:20",
-            "updateDateTime": "2022-06-15 10:27:20"
-        },
-        {
-            "id": 9,
-            "tenantId": 29676,
-            "score": 3,
-            "tagName": "最多是诗歌汉字啊几十",
-            "createDateTime": "2022-06-15 10:27:20",
-            "updateDateTime": "2022-06-15 10:27:20"
-        },
-      ]
-    },
-    "enquiryOptions": [
-      {
-        "optionId": 3,
-        "tenantId": 29676,
-        "optionName": "EnquiryCommentEnable",
-        "optionValue": "true",
-        "createDateTime": "2022-06-15 02:07:43",
-        "lastUpdateDateTime": "2022-06-15 02:07:43"
-      },
-      {
-        "optionId": 4,
-        "tenantId": 29676,
-        "optionName": "EnquiryDefaultShow5Score",
-        "optionValue": "true",
-        "createDateTime": "2022-06-15 02:07:43",
-        "lastUpdateDateTime": "2022-06-15 02:07:43"
-      },
-      {
-        "optionId": 5,
-        "tenantId": 29676,
-        "optionName": "EnquiryInviteMsg",
-        "optionValue": "请您对我们的服务进行评价：",
-        "createDateTime": "2022-06-15 02:07:43",
-        "lastUpdateDateTime": "2022-06-15 02:07:43"
-      },
-      {
-        "optionId": 6,
-        "tenantId": 29676,
-        "optionName": "EnquirySolveMsg",
-        "optionValue": "感谢您的评价！",
-        "createDateTime": "2022-06-15 02:07:43",
-        "lastUpdateDateTime": "2022-06-15 02:07:43"
-      },
-      {
-        "optionId": 9,
-        "tenantId": 29676,
-        "optionName": "EnquiryTagsFor3Score",
-        "optionValue": "false",
-        "createDateTime": "2022-06-15 02:07:43",
-        "lastUpdateDateTime": "2022-06-15 02:07:43"
-      },
-      {
-        "optionId": 10,
-        "tenantId": 29676,
-        "optionName": "EnquiryCommentFor3Score",
-        "optionValue": "true",
-        "createDateTime": "2022-06-15 02:07:43",
-        "lastUpdateDateTime": "2022-06-15 02:07:43"
-      },
-      {
-        "optionId": 11,
-        "tenantId": 29676,
-        "optionName": "EnquiryTagsFor2Score",
-        "optionValue": "false",
-        "createDateTime": "2022-06-15 02:07:43",
-        "lastUpdateDateTime": "2022-06-15 02:07:43"
-      },
-      {
-        "optionId": 12,
-        "tenantId": 29676,
-        "optionName": "EnquiryCommentFor2Score",
-        "optionValue": "true",
-        "createDateTime": "2022-06-15 02:07:43",
-        "lastUpdateDateTime": "2022-06-15 02:07:43"
-      },
-      {
-        "optionId": 13,
-        "tenantId": 29676,
-        "optionName": "EnquiryTagsFor1Score",
-        "optionValue": "false",
-        "createDateTime": "2022-06-15 02:07:43",
-        "lastUpdateDateTime": "2022-06-15 02:07:43"
-      },
-      {
-        "optionId": 14,
-        "tenantId": 29676,
-        "optionName": "EnquiryCommentFor1Score",
-        "optionValue": "true",
-        "createDateTime": "2022-06-15 02:07:43",
-        "lastUpdateDateTime": "2022-06-15 02:07:43"
-      }
-    ]
-}
+// var props = {
+//     "enquiryTags": {
+//       "2": [
+//         {
+//           "id": 6,
+//           "tenantId": 29676,
+//           "score": 2,
+//           "tagName": "最多是诗歌汉字啊几十",
+//           "createDateTime": "2022-06-15 10:37:30",
+//           "updateDateTime": "2022-06-15 10:37:30"
+//         }
+//       ],
+//       "3": [
+//         {
+//           "id": 3,
+//           "tenantId": 29676,
+//           "score": 3,
+//           "tagName": "最多是诗歌汉字啊几十",
+//           "createDateTime": "2022-06-15 10:27:09",
+//           "updateDateTime": "2022-06-15 10:27:09"
+//         },
+//         {
+//           "id": 4,
+//           "tenantId": 29676,
+//           "score": 3,
+//           "tagName": "最多是诗歌汉字啊几十",
+//           "createDateTime": "2022-06-15 10:27:20",
+//           "updateDateTime": "2022-06-15 10:27:20"
+//         },
+//         {
+//             "id": 5,
+//             "tenantId": 29676,
+//             "score": 3,
+//             "tagName": "最多是诗歌汉字啊几十",
+//             "createDateTime": "2022-06-15 10:27:20",
+//             "updateDateTime": "2022-06-15 10:27:20"
+//         },
+//         {
+//             "id": 7,
+//             "tenantId": 29676,
+//             "score": 3,
+//             "tagName": "最多是诗歌汉字啊几十",
+//             "createDateTime": "2022-06-15 10:27:20",
+//             "updateDateTime": "2022-06-15 10:27:20"
+//         },
+//         {
+//             "id": 8,
+//             "tenantId": 29676,
+//             "score": 3,
+//             "tagName": "最多是诗歌汉字啊几十",
+//             "createDateTime": "2022-06-15 10:27:20",
+//             "updateDateTime": "2022-06-15 10:27:20"
+//         },
+//         {
+//             "id": 9,
+//             "tenantId": 29676,
+//             "score": 3,
+//             "tagName": "最多是诗歌汉字啊几十",
+//             "createDateTime": "2022-06-15 10:27:20",
+//             "updateDateTime": "2022-06-15 10:27:20"
+//         },
+//       ]
+//     },
+//     "enquiryOptions": [
+//       {
+//         "optionId": 3,
+//         "tenantId": 29676,
+//         "optionName": "EnquiryCommentEnable",
+//         "optionValue": "true",
+//         "createDateTime": "2022-06-15 02:07:43",
+//         "lastUpdateDateTime": "2022-06-15 02:07:43"
+//       },
+//       {
+//         "optionId": 4,
+//         "tenantId": 29676,
+//         "optionName": "EnquiryDefaultShow5Score",
+//         "optionValue": "true",
+//         "createDateTime": "2022-06-15 02:07:43",
+//         "lastUpdateDateTime": "2022-06-15 02:07:43"
+//       },
+//       {
+//         "optionId": 5,
+//         "tenantId": 29676,
+//         "optionName": "EnquiryInviteMsg",
+//         "optionValue": "请您对我们的服务进行评价：",
+//         "createDateTime": "2022-06-15 02:07:43",
+//         "lastUpdateDateTime": "2022-06-15 02:07:43"
+//       },
+//       {
+//         "optionId": 6,
+//         "tenantId": 29676,
+//         "optionName": "EnquirySolveMsg",
+//         "optionValue": "感谢您的评价！",
+//         "createDateTime": "2022-06-15 02:07:43",
+//         "lastUpdateDateTime": "2022-06-15 02:07:43"
+//       },
+//       {
+//         "optionId": 9,
+//         "tenantId": 29676,
+//         "optionName": "EnquiryTagsFor3Score",
+//         "optionValue": "false",
+//         "createDateTime": "2022-06-15 02:07:43",
+//         "lastUpdateDateTime": "2022-06-15 02:07:43"
+//       },
+//       {
+//         "optionId": 10,
+//         "tenantId": 29676,
+//         "optionName": "EnquiryCommentFor3Score",
+//         "optionValue": "true",
+//         "createDateTime": "2022-06-15 02:07:43",
+//         "lastUpdateDateTime": "2022-06-15 02:07:43"
+//       },
+//       {
+//         "optionId": 11,
+//         "tenantId": 29676,
+//         "optionName": "EnquiryTagsFor2Score",
+//         "optionValue": "false",
+//         "createDateTime": "2022-06-15 02:07:43",
+//         "lastUpdateDateTime": "2022-06-15 02:07:43"
+//       },
+//       {
+//         "optionId": 12,
+//         "tenantId": 29676,
+//         "optionName": "EnquiryCommentFor2Score",
+//         "optionValue": "true",
+//         "createDateTime": "2022-06-15 02:07:43",
+//         "lastUpdateDateTime": "2022-06-15 02:07:43"
+//       },
+//       {
+//         "optionId": 13,
+//         "tenantId": 29676,
+//         "optionName": "EnquiryTagsFor1Score",
+//         "optionValue": "false",
+//         "createDateTime": "2022-06-15 02:07:43",
+//         "lastUpdateDateTime": "2022-06-15 02:07:43"
+//       },
+//       {
+//         "optionId": 14,
+//         "tenantId": 29676,
+//         "optionName": "EnquiryCommentFor1Score",
+//         "optionValue": "true",
+//         "createDateTime": "2022-06-15 02:07:43",
+//         "lastUpdateDateTime": "2022-06-15 02:07:43"
+//       }
+//     ]
+// }
 
 export default function Enquiry() {
     const [comment, setComment] = useState('')
@@ -165,6 +165,68 @@ export default function Enquiry() {
     }
 
     const handleSend = e => {
+        if (3 >= score) {
+            switch(score) {
+                case 3:
+                    if (options.EnquiryCommentEnable && options.EnquiryCommentFor3Score) {
+                        Toast.show({
+                            content: '建议必须填写',
+                            position: 'top',
+                        })
+                    }
+					if (options.EnquiryTagsFor3Score) {
+						Toast.show({
+                            content: '标签必须选择',
+                            position: 'top',
+                        })
+					}
+					break;
+				case 2:
+					if (options.EnquiryCommentEnable && options.EnquiryCommentFor2Score) {
+                        Toast.show({
+                            content: '建议必须填写',
+                            position: 'top',
+                        })
+                    }
+					if (options.EnquiryTagsFor2Score) {
+						Toast.show({
+                            content: '标签必须选择',
+                            position: 'top',
+                        })
+					}
+					break;
+				case 1:
+					if (options.EnquiryCommentEnable && options.EnquiryCommentFor1Score) {
+						Toast.show({
+							content: '建议必须填写',
+							position: 'top',
+						})
+					}
+					if (options.EnquiryTagsFor1Score) {
+						Toast.show({
+							content: '标签必须选择',
+							position: 'top',
+						})
+					}
+					break;
+				default:
+					break;
+            }
+        }
+
+		// 组装ws消息
+		var ext = {
+			type: "agorartcmedia/video",
+    		targetSystem: "kefurtc",
+			msgtype: {
+				visitorEnquiry: {
+					comment,
+					score,
+					tags: tags.map(item => ({id: item.id, tagName: item.tagName}))
+				}
+			}
+		}
+
         console.log(1111, e, comment, score, tags)
     }
 
