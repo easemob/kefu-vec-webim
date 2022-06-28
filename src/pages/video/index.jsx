@@ -1,21 +1,27 @@
 import React, { useState, useCallback, useEffect, useRef } from 'react'
-import { Wrapper, WaitWrapper, WaitTitle, WaitAgent, WaitAgentLogo, WaitAgentDesc, WaitTip, WaitOpera, CurrentWrapper, CurrentTitle, CurrentFooter, CurrentBodySelf, CurrentBodyMicro, CurrentBodyMore, TopVideoBox, CurrentVideo, InviteOpera, DefaultConnect } from './style'
+import { Wrapper, WaitWrapper, WaitTitle, WaitAgent, WaitAgentLogo, WaitAgentDesc, WaitTip, WaitOpera, CurrentWrapper, CurrentTitle, CurrentFooter, CurrentBodySelf, CurrentBodyMicro, CurrentBodyMore, TopVideoBox, CurrentVideo, InviteOpera, DefaultConnect, RoomWhite, RoomControllerBox, RoomControllerMidBox, PagePreviewCell } from './style'
 import TimeControl from './comps/TimeControl'
 import videoChatAgora from '@/tools/hxVideo'
 import logo from '@/assets/img/qiye.png'
 import commonConfig from '@/common/config'
 import event from '@/tools/event'
 import { visitorClose, getOfficalAccounts } from '@/assets/http/user'
-import { SYSTEM_VIDEO_TICKET_RECEIVED, SYSTEM_VIDEO_ARGO_END, SYSTEM_VIDEO_ARGO_REJECT, SYSTEM_VIDEO_CALLBACK_TICKET, SYSTEM_WHITE_BOARD_RECEIVED, SYSTEM_AGENT_CANCALCALLBACK, SYSTEM_ENQUIRY_INVITE, SYSTEM_RTCSESSION_INFO } from '@/assets/constants/events'
+import { SYSTEM_VIDEO_TICKET_RECEIVED, SYSTEM_VIDEO_ARGO_END, SYSTEM_VIDEO_ARGO_REJECT, SYSTEM_VIDEO_CALLBACK_TICKET, SYSTEM_WHITE_BOARD_RECEIVED, SYSTEM_AGENT_CANCALCALLBACK } from '@/assets/constants/events'
 // import profile from '@/tools/profile'
 import MediaPlayer from './comps/MediaPlayer/MediaPlayer'
 import getToHost from '@/common/transfer'
 import intl from 'react-intl-universal'
 import utils from '@/tools/utils'
 import queryString from 'query-string'
+import { useFastboard, Fastboard } from "@netless/fastboard-react"
+import { createPortal } from 'react-dom'
 import WhiteboardPlayer from './comps/WhiteboardPlayer'
-import Enquiry from './comps/Enquiry'
-import WhiteBoard from './comps/Whiteboard'
+import exitSvg from '@/assets/img/exit.svg'
+import imageSvg from '@/assets/img/image.svg'
+import videoSvg from '@/assets/img/video.svg'
+import audioSvg from '@/assets/img/audio.svg'
+import VecModal from '@/components/Modal'
+import Upload from 'rc-upload'
 
 import ws from '@/ws'
 
@@ -54,18 +60,15 @@ export default function Video() {
     const [ticketInfo, setTicketIfo] = useState(null)
     const [idNameMap, setIdNameMap] = useState({})
     const [agents, setAgents] = useState({})
-    const [sessionInfo, setSessionInfo] = useState({})
+    const [ssid, setSsid] = useState('')
     const [timer, setTimer] = useState(null)
     const [show, setShow] = useState(top ? true : false)
     const [hideDefaultButton, setHideDefaultButton] = useState(hideDefault)
     const [whiteboardUser, setWhiteboardUser] = useState(null);
     const [whiteboardVisible, setWhiteboardVisible] = useState(false);
     const [whiteboardRoomInfo, setWhiteboardRoomInfo] = useState(null);
+    const [isModalVisible, setIsModalVisible] = useState(false);
     let [ callingScreenSwitch, setCallingScreenSwitch ] = useState(false);
-    const [enquiryTimer, setEnquiryTimer] = useState(null) // 评价
-    const [enquiryData, setEnquiryData] = useState({})
-    const [waitTimer, setWaitTimer] = useState(null) // 排队
-    const [waitTimerFlag, setWaitTimerFlag] = useState('true')
 
     const videoRef = useRef();
     const stepRef = useRef()
@@ -113,6 +116,7 @@ export default function Video() {
             }
             // callId 拒绝视频邀请要用
             setCallId(ticketInfo.callId)
+            setSsid(ticketInfo.ssid)
 
             serviceAgora = new videoChatAgora({
                 onErrorNotify,
@@ -194,7 +198,7 @@ export default function Video() {
                 },
             })
         } else if (step === 'current') {
-            visitorClose(sessionInfo.rtcSessionId)
+            visitorClose(ssid)
         }
 
         setStep('start')
@@ -205,7 +209,7 @@ export default function Video() {
         setTicketIfo(null)
         setSound(!config.switch.visitorCameraOff)
         setFace(!config.switch.visitorCameraOff)
-        setSessionInfo({})
+        setSsid('')
         /* 重置白板信息 */
         setWhiteboardUser(null);
         setWhiteboardRoomInfo(null);
@@ -410,44 +414,6 @@ export default function Video() {
             })
         }
     }, 1000);
-
-    // 评价
-    const reciveEnquiry = enquiry => {
-        setEnquiryData(enquiry)
-        setStep('enquiry')
-    }
-
-    const handleEnquiry = () => {
-        setEnquiryTimer(setTimeout(() => {
-            setStep('start')
-            setDesc(intl.get('reStartVideo'))
-        }, 3000))
-    }
-
-    // 会话信息&&排队
-    const receiveRtcSession = sInfo => {
-        setSessionInfo(sInfo)
-        // callType  视频类型，呼入: 0，呼出: 1, 只有呼入才会调用查询排队人数接口
-        if (sInfo.callType === 0) {
-            setWaitTimer(setInterval(() => {
-                getWaitData(sInfo.tenantId, sInfo.rtcSessionId)
-            }, 3000))
-        }
-    }
-
-    const getWaitData = (tenantId, ssid) => {
-        visitorWaiting(tenantId, ssid).then(({entity: {waitingFlag, visitorWaitingNumber}}) => {
-            setTip(visitorWaitingNumber)
-            setWaitTimerFlag(waitingFlag)
-        })
-    }
-
-    useEffect(() => {
-        if (waitTimerFlag !== 'true') {
-            clearInterval(waitTimer)
-            setWaitTimerFlag('true')
-        }
-    }, [waitTimerFlag, waitTimer])
 
     useEffect(() => {
         if (!serviceAgora?.localScreenTrack) return;
