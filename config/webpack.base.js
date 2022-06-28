@@ -33,7 +33,7 @@ module.exports = {
       },
       {
         test: /\.(le|c)ss$/,
-        exclude: /node_modules/,
+        // exclude: /node_modules/,
         use: [
           'style-loader',
           // MiniCssExtractPlugin.loader,
