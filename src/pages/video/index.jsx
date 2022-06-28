@@ -54,7 +54,6 @@ export default function Video() {
     const [ticketInfo, setTicketIfo] = useState(null)
     const [idNameMap, setIdNameMap] = useState({})
     const [agents, setAgents] = useState({})
-    // const [ssid, setSsid] = useState('')
     const [sessionInfo, setSessionInfo] = useState({})
     const [timer, setTimer] = useState(null)
     const [show, setShow] = useState(top ? true : false)
@@ -66,6 +65,7 @@ export default function Video() {
     const [enquiryTimer, setEnquiryTimer] = useState(null) // 评价
     const [enquiryData, setEnquiryData] = useState({})
     const [waitTimer, setWaitTimer] = useState(null) // 排队
+    const [waitTimerFlag, setWaitTimerFlag] = useState('true')
 
     const videoRef = useRef();
     const stepRef = useRef()
@@ -113,7 +113,6 @@ export default function Video() {
             }
             // callId 拒绝视频邀请要用
             setCallId(ticketInfo.callId)
-            // setSsid(ticketInfo.ssid)
 
             serviceAgora = new videoChatAgora({
                 onErrorNotify,
@@ -195,7 +194,6 @@ export default function Video() {
                 },
             })
         } else if (step === 'current') {
-            // visitorClose(ssid)
             visitorClose(sessionInfo.rtcSessionId)
         }
 
@@ -208,7 +206,6 @@ export default function Video() {
         setSound(!config.switch.visitorCameraOff)
         setFace(!config.switch.visitorCameraOff)
         setSessionInfo({})
-        // setSsid('')
         /* 重置白板信息 */
         setWhiteboardUser(null);
         setWhiteboardRoomInfo(null);
@@ -427,20 +424,25 @@ export default function Video() {
         setSessionInfo(sInfo)
         // callType  视频类型，呼入: 0，呼出: 1, 只有呼入才会调用查询排队人数接口
         if (sInfo.callType === 0) {
-            setWaitTimer(() => {
+            setWaitTimer(setInterval(() => {
                 getWaitData(sInfo.tenantId, sInfo.rtcSessionId)
-            }, 3000)
+            }, 3000))
         }
     }
 
-    const getWaitData = async (tenantId, ssid) => {
-        const {waitingFlag, visitorWaitingNumber} = await visitorWaiting(tenantId, ssid)
+    const getWaitData = (tenantId, ssid) => {
+        visitorWaiting(tenantId, ssid).then(({entity: {waitingFlag, visitorWaitingNumber}}) => {
+            setTip(visitorWaitingNumber)
+            setWaitTimerFlag(waitingFlag)
+        })
+    }
 
-        setTip(visitorWaitingNumber)
-        if (waitingFlag !== 'true') {
+    useEffect(() => {
+        if (waitTimerFlag !== 'true') {
             clearInterval(waitTimer)
+            setWaitTimerFlag('true')
         }
-    }
+    }, [waitTimerFlag, waitTimer])
 
     useEffect(() => {
         if (!serviceAgora?.localScreenTrack) return;
