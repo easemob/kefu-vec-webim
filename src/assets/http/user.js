@@ -153,3 +153,18 @@ export function grayScaleList(tenantId) {
 }
 
 // 访客排队
+export function visitorWaiting(tenantId, rtcSessionId) {
+	return request({
+		url: `/v1/kefurtc/tenant/${tenantId}/webim/session/${rtcSessionId}/waiting`,
+		method: 'get'
+	})
+}
+
+// 访客评价
+export function visitorEnquiry(tenantId, data) {
+	return request({
+		url: `/v1/kefurtc/tenant/${tenantId}/enquiry/visitor/submit`,
+		method: 'post',
+		data
+	})
+}

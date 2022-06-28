@@ -14,6 +14,7 @@ export default {
     upload_video: 'Upload Video',
     upload_audio: 'Upload Audio',
     close_white: 'Quit',
+    close_white_tips: 'Are you sure to close the interactive whiteboard?',
     rate_five: 'Very Satisfied',
     rate_four: 'Satisfy',
     rate_three: 'Generally',
@@ -22,5 +23,7 @@ export default {
     rate_comment_nessary: 'Need Suggest',
     rate_tags_nessary: 'Need Tags',
     rate_comment_placeholder: 'Please leave your valuable suggestions',
-    rate_button: 'Submit'
+    rate_button: 'Submit',
+    facevideo_end: 'Video call end',
+    contact_agent: 'Contact'
 }

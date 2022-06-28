@@ -1,5 +1,6 @@
 import React, {useState} from "react";
 import { Rate, Tag, TextArea, Button, Space, Toast } from 'antd-mobile'
+import {visitorEnquiry} from '@/assets/http/user'
 import intl from 'react-intl-universal'
 import './index.scss'
 
@@ -44,25 +45,18 @@ export default function Enquiry(props) {
 			}
 		}
 
-		// 组装ws消息
-		var ext = {
-			type: "agorartcmedia/video",
-    		targetSystem: "kefurtc",
-			msgtype: {
-				visitorEnquiry: {
-					tenantId: props.tenantId,
-					rtcSessionId: props.rtcSessionId,
-					comment,
-					score,
-					tags: tags.map(item => ({id: item.id, tagName: item.tagName}))
-				}
+		visitorEnquiry(props.tenantId, {
+			rtcSessionId: props.rtcSessionId,
+			visitorUserId: props.visitorUserId,
+			score,
+			comment,
+			tagData: tags.map(item => ({id: item.id, tagName: item.tagName}))
+		}).then(({status}) => {
+			if (status === 'OK') {
+				props.handleSendWs && props.handleSendWs() // 改为接口，这里是修改状态
+				setVisibleMask(true)
 			}
-		}
-
-		props.handleSendWs && props.handleSendWs(ext)
-		setVisibleMask(true)
-
-        // console.log(1111, e, comment, score, tags, ext)
+		})
     }
 
     const handleTag = tag => {
@@ -88,7 +82,7 @@ export default function Enquiry(props) {
 
     return <div className="enquiry-container">
 		<div className="score-top">
-			<span>通话已结束</span>
+			<span>{intl.get('facevideo_end')}</span>
 		</div>
 		<div className="score-wrapper">
 			<div className="score-container">

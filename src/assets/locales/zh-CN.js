@@ -14,6 +14,7 @@ export default {
     upload_video: '上传视频',
     upload_audio: '上传音频',
     close_white: '退出白板',
+    close_white_tips: '确认关闭互动白板吗？',
     rate_five: '非常满意',
     rate_four: '满意',
     rate_three: '一般',
@@ -22,5 +23,7 @@ export default {
     rate_comment_nessary: '建议必须填写',
     rate_tags_nessary: '标签必须选择',
     rate_comment_placeholder: '请留下您宝贵的建议',
-    rate_button: '提交评价'
+    rate_button: '提交评价',
+    facevideo_end: '视频通话结束',
+    contact_agent: '联系客服'
 }
