@@ -151,3 +151,5 @@ export function grayScaleList(tenantId) {
 		method: 'get'
 	})
 }
+
+// 访客排队

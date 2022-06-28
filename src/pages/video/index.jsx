@@ -6,7 +6,7 @@ import logo from '@/assets/img/qiye.png'
 import commonConfig from '@/common/config'
 import event from '@/tools/event'
 import { visitorClose, getOfficalAccounts } from '@/assets/http/user'
-import { SYSTEM_VIDEO_TICKET_RECEIVED, SYSTEM_VIDEO_ARGO_END, SYSTEM_VIDEO_ARGO_REJECT, SYSTEM_VIDEO_CALLBACK_TICKET, SYSTEM_WHITE_BOARD_RECEIVED, SYSTEM_AGENT_CANCALCALLBACK } from '@/assets/constants/events'
+import { SYSTEM_VIDEO_TICKET_RECEIVED, SYSTEM_VIDEO_ARGO_END, SYSTEM_VIDEO_ARGO_REJECT, SYSTEM_VIDEO_CALLBACK_TICKET, SYSTEM_WHITE_BOARD_RECEIVED, SYSTEM_AGENT_CANCALCALLBACK, SYSTEM_ENQUIRY_INVITE } from '@/assets/constants/events'
 // import profile from '@/tools/profile'
 import MediaPlayer from './comps/MediaPlayer/MediaPlayer'
 import getToHost from '@/common/transfer'
@@ -43,7 +43,7 @@ if (window.location.origin.indexOf('localhost') > -1 || window.location.origin.i
 }
 
 export default function Video() {
-    const [step, setStep] = useState(config.switch.skipWaitingPage ? 'wait' : 'enquiry') // start: 发起和重新发起 wait等待接听中 current 视频中 invite:客服邀请 enquiry: 评价
+    const [step, setStep] = useState(config.switch.skipWaitingPage ? 'wait' : 'start') // start: 发起和重新发起 wait等待接听中 current 视频中 invite:客服邀请 enquiry: 评价
     const [desc, setDesc] = useState(intl.get('startVideo'))
     const [tip, setTip] = useState(config.style.waitingPrompt)
     const [sound, setSound] = useState(!config.switch.visitorCameraOff) // 开关声音
@@ -70,6 +70,8 @@ export default function Video() {
     const [whiteboardRoomInfo, setWhiteboardRoomInfo] = useState(null);
     const [isModalVisible, setIsModalVisible] = useState(false);
     let [ callingScreenSwitch, setCallingScreenSwitch ] = useState(false);
+    const [enquiryTimer, setEnquiryTimer] = useState(null) // 评价
+    const [enquiryData, setEnquiryData] = useState({})
 
     const videoRef = useRef();
     const stepRef = useRef()
@@ -416,6 +418,20 @@ export default function Video() {
         }
     }, 1000);
 
+    // 评价
+    const reciveEnquiry = enquiry => {
+        setEnquiryData(enquiry)
+        setStep('enquiry')
+    }
+
+    const handleEnquiry = ext => {
+        ws.cancelVideo(null, {ext})
+        setEnquiryTimer(setTimeout(() => {
+            setStep('start')
+            setDesc(intl.get('reStartVideo'))
+        }, 3000))
+    }
+
     useEffect(() => {
         if (!serviceAgora?.localScreenTrack) return;
 
@@ -483,6 +499,7 @@ export default function Video() {
         event.on(SYSTEM_VIDEO_CALLBACK_TICKET, agentCallback) // 坐席回呼
         event.on(SYSTEM_WHITE_BOARD_RECEIVED, receiveWhiteBoard) // 白板
         event.on(SYSTEM_AGENT_CANCALCALLBACK, handleClose)
+        event.on(SYSTEM_ENQUIRY_INVITE, reciveEnquiry) // 邀请评价
 
         return () => {
             event.off(SYSTEM_VIDEO_TICKET_RECEIVED, recived) // 监听接受
@@ -491,6 +508,7 @@ export default function Video() {
             event.off(SYSTEM_VIDEO_CALLBACK_TICKET, agentCallback)
             event.off(SYSTEM_WHITE_BOARD_RECEIVED, receiveWhiteBoard) // 白板
             event.off(SYSTEM_AGENT_CANCALCALLBACK, handleClose)
+            event.off(SYSTEM_ENQUIRY_INVITE, reciveEnquiry) // 邀请评价
         }
     }, [step])
 
@@ -502,6 +520,7 @@ export default function Video() {
 
         return () => {
             clearTimeout(timer)
+            clearTimeout(enquiryTimer)
         }
     }, [])
 
@@ -691,7 +710,7 @@ export default function Video() {
                         </WaitOpera>
                     )}
                 </WaitWrapper>
-                {step === 'enquiry' && <Enquiry />}
+                {step === 'enquiry' && <Enquiry handleSendWs={handleEnquiry} {...enquiryData} />}
             </Wrapper>
             <DefaultConnect onClick={handleConnect} className={hideDefaultButton || top || show ? 'hide' : ''}>
                 <span className='icon-logo'>联系客服</span>

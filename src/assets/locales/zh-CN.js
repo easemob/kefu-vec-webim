@@ -18,5 +18,9 @@ export default {
     rate_four: '满意',
     rate_three: '一般',
     rate_two: '不满意',
-    rate_one: '非常不满意'
+    rate_one: '非常不满意',
+    rate_comment_nessary: '建议必须填写',
+    rate_tags_nessary: '标签必须选择',
+    rate_comment_placeholder: '请留下您宝贵的建议',
+    rate_button: '提交评价'
 }

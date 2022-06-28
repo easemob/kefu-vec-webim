@@ -18,5 +18,9 @@ export default {
     rate_four: 'Satisfy',
     rate_three: 'Generally',
     rate_two: 'Dissatisfied',
-    rate_one: 'Very Dissatisfied'
+    rate_one: 'Very Dissatisfied',
+    rate_comment_nessary: 'Need Suggest',
+    rate_tags_nessary: 'Need Tags',
+    rate_comment_placeholder: 'Please leave your valuable suggestions',
+    rate_button: 'Submit'
 }
