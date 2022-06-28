@@ -48,3 +48,5 @@ export const SYSTEM_VIDEO_ARGO_REJECT = 'agent.reject.visitor_video' // 坐席�
 export const SESSION_STATE_PROCESSING = 'Processing'
 export const SYSTEM_AGENT_CANCALCALLBACK = 'agent_cancel_callback'
 export const SYSTEM_ENQUIRY_INVITE = 'enquiry_invite'
+export const SYSTEM_RTCSESSION_INFO = 'rtcSession_info'
+

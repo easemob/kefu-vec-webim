@@ -1,28 +1,21 @@
 import React, { useState, useCallback, useEffect, useRef } from 'react'
-import { Wrapper, WaitWrapper, WaitTitle, WaitAgent, WaitAgentLogo, WaitAgentDesc, WaitTip, WaitOpera, CurrentWrapper, CurrentTitle, CurrentFooter, CurrentBodySelf, CurrentBodyMicro, CurrentBodyMore, TopVideoBox, CurrentVideo, InviteOpera, DefaultConnect, RoomWhite, RoomControllerBox, RoomControllerMidBox, PagePreviewCell } from './style'
+import { Wrapper, WaitWrapper, WaitTitle, WaitAgent, WaitAgentLogo, WaitAgentDesc, WaitTip, WaitOpera, CurrentWrapper, CurrentTitle, CurrentFooter, CurrentBodySelf, CurrentBodyMicro, CurrentBodyMore, TopVideoBox, CurrentVideo, InviteOpera, DefaultConnect } from './style'
 import TimeControl from './comps/TimeControl'
 import videoChatAgora from '@/tools/hxVideo'
 import logo from '@/assets/img/qiye.png'
 import commonConfig from '@/common/config'
 import event from '@/tools/event'
-import { visitorClose, getOfficalAccounts } from '@/assets/http/user'
-import { SYSTEM_VIDEO_TICKET_RECEIVED, SYSTEM_VIDEO_ARGO_END, SYSTEM_VIDEO_ARGO_REJECT, SYSTEM_VIDEO_CALLBACK_TICKET, SYSTEM_WHITE_BOARD_RECEIVED, SYSTEM_AGENT_CANCALCALLBACK, SYSTEM_ENQUIRY_INVITE } from '@/assets/constants/events'
+import { visitorClose, getOfficalAccounts, visitorWaiting } from '@/assets/http/user'
+import { SYSTEM_VIDEO_TICKET_RECEIVED, SYSTEM_VIDEO_ARGO_END, SYSTEM_VIDEO_ARGO_REJECT, SYSTEM_VIDEO_CALLBACK_TICKET, SYSTEM_WHITE_BOARD_RECEIVED, SYSTEM_AGENT_CANCALCALLBACK, SYSTEM_ENQUIRY_INVITE, SYSTEM_RTCSESSION_INFO } from '@/assets/constants/events'
 // import profile from '@/tools/profile'
 import MediaPlayer from './comps/MediaPlayer/MediaPlayer'
 import getToHost from '@/common/transfer'
 import intl from 'react-intl-universal'
 import utils from '@/tools/utils'
 import queryString from 'query-string'
-import { useFastboard, Fastboard } from "@netless/fastboard-react"
-import { createPortal } from 'react-dom'
 import WhiteboardPlayer from './comps/WhiteboardPlayer'
-import exitSvg from '@/assets/img/exit.svg'
-import imageSvg from '@/assets/img/image.svg'
-import videoSvg from '@/assets/img/video.svg'
-import audioSvg from '@/assets/img/audio.svg'
-import VecModal from '@/components/Modal'
-import Upload from 'rc-upload'
 import Enquiry from './comps/Enquiry'
+import WhiteBoard from './comps/Whiteboard'
 
 import ws from '@/ws'
 
@@ -61,17 +54,18 @@ export default function Video() {
     const [ticketInfo, setTicketIfo] = useState(null)
     const [idNameMap, setIdNameMap] = useState({})
     const [agents, setAgents] = useState({})
-    const [ssid, setSsid] = useState('')
+    // const [ssid, setSsid] = useState('')
+    const [sessionInfo, setSessionInfo] = useState({})
     const [timer, setTimer] = useState(null)
     const [show, setShow] = useState(top ? true : false)
     const [hideDefaultButton, setHideDefaultButton] = useState(hideDefault)
     const [whiteboardUser, setWhiteboardUser] = useState(null);
     const [whiteboardVisible, setWhiteboardVisible] = useState(false);
     const [whiteboardRoomInfo, setWhiteboardRoomInfo] = useState(null);
-    const [isModalVisible, setIsModalVisible] = useState(false);
     let [ callingScreenSwitch, setCallingScreenSwitch ] = useState(false);
     const [enquiryTimer, setEnquiryTimer] = useState(null) // 评价
     const [enquiryData, setEnquiryData] = useState({})
+    const [waitTimer, setWaitTimer] = useState(null) // 排队
 
     const videoRef = useRef();
     const stepRef = useRef()
@@ -119,7 +113,7 @@ export default function Video() {
             }
             // callId 拒绝视频邀请要用
             setCallId(ticketInfo.callId)
-            setSsid(ticketInfo.ssid)
+            // setSsid(ticketInfo.ssid)
 
             serviceAgora = new videoChatAgora({
                 onErrorNotify,
@@ -201,7 +195,8 @@ export default function Video() {
                 },
             })
         } else if (step === 'current') {
-            visitorClose(ssid)
+            // visitorClose(ssid)
+            visitorClose(sessionInfo.rtcSessionId)
         }
 
         setStep('start')
@@ -212,7 +207,8 @@ export default function Video() {
         setTicketIfo(null)
         setSound(!config.switch.visitorCameraOff)
         setFace(!config.switch.visitorCameraOff)
-        setSsid('')
+        setSessionInfo({})
+        // setSsid('')
         /* 重置白板信息 */
         setWhiteboardUser(null);
         setWhiteboardRoomInfo(null);
@@ -221,7 +217,7 @@ export default function Video() {
         // 本地离开
         serviceAgora && serviceAgora.leave();
         serviceAgora = null
-    }, [ssid, callId, step])
+    }, [sessionInfo, callId, step])
 
     // 声音
     function handleSound() {
@@ -306,6 +302,11 @@ export default function Video() {
         }
     }, 1000), [whiteboardVisible]);
 
+    // 关闭白板
+    const handleWhiteOk = () => {
+        setWhiteboardVisible(false)
+    }
+
     function onErrorNotify(errorCode) {
         let errorCodeMap = {
             NOT_READABLE: '请检查摄像头/麦克风，或者屏幕分享权限！请刷新浏览器重试！',
@@ -374,16 +375,6 @@ export default function Video() {
         setShow(true)
     }
 
-    // 白板Modal
-    const handleWhiteOk = () => {
-        setWhiteboardVisible(false)
-        setIsModalVisible(false)
-    }
-
-    const handleWhiteCancel = () => {
-        setIsModalVisible(false)
-    }
-
     /* 桌面分享绑定事件 */
     const onDesktopControl = _.debounce(function() {
         if (whiteboardVisible) return;
@@ -429,6 +420,26 @@ export default function Video() {
             setStep('start')
             setDesc(intl.get('reStartVideo'))
         }, 3000))
+    }
+
+    // 会话信息&&排队
+    const receiveRtcSession = sInfo => {
+        setSessionInfo(sInfo)
+        // callType  视频类型，呼入: 0，呼出: 1, 只有呼入才会调用查询排队人数接口
+        if (sInfo.callType === 0) {
+            setWaitTimer(() => {
+                getWaitData(sInfo.tenantId, sInfo.rtcSessionId)
+            }, 3000)
+        }
+    }
+
+    const getWaitData = async (tenantId, ssid) => {
+        const {waitingFlag, visitorWaitingNumber} = await visitorWaiting(tenantId, ssid)
+
+        setTip(visitorWaitingNumber)
+        if (waitingFlag !== 'true') {
+            clearInterval(waitTimer)
+        }
     }
 
     useEffect(() => {
@@ -499,6 +510,7 @@ export default function Video() {
         event.on(SYSTEM_WHITE_BOARD_RECEIVED, receiveWhiteBoard) // 白板
         event.on(SYSTEM_AGENT_CANCALCALLBACK, handleClose)
         event.on(SYSTEM_ENQUIRY_INVITE, reciveEnquiry) // 邀请评价
+        event.on(SYSTEM_RTCSESSION_INFO, receiveRtcSession) // 会话信息，开始排队
 
         return () => {
             event.off(SYSTEM_VIDEO_TICKET_RECEIVED, recived) // 监听接受
@@ -508,6 +520,7 @@ export default function Video() {
             event.off(SYSTEM_WHITE_BOARD_RECEIVED, receiveWhiteBoard) // 白板
             event.off(SYSTEM_AGENT_CANCALCALLBACK, handleClose)
             event.off(SYSTEM_ENQUIRY_INVITE, reciveEnquiry) // 邀请评价
+            event.off(SYSTEM_RTCSESSION_INFO, receiveRtcSession)
         }
     }, [step])
 
@@ -522,76 +535,6 @@ export default function Video() {
             clearTimeout(enquiryTimer)
         }
     }, [])
-
-    const App = useCallback(() => {
-        const fastboard = useFastboard(() => ({
-            sdkConfig: {
-                appIdentifier: whiteboardRoomInfo.appIdentifier,
-                region: "cn-hz", // "cn-hz" | "us-sv" | "sg" | "in-mum" | "gb-lon"
-            },
-            joinRoom: {
-                uid: whiteboardUser && whiteboardUser.uid || Math.ceil(Math.random() * 1000) + '',
-                uuid: whiteboardRoomInfo.roomUUID,
-                roomToken: whiteboardRoomInfo.roomToken,
-            },
-        }));
-
-        const [uiConfig] = useState(() => ({
-            page_control: { enable: true },
-            redo_undo: { enable: true },
-            toolbar: { enable: true },
-            zoom_control: { enable: true }
-        }));
-
-        // return <Fastboard app={fastboard} language="en" theme="light" config={uiConfig} />
-
-        return createPortal(<RoomWhite>
-            <Fastboard app={fastboard} language="en" theme="light" config={uiConfig} />
-            <RoomControllerBox>
-                <RoomControllerMidBox>
-                    <PagePreviewCell title={intl.get('upload_img')}>
-                        <Upload 
-                            action={`/v1/agorartc/tenant/${config.tenantId}/whiteboard/call/${callId}/conversion/upload`}
-                            multiple={true}
-                            onStart={file => console.log('onStart', file, file.name)}
-                            onSuccess={ret => fastboard.insertImage(ret.entity)}
-                            onError={err => console.log('onError', err)}
-                        >
-                            <img src={imageSvg} />
-                        </Upload>
-                    </PagePreviewCell>
-                    <PagePreviewCell title={intl.get('upload_video')}>
-                        <Upload
-                            action={`/v1/agorartc/tenant/${config.tenantId}/whiteboard/call/${callId}/conversion/upload`}
-                            multiple={true}
-                            accept=".mp4"
-                            onStart={file => console.log('onStart', file, file.name)}
-                            onSuccess={ret => fastboard.insertMedia('', ret.entity)}
-                            onError={err => console.log('onError', err)}
-                        >
-                            <img src={videoSvg} />
-                        </Upload>
-                    </PagePreviewCell>
-                    <PagePreviewCell title={intl.get('upload_audio')}>
-                        <Upload 
-                            action={`/v1/agorartc/tenant/${config.tenantId}/whiteboard/call/${callId}/conversion/upload`}
-                            multiple={true}
-                            accept=".mp3"
-                            onStart={file => console.log('onStart', file, file.name)}
-                            onSuccess={ret => fastboard.insertMedia('', ret.entity)}
-                            onError={err => console.log('onError', err)}
-                        >
-                            <img src={audioSvg} />
-                        </Upload>
-                    </PagePreviewCell>
-                    <PagePreviewCell title={intl.get('close_white')}>
-                        <img src={exitSvg} onClick={() => setIsModalVisible(true)} />
-                    </PagePreviewCell>
-                </RoomControllerMidBox>
-            </RoomControllerBox>
-        </RoomWhite>
-        , whiteboardRoomInfo.domNode || videoRef.current)
-    }, [whiteboardRoomInfo, whiteboardUser, whiteboardVisible, callId])
 
     var waitTitle = step === 'invite' ? intl.get('inviteTitle') : intl.get('ptitle')
     let videoLinking = step === 'current' && !!remoteUsers.length; //通话中 有其他人加入
@@ -647,7 +590,14 @@ export default function Video() {
                                     }</span>
                                     </div>}
                                 <div id='visitor_video' ref={videoRef}>
-                                    {whiteboardVisible && <App />}
+                                    {whiteboardVisible && <WhiteBoard 
+                                        whiteboardRoomInfo={whiteboardRoomInfo}
+                                        whiteboardUser={whiteboardUser}
+                                        whiteboardVisible={whiteboardVisible}
+                                        callId={callId}
+                                        domNode={videoRef.current}
+                                        handleClose={handleWhiteOk}
+                                    />}
                                 </div>
                                 {!currentChooseUser.videoTrack && <span className='icon-smile'></span>}
                             </CurrentBodySelf>)}
@@ -660,13 +610,6 @@ export default function Video() {
                         <div onClick={() => void (!isDisabledWhiteboard && bindWhiteboardClick())}><span className={`icon-white-board ${isDisabledWhiteboard  ? 'gray' : ''}`}></span></div>
                         <div onClick={handleClose}><span className='icon-off'></span></div>
                     </CurrentFooter>
-                    <VecModal
-                        visible={isModalVisible}
-                        onOk={handleWhiteOk}
-                        onCancel={handleWhiteCancel}
-                    >
-                        {intl.get('close_white_tips')}
-                    </VecModal>
                 </CurrentWrapper>
                 {/* 等待页面 */}
                 <WaitWrapper className={!['enquiry', 'current'].includes(step) ? '' : 'hide'}>
