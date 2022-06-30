@@ -77,25 +77,33 @@ export default function Video() {
         setTip(config.style.callingPrompt)
 
         setTimer(setTimeout(() => {
-            ws.sendText(intl.get('inviteAgentVideo'), {
-                ext: {
-                    type: "agorartcmedia/video",
-                    targetSystem: 'kefurtc',
-                    msgtype: {
-                        liveStreamInvitation: {
-                            msg: intl.get('inviteAgentVideo'),
-                            orgName: config.orgName,
-                            appName: config.appName,
-                            userName: config.user.username,
-                            imServiceNumber: config.toUser,
-                            restServer: config.restServer,
-                            xmppServer: config.xmppServer,
-                            resource: "webim",
-                            isNewInvitation: true,
-                            userAgent: navigator.userAgent,
-                        },
+            var ext = {
+                type: "agorartcmedia/video",
+                targetSystem: 'kefurtc',
+                msgtype: {
+                    liveStreamInvitation: {
+                        msg: intl.get('inviteAgentVideo'),
+                        orgName: config.orgName,
+                        appName: config.appName,
+                        userName: config.user.username,
+                        imServiceNumber: config.toUser,
+                        restServer: config.restServer,
+                        xmppServer: config.xmppServer,
+                        resource: "webim",
+                        isNewInvitation: true,
+                        userAgent: navigator.userAgent,
                     },
-                },
+                }
+            }
+            if (params.subscribe && JSON.parse(params.subscribe)) {
+                ext.sessionExt = {
+                    source: params.subscribe,
+                    taskId: params.taskId || '',
+                    queueId: params.queueId || ''
+                }
+            }
+            ws.sendText(intl.get('inviteAgentVideo'), {
+                ext
             })
         }, 1000))
     }
@@ -297,7 +305,7 @@ export default function Video() {
         } else {
             sendWhiteboardInvitation(); 
         }
-    }, 1000), [whiteboardVisible]);
+    }, 1000), [whiteboardVisible, callId]);
 
     // 关闭白板
     const handleWhiteOk = () => {
