@@ -33,15 +33,17 @@ export default function Enquiry(props) {
 					return;
 				}
 			}
-			if ((score === 3 && options.EnquiryTagsFor3Score && tags.length < 1)
-			|| (score === 2 && options.EnquiryTagsFor2Score && tags.length < 1)
-			|| (score === 1 && options.EnquiryTagsFor1Score && tags.length < 1)) {
-				Toast.show({
-					content: intl.get('rate_tags_nessary'),
-					position: 'top',
-				})
+			if (enquiryTags && enquiryTags[score] && enquiryTags[score].length) {
+				if ((score === 3 && options.EnquiryTagsFor3Score && tags.length < 1)
+				|| (score === 2 && options.EnquiryTagsFor2Score && tags.length < 1)
+				|| (score === 1 && options.EnquiryTagsFor1Score && tags.length < 1)) {
+					Toast.show({
+						content: intl.get('rate_tags_nessary'),
+						position: 'top',
+					})
 
-				return;
+					return;
+				}
 			}
 		}
 
@@ -93,6 +95,9 @@ export default function Enquiry(props) {
 						defaultValue={score}
 						value={score}
 						onChange={handleChangeScore}
+						style={{
+							'--star-size': '28px'
+						}}
 					/>
 					<span className="score-desc">{scoreItemData[score]}</span>
 					{

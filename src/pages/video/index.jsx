@@ -438,7 +438,7 @@ export default function Video() {
 
     const getWaitData = (tenantId, ssid) => {
         visitorWaiting(tenantId, ssid).then(({entity: {waitingFlag, visitorWaitingNumber}}) => {
-            setTip(visitorWaitingNumber)
+            stepRef.current.getAttribute('role') === 'wait' && setTip(visitorWaitingNumber)
             setWaitTimerFlag(waitingFlag)
         })
     }
@@ -549,6 +549,10 @@ export default function Video() {
     var waitTitle = step === 'invite' ? intl.get('inviteTitle') : intl.get('ptitle')
     let videoLinking = step === 'current' && !!remoteUsers.length; //通话中 有其他人加入
     var isDisabledWhiteboard = !videoLinking || callingScreenSwitch || whiteboardVisible;
+    var tenantLogo = logo // 头像含有域名展示不出来
+    if (compInfo.avatar) {
+        tenantLogo = compInfo.avatar.indexOf('//') > -1 ? '/' + compInfo.avatar.split('/').slice(3).join('/') : compInfo.avatar
+    }
 
     return (
         <React.Fragment>
@@ -629,7 +633,7 @@ export default function Video() {
                     <WaitAgent>
                         {step === 'invite' && <TimeControl />}
                         <WaitAgentLogo>
-                            <img src={compInfo.avatar ? compInfo.avatar : logo}  />
+                            <img src={tenantLogo}  />
                         </WaitAgentLogo>
                         <WaitAgentDesc>
                             {compInfo.name ? compInfo.name : ''}
