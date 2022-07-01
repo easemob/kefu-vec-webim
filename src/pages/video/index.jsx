@@ -6,7 +6,7 @@ import logo from '@/assets/img/qiye.png'
 import commonConfig from '@/common/config'
 import event from '@/tools/event'
 import { visitorClose, getOfficalAccounts, visitorWaiting } from '@/assets/http/user'
-import { SYSTEM_VIDEO_TICKET_RECEIVED, SYSTEM_VIDEO_ARGO_END, SYSTEM_VIDEO_ARGO_REJECT, SYSTEM_VIDEO_CALLBACK_TICKET, SYSTEM_WHITE_BOARD_RECEIVED, SYSTEM_AGENT_CANCALCALLBACK, SYSTEM_ENQUIRY_INVITE, SYSTEM_RTCSESSION_INFO } from '@/assets/constants/events'
+import { SYSTEM_VIDEO_TICKET_RECEIVED, SYSTEM_VIDEO_ARGO_END, SYSTEM_VIDEO_ARGO_REJECT, SYSTEM_VIDEO_CALLBACK_TICKET, SYSTEM_WHITE_BOARD_RECEIVED, SYSTEM_AGENT_CANCALCALLBACK, SYSTEM_ENQUIRY_INVITE, SYSTEM_RTCSESSION_INFO, SYSTEM_VIDEO_CALLBACK } from '@/assets/constants/events'
 // import profile from '@/tools/profile'
 import MediaPlayer from './comps/MediaPlayer/MediaPlayer'
 import getToHost from '@/common/transfer'
@@ -338,8 +338,7 @@ export default function Video() {
     }
 
     // 坐席回呼
-    const agentCallback = ticketInfo => {
-        setTicketIfo(ticketInfo)
+    const agentCallback = callbackInfo => {
         setStep('invite')
         setTip('客服正在邀请您进行视频通话')
     }
@@ -356,7 +355,6 @@ export default function Video() {
                 },
             },
         })
-        recived(ticketInfo)
     }
 
     const callbackReject = () => {
@@ -516,7 +514,8 @@ export default function Video() {
         event.on(SYSTEM_VIDEO_TICKET_RECEIVED, recived) // 监听接受
         event.on(SYSTEM_VIDEO_ARGO_END, handleClose) // 取消和挂断
         event.on(SYSTEM_VIDEO_ARGO_REJECT, handleClose) // 坐席拒接
-        event.on(SYSTEM_VIDEO_CALLBACK_TICKET, agentCallback) // 坐席回呼
+        event.on(SYSTEM_VIDEO_CALLBACK, agentCallback) // 回呼
+        event.on(SYSTEM_VIDEO_CALLBACK_TICKET, recived) // 坐席回呼
         event.on(SYSTEM_WHITE_BOARD_RECEIVED, receiveWhiteBoard) // 白板
         event.on(SYSTEM_AGENT_CANCALCALLBACK, handleClose)
         event.on(SYSTEM_ENQUIRY_INVITE, reciveEnquiry) // 邀请评价
@@ -526,7 +525,8 @@ export default function Video() {
             event.off(SYSTEM_VIDEO_TICKET_RECEIVED, recived) // 监听接受
             event.off(SYSTEM_VIDEO_ARGO_END, handleClose) // 取消和挂断
             event.off(SYSTEM_VIDEO_ARGO_REJECT, handleClose) // 坐席拒接
-            event.off(SYSTEM_VIDEO_CALLBACK_TICKET, agentCallback)
+            event.on(SYSTEM_VIDEO_CALLBACK, agentCallback) // 回呼
+            event.off(SYSTEM_VIDEO_CALLBACK_TICKET, recived)
             event.off(SYSTEM_WHITE_BOARD_RECEIVED, receiveWhiteBoard) // 白板
             event.off(SYSTEM_AGENT_CANCALCALLBACK, handleClose)
             event.off(SYSTEM_ENQUIRY_INVITE, reciveEnquiry) // 邀请评价

@@ -22,6 +22,7 @@ export const SYSTEM_OFFICIAL_ACCOUNT_UPDATED = 'system.official.account.updated'
 
 export const SYSTEM_VIDEO_TICKET_RECEIVED = 'video.ticket.received'
 export const SYSTEM_VIDEO_CALLBACK_TICKET = 'video.callback.ticket'
+export const SYSTEM_VIDEO_CALLBACK = 'sendVisitorCallback'
 
 export const SYSTEM_VIDEO_ARGO_END = 'video.argo.end' // 声网音视频结束的通知
 
