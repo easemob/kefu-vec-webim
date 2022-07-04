@@ -25,5 +25,6 @@ export default {
     rate_comment_placeholder: '请留下您宝贵的建议',
     rate_button: '提交评价',
     facevideo_end: '视频通话结束',
-    contact_agent: '联系客服'
+    contact_agent: '联系客服',
+    rate_nessary: '分数必须填写'
 }

@@ -6,7 +6,9 @@ import './index.scss'
 
 export default function Enquiry(props) {
     const [comment, setComment] = useState('')
-    const [score, setScore] = useState(5)
+    const [score, setScore] = useState(() => {
+		return JSON.parse(props.enquiryOptions.find(item => item.optionName === 'EnquiryDefaultShow5Score').optionValue) ? 5 : 0
+	})
     const [tags, setTags] = useState([])
 	const [isVisibleMask, setVisibleMask] = useState(false)
 
@@ -21,6 +23,15 @@ export default function Enquiry(props) {
 
     const handleSend = e => {
 		if (3 >= score) {
+			if (score === 0) {
+				Toast.show({
+					content: intl.get('rate_nessary'),
+					position: 'top',
+				})
+
+				return;
+			}
+
 			if (options.EnquiryCommentEnable) {
 				if ((score === 3 && options.EnquiryCommentFor3Score && comment.trim().length < 1)
 				|| (score === 2 && options.EnquiryCommentFor2Score && comment.trim().length < 1)
@@ -77,10 +88,10 @@ export default function Enquiry(props) {
         2: intl.get('rate_two'),
         1: intl.get('rate_one')
     }
-  
+
     const options = {}
     const enquiryTags = props.enquiryTags
-    props.enquiryOptions.forEach(item => options[item.optionName] = item.optionValue)
+    props.enquiryOptions.forEach(item => options[item.optionName] = ["EnquiryInviteMsg", "EnquirySolveMsg"].includes(item.optionName) ? item.optionValue : JSON.parse(item.optionValue))
 
     return <div className="enquiry-container">
 		<div className="score-top">
@@ -113,13 +124,15 @@ export default function Enquiry(props) {
 						</div>
 					}
 				</div>
-				<TextArea
-					placeholder={intl.get('rate_comment_placeholder')}
-					value={comment}
-					maxLength={100}
-					onChange={handleChangeComment}
-					showCount={true}
-					></TextArea>
+				{
+					options.EnquiryCommentEnable && <TextArea
+						placeholder={intl.get('rate_comment_placeholder')}
+						value={comment}
+						maxLength={100}
+						onChange={handleChangeComment}
+						showCount={true}
+						></TextArea>
+				}
 				<div className="button"><Button color="primary" size='small' onClick={handleSend}>{intl.get('rate_button')}</Button></div>
 			</div>
 			{isVisibleMask && <div className="score-mask">{options.EnquirySolveMsg}</div>}

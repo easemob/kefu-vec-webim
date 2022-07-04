@@ -25,5 +25,6 @@ export default {
     rate_comment_placeholder: 'Please leave your valuable suggestions',
     rate_button: 'Submit',
     facevideo_end: 'Video call end',
-    contact_agent: 'Contact'
+    contact_agent: 'Contact',
+    rate_nessary: 'Scores are required'
 }
