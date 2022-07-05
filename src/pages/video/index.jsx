@@ -413,10 +413,14 @@ export default function Video() {
     }, 1000);
 
     // 评价
-    const reciveEnquiry = enquiry => {
+    const reciveEnquiry = useCallback(enquiry => {
+        if (step === 'current') {
+            handleClose()
+        }
+
         setEnquiryData(enquiry)
         setStep('enquiry')
-    }
+    }, [step])
 
     const handleEnquiry = () => {
         setEnquiryTimer(setTimeout(() => {
