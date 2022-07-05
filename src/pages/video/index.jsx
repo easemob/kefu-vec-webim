@@ -97,9 +97,9 @@ export default function Video() {
             }
             if (params.subscribe && JSON.parse(params.subscribe)) {
                 ext.sessionExt = {
-                    source: params.subscribe,
+                    source: 'subscribe',
                     taskId: params.taskId || '',
-                    queueId: params.queueId || ''
+                    queueId: Number(params.queueId) || 0
                 }
             }
             ws.sendText(intl.get('inviteAgentVideo'), {
