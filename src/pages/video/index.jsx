@@ -189,20 +189,24 @@ export default function Video() {
 
     // 结束 1.访客等待挂断 2.访客接通挂断 3.坐席拒接
     const handleClose = useCallback(e => {
-        if (step === 'wait' && e && !e.agentReject) {
-            ws.cancelVideo(callId, {
-                ext: {
-                    type: "agorartcmedia/video",
-                    targetSystem: 'kefurtc',
-                    msgtype: {
-                        visitorCancelInvitation : {
-                            callId: callId
-                        }
+        if (serviceAgora && !serviceAgora.remoteUsers.length) {
+            // 坐席挂断
+        } else {
+            if (step === 'wait' && e && !e.agentReject) { // e: ws时是自定义消息，其他就是event
+                ws.cancelVideo(callId, {
+                    ext: {
+                        type: "agorartcmedia/video",
+                        targetSystem: 'kefurtc',
+                        msgtype: {
+                            visitorCancelInvitation : {
+                                callId: callId
+                            }
+                        },
                     },
-                },
-            })
-        } else if (step === 'current') {
-            visitorClose(sessionInfo.rtcSessionId)
+                })
+            } else if (step === 'current') {
+                visitorClose(sessionInfo.rtcSessionId)
+            }
         }
 
         setStep('start')
@@ -261,23 +265,14 @@ export default function Video() {
         if (!serviceAgora) return
 
         if (!serviceAgora.remoteUsers.length) {
-            serviceAgora.leave()
-            serviceAgora = null
-            setStep('start')
-            setDesc(intl.get('reStartVideo'))
-            setTip(config.style.endingPrompt)
-            setCallId(null)
-            setTime(false)
-            setTicketIfo(null)
-            setSound(!config.switch.visitorCameraOff)
-            setFace(!config.switch.visitorCameraOff)
+            handleClose()
         } else {
             let _remoteUsers = serviceAgora.remoteUsers || [];
             if (currentChooseUser && user === currentChooseUser && !!_remoteUsers.length && (_remoteUsers[0] !== user)) {
                 setCurrentChooseUser(_remoteUsers[0]);
             }
         }
-    }, [currentChooseUser, remoteUsers])
+    }, [currentChooseUser, remoteUsers, step])
 
     const onUserJoined = useCallback((user) => {
         !!whiteboardRoomInfo && sendWhiteboardInvitation();
@@ -501,7 +496,7 @@ export default function Video() {
     }, [currentChooseUser, whiteboardVisible])
 
     useEffect(() => {
-        if (stepRef.current.getAttribute('role') !== 'current') return;
+        if (step !== 'current') return;
 
         if (whiteboardVisible) { //打开
             showWhiteboard();
@@ -512,7 +507,7 @@ export default function Video() {
                 setCurrentChooseUser(remoteUsers[0] || localUser);
             }
         }
-    }, [whiteboardVisible])
+    }, [whiteboardVisible, step])
 
     useEffect(() => {
         event.on(SYSTEM_VIDEO_TICKET_RECEIVED, recived) // 监听接受
