@@ -136,13 +136,14 @@ export default function Video() {
 
                 serviceAgora.localAudioTrack.setMuted(config.switch.visitorCameraOff)
                 serviceAgora.localVideoTrack.setMuted(config.switch.visitorCameraOff)
-                config.switch.visitorCameraOff && serviceAgora.closeLocalTrack('video')
+                // config.switch.visitorCameraOff && serviceAgora.closeLocalTrack('video')
 
                 let { localAudioTrack, localVideoTrack } = serviceAgora
                 let localUser = {
                     isLocal: true, 
                     // audioTrack: localAudioTrack,
-                    videoTrack: config.switch.visitorCameraOff ? null : localVideoTrack,
+                    videoTrack: localVideoTrack,
+                    // videoTrack: config.switch.visitorCameraOff ? null : localVideoTrack,
                     uid: cfgAgora.uid
                 }
 
@@ -237,22 +238,22 @@ export default function Video() {
     const handleFace = async () => {
         if (callingScreenSwitch) return onDesktopControl();
 
-        if (serviceAgora.localVideoTrack) {
-            serviceAgora.closeLocalTrack('video')
-            setLocalUser(user => {
-                user.videoTrack = null
-                return user
-            })
-        } else {
-            const localVideoTrack = await serviceAgora.createLocalVideoTrack()
-            serviceAgora.publish(localVideoTrack)
-            setLocalUser(user => {
-                user.videoTrack = localVideoTrack
-                return user
-            })
-            currentChooseUser.uid === localUser.uid && localVideoTrack.play(videoRef.current)
-        }
-        // serviceAgora.localVideoTrack.setMuted(face); // false 打开 true 关闭
+        // if (serviceAgora.localVideoTrack) {
+        //     serviceAgora.closeLocalTrack('video')
+        //     setLocalUser(user => {
+        //         user.videoTrack = null
+        //         return user
+        //     })
+        // } else {
+        //     const localVideoTrack = await serviceAgora.createLocalVideoTrack()
+        //     serviceAgora.publish(localVideoTrack)
+        //     setLocalUser(user => {
+        //         user.videoTrack = localVideoTrack
+        //         return user
+        //     })
+        //     currentChooseUser.uid === localUser.uid && localVideoTrack.play(videoRef.current)
+        // }
+        serviceAgora.localVideoTrack.setMuted(face); // false 打开 true 关闭
         setFace(!face)
     }
 
