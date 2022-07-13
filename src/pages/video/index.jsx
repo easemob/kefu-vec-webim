@@ -525,7 +525,7 @@ export default function Video() {
             event.off(SYSTEM_VIDEO_TICKET_RECEIVED, recived) // 监听接受
             event.off(SYSTEM_VIDEO_ARGO_END, handleClose) // 取消和挂断
             event.off(SYSTEM_VIDEO_ARGO_REJECT, handleClose) // 坐席拒接
-            event.on(SYSTEM_VIDEO_CALLBACK, agentCallback) // 回呼
+            event.off(SYSTEM_VIDEO_CALLBACK, agentCallback) // 回呼
             event.off(SYSTEM_VIDEO_CALLBACK_TICKET, recived)
             event.off(SYSTEM_WHITE_BOARD_RECEIVED, receiveWhiteBoard) // 白板
             event.off(SYSTEM_AGENT_CANCALCALLBACK, handleClose)
