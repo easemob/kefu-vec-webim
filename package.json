@@ -59,6 +59,7 @@
     "react": "^18.1.0",
     "react-dom": "^18.1.0",
     "react-intl-universal": "^2.5.3",
+    "react-router-dom": "^6.3.0",
     "styled-components": "^5.3.5",
     "underscore": "=1.8.3",
     "vconsole": "^3.14.6",
