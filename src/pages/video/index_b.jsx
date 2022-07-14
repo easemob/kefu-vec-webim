@@ -18,7 +18,6 @@ import Enquiry from './comps/Enquiry'
 import WhiteBoard from './comps/Whiteboard'
 import Chat from './comps/Chat'
 import { Badge } from 'antd-mobile'
-import WaitPage from './wait'
 
 import ws from '@/ws'
 
@@ -74,7 +73,6 @@ export default function Video() {
 
     const videoRef = useRef();
     const stepRef = useRef()
-    const waitPageRef = useRef()
 
     // 发起、重新发起
     function handleStart() {
@@ -655,12 +653,46 @@ export default function Video() {
                     </CurrentFooter>
                 </CurrentWrapper>
                 {/* 等待页面 */}
-                <WaitPage
-                    ref={waitPageRef}
-                    step={step}
-                    compInfo={compInfo}
-                    config={config}
-                    />
+                <WaitWrapper className={!['enquiry', 'current'].includes(step) ? '' : 'hide'}>
+                    <WaitTitle>
+                        <h2>{waitTitle}</h2>
+                    </WaitTitle>
+                    <WaitAgent>
+                        {step === 'invite' && <TimeControl />}
+                        <WaitAgentLogo>
+                            <img src={tenantLogo}  />
+                        </WaitAgentLogo>
+                        <WaitAgentDesc>
+                            {compInfo.name ? compInfo.name : ''}
+                        </WaitAgentDesc>
+                    </WaitAgent>
+                    <WaitTip>{tip}</WaitTip>
+                    {step === 'invite' ? (
+                        <InviteOpera>
+                            <div className='recive'>
+                                <div>
+                                    <span className='icon-answer' onClick={callbackRecived}></span>
+                                </div>
+                                <div>{intl.get('reciveVideo')}</div>
+                            </div>
+                            <div className='hung'>
+                                <div>
+                                    <span className='icon-off' onClick={callbackReject}></span>
+                                </div>
+                                <div>{intl.get('closeVideo')}</div>
+                            </div>
+                        </InviteOpera>
+                    ) : (
+                        <WaitOpera role={step} ref={stepRef}>
+                            <div>
+                                {
+                                    step === 'start' ? <span onClick={handleStart} className='icon-answer'></span> : <span onClick={handleClose} className='icon-off'></span>
+                                }
+                            </div>
+                            <div>{desc}</div>
+                        </WaitOpera>
+                    )}
+                </WaitWrapper>
                 {step === 'enquiry' && <Enquiry handleSendWs={handleEnquiry} {...enquiryData} />}
                 {chatVisible && top && !utils.isMobile && getChat()}
             </Wrapper>

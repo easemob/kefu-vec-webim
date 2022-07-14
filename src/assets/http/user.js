@@ -28,10 +28,10 @@ export function getToken() {
 }
 
 // 访客挂断
-export function visitorClose(ssid) {
+export function visitorClose(ssid, userId) {
     var config = commonConfig.getConfig()
     return request({
-        url: `/v1/kefurtc/tenant/${config.tenantId}/session/${ssid}/visitor/${config.visitorInfo.userId}/close`,
+        url: `/v1/kefurtc/tenant/${config.tenantId}/session/${ssid}/visitor/${userId}/close`,
         method: 'post'
     })
 }

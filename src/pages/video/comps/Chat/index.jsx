@@ -37,7 +37,6 @@ export default function Chat({close}) {
     
     const handleSend = () => {
         if (text.trim().length) {
-            console.log(111, text)
             setActive(false)
             setText('')
             // 追加到当前列表
