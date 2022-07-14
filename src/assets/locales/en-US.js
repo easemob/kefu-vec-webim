@@ -26,5 +26,6 @@ export default {
     rate_button: 'Submit',
     facevideo_end: 'Video call end',
     contact_agent: 'Contact',
-    rate_nessary: 'Scores are required'
+    rate_nessary: 'Scores are required',
+    chat_title: 'Chat'
 }

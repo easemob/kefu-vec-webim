@@ -26,5 +26,6 @@ export default {
     rate_button: '提交评价',
     facevideo_end: '视频通话结束',
     contact_agent: '联系客服',
-    rate_nessary: '分数必须填写'
+    rate_nessary: '分数必须填写',
+    chat_title: '聊天'
 }

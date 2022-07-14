@@ -21,6 +21,17 @@ export const Wrapper = styled.div`
     .icon-mini {
         color: #3689f7;
     }
+    &.chat_half_right {
+        display: grid;
+        grid-template-rows: 100%;
+        grid-template-columns: 60% 40%;
+        grid-column-gap: 10px;
+        box-shadow: none;
+        > div {
+            border-radius: 5px;
+            box-shadow: 0px 0px 10px #ccc;
+        }
+    }
 `
 
 export const WaitWrapper = styled.div`
@@ -159,7 +170,7 @@ export const InviteOpera = styled.div`
 // 视频中
 export const CurrentWrapper = styled.div`
     max-width: 998px;
-    margin: 0 auto;
+    // margin: 0 auto;
     height: 100%;
 `
 
@@ -351,7 +362,7 @@ export const CurrentFooter = styled.div`
     display: flex;
     align-items: center;
     justify-content: center;
-    div {
+    > div {
         height: 50px;
         width: 50px;
         border-radius: 5px;
@@ -380,7 +391,28 @@ export const CurrentFooter = styled.div`
 
 export const CurrentBodyMore = styled.div`
     height: 80%;
+    &.chat_half_bottom {
+        display: grid;
+        grid-template-rows: 60% 40%;
+    }
+    &.chat_mask {
+        position: relative;
+        > div {
+            &:last-child {
+                position: absolute;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                height: 50% !important;
+                z-index: 1000;
+            }
+        }
+    }
+    &.chat_half_right {}
+`
+export const VideoBox = styled.div`
     position: relative;
+    height: 100%;
 `
 
 export const TopVideoBox = styled.div`

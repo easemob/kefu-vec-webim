@@ -134,3 +134,19 @@ $fs: 25px;
 		content: "\e6ff";
 	}
 }
+
+.icon-chat-pic {
+	@extend %font-shell-base-newagent;
+	&:before {
+		@extend %font-base-newagent;
+		content: "\e60b";
+	}
+}
+
+.icon-chat-button {
+	@extend %font-shell-base-newagent;
+	&:before {
+		@extend %font-base-newagent;
+		content: "\e623";
+	}
+}

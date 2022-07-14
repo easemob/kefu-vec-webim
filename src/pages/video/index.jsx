@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useEffect, useRef } from 'react'
-import { Wrapper, WaitWrapper, WaitTitle, WaitAgent, WaitAgentLogo, WaitAgentDesc, WaitTip, WaitOpera, CurrentWrapper, CurrentTitle, CurrentFooter, CurrentBodySelf, CurrentBodyMicro, CurrentBodyMore, TopVideoBox, CurrentVideo, InviteOpera, DefaultConnect } from './style'
+import { Wrapper, WaitWrapper, WaitTitle, WaitAgent, WaitAgentLogo, WaitAgentDesc, WaitTip, WaitOpera, CurrentWrapper, CurrentTitle, CurrentFooter, CurrentBodySelf, CurrentBodyMicro, CurrentBodyMore, TopVideoBox, CurrentVideo, InviteOpera, DefaultConnect, VideoBox } from './style'
 import TimeControl from './comps/TimeControl'
 import videoChatAgora from '@/tools/hxVideo'
 import logo from '@/assets/img/qiye.png'
@@ -16,6 +16,8 @@ import queryString from 'query-string'
 import WhiteboardPlayer from './comps/WhiteboardPlayer'
 import Enquiry from './comps/Enquiry'
 import WhiteBoard from './comps/Whiteboard'
+import Chat from './comps/Chat'
+import { Badge } from 'antd-mobile'
 
 import ws from '@/ws'
 
@@ -66,6 +68,8 @@ export default function Video() {
     const [enquiryData, setEnquiryData] = useState({})
     const [waitTimer, setWaitTimer] = useState(null) // 排队
     const [waitTimerFlag, setWaitTimerFlag] = useState('true')
+    const [chatVisible, setChatVisible] = useState(false) // 聊天
+    const [chatUnread, setChatUnread] = useState(null)
 
     const videoRef = useRef();
     const stepRef = useRef()
@@ -223,6 +227,7 @@ export default function Video() {
         setWhiteboardUser(null);
         setWhiteboardRoomInfo(null);
         setWhiteboardVisible(false);
+        setChatVisible(false)
 
         // 本地离开
         serviceAgora && serviceAgora.leave();
@@ -443,6 +448,15 @@ export default function Video() {
         })
     }
 
+    // 聊天
+    const handleChatClose = () => {
+        setChatVisible(false)
+    }
+    
+    const getChat = () => {
+        return utils.isMobile ? <div style={{backgroundColor: '#000'}}><Chat close={handleChatClose} /></div> : <Chat close={handleChatClose} />
+    }
+
     useEffect(() => {
         if (waitTimerFlag !== 'true') {
             clearInterval(waitTimer)
@@ -553,75 +567,88 @@ export default function Video() {
     if (compInfo.avatar) {
         tenantLogo = compInfo.avatar.indexOf('//') > -1 ? '/' + compInfo.avatar.split('/').slice(3).join('/') : compInfo.avatar
     }
+    // 聊天位置
+    var chatPos = 'chat_mask' // 浮层
+    top && (chatPos = 'chat_half_right') // 右半屏
+    utils.isMobile && (chatPos = 'chat_half_bottom') // 下半屏
 
     return (
         <React.Fragment>
-            <Wrapper role={step} top={top} className={`${utils.isMobile ? 'full_screen' : ''} ${top || show || hideDefaultButton ? '' : 'hide'}`}>
+            <Wrapper role={step} top={top} className={`${utils.isMobile ? 'full_screen' : ''} ${top || show || hideDefaultButton ? '' : 'hide'} ${chatVisible && !utils.isMobile ? chatPos : ''}`}>
                 {!top && step !== 'enquiry' && <span onClick={handleMini} className={step === 'current' ? 'icon-mini' : 'icon-close'}></span>}
                 <CurrentWrapper className={step === 'current' ? '' : 'hide'}>
                     <CurrentTitle>
                         <span>{time  ? intl.get('calling') : intl.get('waitCalling')}</span>
                         {time ? <TimeControl /> : ''}
                     </CurrentTitle>
-                    <CurrentBodyMore>
-                        <TopVideoBox className='top'>
-                            {
-                                step === 'current' && !!currentChooseUser && remoteUsers
-                                .concat(whiteboardUser || [])
-                                .concat(localUser || [])
-                                .filter(({ uid }) => uid !== currentChooseUser?.uid)
-                                .map((user) => {
-                                    let {isWhiteboard = false, isLocal = false, uid, videoTrack, hasAudio, audioTrack } = user;
+                    <CurrentBodyMore className={chatVisible ? chatPos : ''}>
+                        <VideoBox>
+                            <TopVideoBox className='top'>
+                                {
+                                    step === 'current' && !!currentChooseUser && remoteUsers
+                                    .concat(whiteboardUser || [])
+                                    .concat(localUser || [])
+                                    .filter(({ uid }) => uid !== currentChooseUser?.uid)
+                                    .map((user) => {
+                                        let {isWhiteboard = false, isLocal = false, uid, videoTrack, hasAudio, audioTrack } = user;
 
-                                return isWhiteboard 
-                                ? <WhiteboardPlayer 
-                                    key={uid} 
-                                    setWhiteboardRoomInfo={setWhiteboardRoomInfo}
-                                    bindClick={() => setCurrentChooseUser(user)}
-                                  />
-                                : <MediaPlayer
-                                    bindClick={() => setCurrentChooseUser(user)}
-                                    key={uid} 
-                                    isLocal={isLocal}
-                                    name={idNameMap[uid] || ''} 
-                                    hasAudio={isLocal ? sound : hasAudio}
-                                    audioTrack={audioTrack} 
-                                    videoTrack={videoTrack} 
+                                    return isWhiteboard 
+                                    ? <WhiteboardPlayer 
+                                        key={uid} 
+                                        setWhiteboardRoomInfo={setWhiteboardRoomInfo}
+                                        bindClick={() => setCurrentChooseUser(user)}
                                     />
-                                })
-                            }
-                        </TopVideoBox>
-                        <CurrentVideo>
-                            {step === 'current' && currentChooseUser && (<CurrentBodySelf isMobile={utils.isMobile}>
-                                {!currentChooseUser.isWhiteboard && <div className='info'>
-                                    <CurrentBodyMicro className='self'>
-                                        <span className={(currentChooseUser.isLocal ? sound : currentChooseUser.hasAudio) ? 'icon-microphone' : 'icon-microphone-close'}></span>
-                                    </CurrentBodyMicro>
-                                    <span>{
-                                        currentChooseUser ?  currentChooseUser.isLocal 
-                                        ? intl.get('me') 
-                                        : `${intl.get('agent')}-${idNameMap[currentChooseUser.uid] || ''}`  : ''    
-                                    }</span>
-                                    </div>}
-                                <div id='visitor_video' ref={videoRef}>
-                                    {whiteboardVisible && <WhiteBoard 
-                                        whiteboardRoomInfo={whiteboardRoomInfo}
-                                        whiteboardUser={whiteboardUser}
-                                        whiteboardVisible={whiteboardVisible}
-                                        callId={callId}
-                                        domNode={videoRef.current}
-                                        handleClose={handleWhiteOk}
-                                    />}
-                                </div>
-                                {!currentChooseUser.videoTrack && <span className='icon-smile'></span>}
-                            </CurrentBodySelf>)}
-                        </CurrentVideo>
+                                    : <MediaPlayer
+                                        bindClick={() => setCurrentChooseUser(user)}
+                                        key={uid} 
+                                        isLocal={isLocal}
+                                        name={idNameMap[uid] || ''} 
+                                        hasAudio={isLocal ? sound : hasAudio}
+                                        audioTrack={audioTrack} 
+                                        videoTrack={videoTrack} 
+                                        />
+                                    })
+                                }
+                            </TopVideoBox>
+                            <CurrentVideo>
+                                {step === 'current' && currentChooseUser && (<CurrentBodySelf isMobile={utils.isMobile}>
+                                    {!currentChooseUser.isWhiteboard && <div className='info'>
+                                        <CurrentBodyMicro className='self'>
+                                            <span className={(currentChooseUser.isLocal ? sound : currentChooseUser.hasAudio) ? 'icon-microphone' : 'icon-microphone-close'}></span>
+                                        </CurrentBodyMicro>
+                                        <span>{
+                                            currentChooseUser ?  currentChooseUser.isLocal 
+                                            ? intl.get('me') 
+                                            : `${intl.get('agent')}-${idNameMap[currentChooseUser.uid] || ''}`  : ''    
+                                        }</span>
+                                        </div>}
+                                    <div id='visitor_video' ref={videoRef}>
+                                        {whiteboardVisible && <WhiteBoard 
+                                            whiteboardRoomInfo={whiteboardRoomInfo}
+                                            whiteboardUser={whiteboardUser}
+                                            whiteboardVisible={whiteboardVisible}
+                                            callId={callId}
+                                            domNode={videoRef.current}
+                                            handleClose={handleWhiteOk}
+                                        />}
+                                    </div>
+                                    {!currentChooseUser.videoTrack && <span className='icon-smile'></span>}
+                                </CurrentBodySelf>)}
+                            </CurrentVideo>
+                        </VideoBox>
+                        {chatVisible && (utils.isMobile || !top) && getChat()}
                     </CurrentBodyMore>
                     <CurrentFooter top={top}>
                         <div onClick={handleSound}><span className={sound ? 'icon-sound' : 'icon-sound-close'}></span></div>
                         <div onClick={handleFace}><span className={face ? 'icon-face' : 'icon-face-close'}></span></div>
                         {!utils.isMobile && top && <div onClick={onDesktopControl}><span className={`icon-desktop-share ${whiteboardVisible ? 'gray' : ''}`}></span></div>}
                         <div onClick={() => void (!isDisabledWhiteboard && bindWhiteboardClick())}><span className={`icon-white-board ${isDisabledWhiteboard  ? 'gray' : ''}`}></span></div>
+                        <Badge content={chatUnread}>
+                            <div onClick={() => setChatVisible(!chatVisible)}>
+                                <span className='icon-chat-button'></span>
+                            </div>
+                        </Badge>
+                        
                         <div onClick={handleClose}><span className='icon-off'></span></div>
                     </CurrentFooter>
                 </CurrentWrapper>
@@ -667,6 +694,7 @@ export default function Video() {
                     )}
                 </WaitWrapper>
                 {step === 'enquiry' && <Enquiry handleSendWs={handleEnquiry} {...enquiryData} />}
+                {chatVisible && top && !utils.isMobile && getChat()}
             </Wrapper>
             <DefaultConnect onClick={handleConnect} className={hideDefaultButton || top || show ? 'hide' : ''}>
                 <span className='icon-logo'>{intl.get('contact_agent')}</span>
