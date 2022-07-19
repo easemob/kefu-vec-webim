@@ -27,5 +27,12 @@ export default {
     facevideo_end: 'Video call end',
     contact_agent: 'Contact',
     rate_nessary: 'Scores are required',
-    chat_title: 'Chat'
+    chat_title: 'Chat',
+    reserve_header: 'Reservation service',
+    reserve_tab: 'Reserve',
+    reserve_tab_records: 'Reservation record',
+    reserve_cancel_succ: 'Success',
+    reserve_cancel_fail: 'Fail',
+    reserve_add_succ: 'Reserve Success',
+    reserve_add_fail: 'Retry'
 }
