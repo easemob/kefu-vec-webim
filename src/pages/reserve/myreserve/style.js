@@ -77,7 +77,9 @@ export const AddItem = styled.div`
     line-height: 40px;
     display: flex;
     .adm-input-element {
-        background-color: #f7f7f7;
+        background-color: #f1f1f1;
+        font-size: 13px;
+        padding: 2px 5px;
     }
     input[readonly] {
         background-color: #fff;
