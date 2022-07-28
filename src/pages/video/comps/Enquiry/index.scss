@@ -1,10 +1,15 @@
 .enquiry-container {
     height: 100%;
+    width: 100%;
     background-color: rgba(71, 71, 71, 1);
     display: flex;
     flex-direction: column;
     justify-content: flex-end;
     align-items: center;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 100;
     .score-top {
         flex: 1;
         color: #fff;

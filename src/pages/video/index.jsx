@@ -45,6 +45,7 @@ export default function Video() {
     const [chatVisible, setChatVisible] = useState(false) // 聊天
     const [remoteUsers, setRemoteUsers] = useState([])
     const [time, setTime] = useState(false) // 开始计时
+    const [enquiryVisible, setEnquiryVisible] = useState(false)
 
     const waitPageRef = useRef()
     const currentPageRef = useRef()
@@ -153,20 +154,16 @@ export default function Video() {
         getToHost.send({event: 'showChat'})
         setShow(true)
     }
-    
+
     // 评价
     const reciveEnquiry = useCallback(enquiry => {
-        if (step === 'current') {
-            handleClose()
-        }
-
         setEnquiryData(enquiry)
-        setStep('enquiry')
     }, [step])
 
     const handleEnquiry = () => {
         setEnquiryTimer(setTimeout(() => {
-            setStep('start')
+            setEnquiryVisible(false)
+            setEnquiryData({})
             waitPageRef.current?.setDesc(intl.get('reStartVideo'))
         }, 3000))
     }
@@ -179,6 +176,10 @@ export default function Video() {
     const getChat = () => {
         return utils.isMobile ? <div style={{backgroundColor: '#000'}}><Chat close={handleChatClose} /></div> : <Chat close={handleChatClose} />
     }
+
+    useEffect(() => {
+        step === 'start' && Object.keys(enquiryData).length && setEnquiryVisible(true)
+    }, [enquiryData, handleClose, step])
 
     useEffect(() => {
         if (!serviceAgora?.client) return;
@@ -254,7 +255,7 @@ export default function Video() {
                     callId={callId}
                     handleCloseVideo={handleClose}
                     />
-                {step === 'enquiry' && <Enquiry handleSendWs={handleEnquiry} {...enquiryData} />}
+                {enquiryVisible && <Enquiry handleSendWs={handleEnquiry} {...enquiryData} />}
                 {chatVisible && top && !utils.isMobile && getChat()}
             </Wrapper>
             <DefaultConnect onClick={handleConnect} className={hideDefaultButton || top || show ? 'hide' : ''}>
