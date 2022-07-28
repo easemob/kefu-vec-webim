@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useCallback, useImperativeHandle, useRef } from "react";
 import { CurrentWrapper, CurrentTitle, CurrentFooter, CurrentBodySelf, CurrentBodyMicro, CurrentBodyMore, TopVideoBox, CurrentVideo, VideoBox } from './style'
-import { SYSTEM_WHITE_BOARD_RECEIVED } from '@/assets/constants/events'
+import { SYSTEM_WHITE_BOARD_RECEIVED, SYSTEM_OPERA_MICROPHONE, SYSTEM_OPERA_CAMERA } from '@/assets/constants/events'
 import TimeControl from './comps/TimeControl'
 import MediaPlayer from './comps/MediaPlayer/MediaPlayer'
 import WhiteboardPlayer from './comps/WhiteboardPlayer'
@@ -43,23 +43,22 @@ export default React.forwardRef(function({step, config, serviceAgora, callId,set
     const handleFace = async () => {
         if (callingScreenSwitch) return onDesktopControl();
 
-        // if (serviceAgora.localVideoTrack) {
-        //     serviceAgora.closeLocalTrack('video')
-        //     setLocalUser(user => {
-        //         user.videoTrack = null
-        //         return user
-        //     })
-        // } else {
-        //     const localVideoTrack = await serviceAgora.createLocalVideoTrack()
-        //     serviceAgora.publish(localVideoTrack)
-        //     setLocalUser(user => {
-        //         user.videoTrack = localVideoTrack
-        //         return user
-        //     })
-        //     currentChooseUser.uid === localUser.uid && localVideoTrack.play(videoRef.current)
-        // }
         serviceAgora.localVideoTrack.setMuted(face); // false 打开 true 关闭
         setFace(!face)
+    }
+
+    const agentChangeMicroPhone = info => {
+        let flag = info.action === 'on' ? true : false;
+        setSound(flag)
+        serviceAgora.localAudioTrack.setMuted(!flag)
+    }
+
+    const agentChangeCamera = info => {
+        if (callingScreenSwitch) return onDesktopControl();
+
+        let flag = info.action === 'on' ? true : false;
+        setFace(flag)
+        serviceAgora.localVideoTrack.setMuted(!flag)
     }
 
     // 接受白板
@@ -200,9 +199,13 @@ export default React.forwardRef(function({step, config, serviceAgora, callId,set
 
     useEffect(() => {
         event.on(SYSTEM_WHITE_BOARD_RECEIVED, receiveWhiteBoard) // 白板
+        event.on(SYSTEM_OPERA_MICROPHONE, agentChangeMicroPhone)
+        event.on(SYSTEM_OPERA_CAMERA, agentChangeCamera)
 
         return () => {
             event.off(SYSTEM_WHITE_BOARD_RECEIVED, receiveWhiteBoard)
+            event.off(SYSTEM_OPERA_MICROPHONE, agentChangeMicroPhone)
+            event.off(SYSTEM_OPERA_CAMERA, agentChangeCamera)
         }
     }, [step])
 
