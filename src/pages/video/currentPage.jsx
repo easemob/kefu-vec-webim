@@ -284,11 +284,11 @@ export default React.forwardRef(function({step, config, serviceAgora, callId,set
             <div onClick={() => void (!isDisabledWhiteboard && bindWhiteboardClick())}>
                 <span className={`icon-white-board ${isDisabledWhiteboard  ? 'gray' : ''}`}></span>
             </div>
-            <Badge content={chatUnread}>
+            {/* <Badge content={chatUnread}>
                 <div onClick={() => setChatVisible(!chatVisible)}>
                     <span className='icon-chat-button'></span>
                 </div>
-            </Badge>
+            </Badge> */}
             <div onClick={handleCloseVideo}>
                 <span className='icon-off'></span>
             </div>
