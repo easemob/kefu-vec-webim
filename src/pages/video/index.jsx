@@ -174,7 +174,7 @@ export default function Video() {
     }
     
     const getChat = () => {
-        return utils.isMobile ? <div style={{backgroundColor: '#000'}}><Chat close={handleChatClose} /></div> : <Chat close={handleChatClose} />
+        return <Chat close={handleChatClose} />
     }
 
     useEffect(() => {
@@ -215,7 +215,7 @@ export default function Video() {
     // 聊天位置
     var chatPos = 'chat_mask' // 浮层
     top && (chatPos = 'chat_half_right') // 右半屏
-    utils.isMobile && (chatPos = 'chat_half_bottom') // 下半屏
+    utils.isMobile && (chatPos = 'chat_mask') // 下半屏
 
     return (
         <React.Fragment>

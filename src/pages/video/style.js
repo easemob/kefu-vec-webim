@@ -391,10 +391,6 @@ export const CurrentFooter = styled.div`
 
 export const CurrentBodyMore = styled.div`
     height: 80%;
-    &.chat_half_bottom {
-        display: grid;
-        grid-template-rows: 60% 40%;
-    }
     &.chat_mask {
         position: relative;
         > div {
@@ -403,13 +399,13 @@ export const CurrentBodyMore = styled.div`
                 bottom: 0;
                 left: 0;
                 right: 0;
-                height: 50% !important;
+                height: 75% !important;
                 z-index: 1000;
             }
         }
     }
-    &.chat_half_right {}
 `
+
 export const VideoBox = styled.div`
     position: relative;
     height: 100%;
