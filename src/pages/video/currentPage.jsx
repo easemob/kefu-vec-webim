@@ -9,6 +9,7 @@ import { Badge } from 'antd-mobile'
 import intl from 'react-intl-universal'
 import utils from '@/tools/utils'
 import event from '@/tools/event'
+import profile from '@/tools/profile'
 
 export default React.forwardRef(function({step, config, serviceAgora, callId,setCurrentChooseUser, remoteUsers, currentChooseUser, ws, time, chatVisible, localUser, idNameMap, setLocalUser, setChatVisible, getChat, chatPos, handleCloseVideo, top }, ref) {
     const [sound, setSound] = useState(!config.switch.visitorCameraOff) // 开关声音
@@ -281,12 +282,16 @@ export default React.forwardRef(function({step, config, serviceAgora, callId,set
             <div onClick={handleFace}>
                 <span className={face ? 'icon-face' : 'icon-face-close'}></span>
             </div>
-            {!utils.isMobile && top && <div onClick={onDesktopControl}>
+            {profile.grayList.shareDesktop && !utils.isMobile && top && <div onClick={onDesktopControl}>
                 <span className={`icon-desktop-share ${whiteboardVisible ? 'gray' : ''}`}></span>
             </div>}
-            <div onClick={() => void (!isDisabledWhiteboard && bindWhiteboardClick())}>
-                <span className={`icon-white-board ${isDisabledWhiteboard  ? 'gray' : ''}`}></span>
-            </div>
+            {
+                profile.grayList.whiteBoard && (
+                    <div onClick={() => void (!isDisabledWhiteboard && bindWhiteboardClick())}>
+                        <span className={`icon-white-board ${isDisabledWhiteboard  ? 'gray' : ''}`}></span>
+                    </div>
+                )
+            }
             {/* <Badge content={chatUnread}>
                 <div onClick={() => setChatVisible(!chatVisible)}>
                     <span className='icon-chat-button'></span>
