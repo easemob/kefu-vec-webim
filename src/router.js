@@ -9,6 +9,7 @@ const Video = React.lazy(async () => {
 })
 
 const Reserve = React.lazy(() => import('./pages/reserve'))
+const Transfer = React.lazy(() => import('./pages/transfer')) // 预约中间页，里面都是跳转逻辑
 
 export default function Router() {
     const element = useRoutes([
@@ -19,6 +20,10 @@ export default function Router() {
         {
             path: '/reserve',
             element: <Reserve />
+        },
+        {
+            path: '/transfer',
+            element: <Transfer />
         }
     ])
 

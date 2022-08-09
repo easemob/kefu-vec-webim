@@ -53,9 +53,9 @@ export default function MyReserve({isLogin, setShowLogin, tenantId}) {
             businessList(tenantId),
             httpSevenDays(tenantId, date)
         ])
-        
-        setBasicColumns(businessListData.entities)
-        setSevenDays(httpSevenDaysData.entities)
+
+        businessListData.status === 'OK' && setBasicColumns(businessListData.entities)
+        httpSevenDaysData.status === 'OK' && setSevenDays(httpSevenDaysData.entities)
     }
 
     // 剩余资源
@@ -66,7 +66,7 @@ export default function MyReserve({isLogin, setShowLogin, tenantId}) {
             setAddVisible(false)
         }
     }
-    
+
     // 处理剩余资源列表
     const handleRestList = () => {
         setRestList(oList => oList.map(t => t.surplusId === rest.surplusId ? Object.assign({}, t, {surplusReservationNum: t.surplusReservationNum - 1}) : t))

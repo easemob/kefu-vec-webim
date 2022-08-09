@@ -6,7 +6,7 @@ import Loading from './components/Loading'
 import intl from 'react-intl-universal'
 import queryString from 'query-string'
 import Router from './router'
-import { HashRouter } from 'react-router-dom'
+import { HashRouter, BrowserRouter } from 'react-router-dom'
 import { RecoilRoot } from 'recoil'
 
 var lang = queryString.parse(location.search).lang || 'zh-CN'
@@ -24,9 +24,9 @@ export default function App() {
     return <React.Fragment>
         <RecoilRoot>
             <Suspense fallback={<Loading />}>
-                <HashRouter>
+                <BrowserRouter>
                     <Router />
-                </HashRouter>
+                </BrowserRouter>
             </Suspense>
         </RecoilRoot>
     </React.Fragment>
