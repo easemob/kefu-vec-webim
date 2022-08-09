@@ -34,5 +34,14 @@ export default {
     reserve_cancel_succ: '取消成功',
     reserve_cancel_fail: '取消失败',
     reserve_add_succ: '预约成功',
-    reserve_add_fail: '预约失败，重新预约'
+    reserve_add_fail: '预约失败，重新预约',
+    reserve_login: '登录',
+    reserve_loginout: '退出',
+    reserve_login_withMsg: '短信登录',
+    reserve_phone_err: '请输入正确的手机号',
+    reserve_phone_placeholder: '手机号',
+    reserve_code_placeholder: '验证码',
+    reserve_code: '发送验证码',
+    reserve_recode: '重新发送',
+    logout_fail: '退登失败'
 }

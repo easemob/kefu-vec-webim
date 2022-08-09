@@ -150,3 +150,11 @@ $fs: 25px;
 		content: "\e623";
 	}
 }
+
+.icon-next {
+	@extend %font-shell-base-newagent;
+	&:before {
+		@extend %font-base-newagent;
+		content: "\e639";
+	}
+}

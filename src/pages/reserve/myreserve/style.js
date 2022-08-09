@@ -1,24 +1,66 @@
 import styled from "styled-components";
+import s from '@/assets/css/color'
 
 export const Wrapper = styled.div`
     font-size: 15px;
     .current-day {
-        background: #2189ff !important;
+        background: ${s.theme} !important;
     }
 `
 
 export const Header = styled.header`
-    height: 50px;
-    line-height: 50px;
-    padding-left: 20px;
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    border-bottom: 1px solid ${s.border};
+    > span {
+        flex-basis: 25%;
+        min-height: 50px;
+        padding: 0 5px;
+        box-sizing: border-box;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        white-space: break-spaces;
+        word-break: break-all;
+        overflow-wrap: anywhere;
+        &.selected {
+            color: ${s.theme};
+        }
+    }
 `
 
-export const ReserveButton = styled.button`
-    padding: 5px 10px;
-    background-color: #fff;
-    border-radius: 5px;
-    margin-left: 10px;
-    border: 1px solid #ccc;
+export const SevenDays = styled.div`
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: ${s.calendar};
+    padding: 10px 0;
+    border-bottom: 1px solid ${s.border};
+    font-size: 14px;
+    > div {
+        display: flex;
+        align-items: center;
+        justify-content: space-around;
+        width: 100%;
+        > div {
+            display: flex;
+            flex-direction: column;
+            line-height: 35px;
+            padding: 0 5px;
+            background-color: ${s.white};
+            &.selected {
+                background-color: ${s.theme};
+                color: ${s.white};
+            }
+            > span {
+                text-align: center;
+            }
+        }
+    }
+    > span {
+        cursor: pointer;
+    }
 `
 
 export const Container = styled.div`
@@ -30,16 +72,23 @@ export const ReserveRest = styled.div`
     line-height: 80px;
     padding: 0 20px;
     display: flex;
-    justify-content: space-between;
+    // justify-content: space-between;
     align-items: center;
-    border-top: 1px solid #ccc;
-    border-bottom: 1px solid #ccc;
+    border-bottom: 1px solid ${s.border};
     box-sizing: border-box;
+    > span {
+        &:last-child {
+            margin-left: auto;
+        }
+        &:nth-child(2) {
+            margin-left: 10px;
+        }
+    }
 `
 
 export const ReserveRestTip = styled.span`
     > i {
-        color: red;
+        color: ${s.red};
         margin: 0 10px;
         font-style: normal;
     }
@@ -47,14 +96,14 @@ export const ReserveRestTip = styled.span`
 
 export const ReserveRestButton = styled.span`
     padding: 0 15px;
-    color: #fff;
-    background: #2189ff;
+    color: ${s.white};
+    background: ${s.theme};
     border-radius: 5px;
     line-height: 30px;
 `
 
-export const ReserveFull = styled.div`
-    color: red;
+export const ReserveFull = styled.span`
+    color: ${s.red};
 `
 
 // AddReserve
@@ -66,7 +115,7 @@ export const AddContainer = styled.div`
 export const AddHeader = styled.header`
     line-height: 40px;
     padding-left: 30px;
-    border-bottom: 1px solid #ccc;
+    border-bottom: 1px solid ${s.border};
 `
 
 export const AddContent = styled.div`
@@ -77,12 +126,12 @@ export const AddItem = styled.div`
     line-height: 40px;
     display: flex;
     .adm-input-element {
-        background-color: #f1f1f1;
+        background-color: ${s.input};
         font-size: 13px;
         padding: 2px 5px;
     }
     input[readonly] {
-        background-color: #fff;
+        background-color: ${s.white};
     }
 `
 
@@ -91,8 +140,8 @@ export const AddItemLabel = styled.span`
 `
 
 export const AddButton = styled.div`
-    color: #fff;
-    background-color: #2189ff;
+    color: ${s.white};
+    background-color: ${s.theme};
     line-height: 30px;
     border-radius: 5px;
     width: 100px;

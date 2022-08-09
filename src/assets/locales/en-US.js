@@ -34,5 +34,14 @@ export default {
     reserve_cancel_succ: 'Success',
     reserve_cancel_fail: 'Fail',
     reserve_add_succ: 'Reserve Success',
-    reserve_add_fail: 'Retry'
+    reserve_add_fail: 'Retry',
+    reserve_login: 'Login',
+    reserve_loginout: 'Logout',
+    reserve_login_withMsg: 'SMS login',
+    reserve_phone_err: 'Please enter a valid phone number',
+    reserve_phone_placeholder: 'Phone number',
+    reserve_code_placeholder: 'Verify Code',
+    reserve_code: 'Send verify code',
+    reserve_recode: 'Resend',
+    logout_fail: 'Logout Fail'
 }

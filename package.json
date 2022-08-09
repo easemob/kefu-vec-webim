@@ -43,7 +43,8 @@
     "webpack": "^5.72.1",
     "webpack-bundle-analyzer": "^4.5.0",
     "webpack-cli": "^4.9.2",
-    "webpack-dev-server": "^4.9.0"
+    "webpack-dev-server": "^4.9.0",
+    "vconsole": "^3.14.6"
   },
   "dependencies": {
     "@netless/fastboard-react": "^0.3.3",
@@ -53,6 +54,7 @@
     "axios": "^0.27.2",
     "crypto-js": "^4.1.1",
     "easemob-kefu-webim": "^1.1.9",
+    "js-cookie": "^3.0.1",
     "moment": "^2.29.3",
     "query-string": "^7.1.1",
     "rc-upload": "^4.3.4",
@@ -61,9 +63,9 @@
     "react-h5-calendar": "^1.0.6",
     "react-intl-universal": "^2.5.3",
     "react-router-dom": "^6.3.0",
+    "recoil": "^0.7.4",
     "styled-components": "^5.3.5",
     "underscore": "=1.8.3",
-    "vconsole": "^3.14.6",
     "white-web-sdk": "^2.16.24"
   }
 }

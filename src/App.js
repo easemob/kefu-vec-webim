@@ -7,6 +7,7 @@ import intl from 'react-intl-universal'
 import queryString from 'query-string'
 import Router from './router'
 import { HashRouter } from 'react-router-dom'
+import { RecoilRoot } from 'recoil'
 
 var lang = queryString.parse(location.search).lang || 'zh-CN'
 
@@ -21,10 +22,12 @@ intl.init({
 
 export default function App() {
     return <React.Fragment>
-        <Suspense fallback={<Loading />}>
-            <HashRouter>
-                <Router />
-            </HashRouter>
-        </Suspense>
+        <RecoilRoot>
+            <Suspense fallback={<Loading />}>
+                <HashRouter>
+                    <Router />
+                </HashRouter>
+            </Suspense>
+        </RecoilRoot>
     </React.Fragment>
 }

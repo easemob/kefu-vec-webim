@@ -2,23 +2,43 @@ import React, { useState } from "react";
 import { Input, Toast} from 'antd-mobile'
 import { AddContainer, AddHeader, AddContent, AddItem, AddItemLabel, AddButton} from './style'
 import intl from 'react-intl-universal'
+import { createTask } from '@/assets/http/reserve'
+import { useRecoilValue } from "recoil"
+import { visitorInfoState } from "@/store/reserve"
 
 export default function AddReserve(props) {
-    const [idCard, setIdCard] = useState('')
     const [name, setName] = useState('')
     const [phone, setPhone] = useState('')
+    const visitorInfo = useRecoilValue(visitorInfoState(props.tenantId))
 
-    const handleAdd = () => {
-        console.log(111, {props, ...{idCard, name, phone}})
-        Toast.show({
-            content: intl.get('reserve_add_succ'),
-            position: 'top',
+    const handleAdd = async () => {
+        const { status } = await createTask({
+            tenantId: props.tenantId,
+            creatorId: visitorInfo.loginUser.userId,
+            subscribeTimePeriod: `${props.date} ${props.week} ${props.time}`,
+            visitorName: name,
+            contact: phone,
+            resourceDetailId: props.rest.resourceDetailId,
+            token: visitorInfo.token,
+            noticeBeforeMinutes: 10,
+            businessId: props.business.id
         })
-        props.setAddVisible && props.setAddVisible(false)
-
-        setIdCard('')
-        setName('')
-        setPhone('')
+        if (status === 'OK') {
+            Toast.show({
+                content: intl.get('reserve_add_succ'),
+                position: 'top',
+            })
+            props.setAddVisible && props.setAddVisible(false)
+            props.handleRestList && props.handleRestList()
+    
+            setName('')
+            setPhone('')
+        } else {
+            Toast.show({
+                icon: 'fail',
+                content: intl.get('reserve_add_fail'),
+            })
+        }
     }
  
     return <AddContainer>
@@ -26,15 +46,11 @@ export default function AddReserve(props) {
         <AddContent>
             <AddItem>
                 <AddItemLabel>预约业务：</AddItemLabel>
-                <Input value={props.type} readOnly />
+                <Input value={props.business ? props.business.name : ''} readOnly />
             </AddItem>
             <AddItem>
                 <AddItemLabel>预约时间：</AddItemLabel>
-                <Input value={props.date} readOnly />
-            </AddItem>
-            <AddItem>
-                <AddItemLabel>身份ID：</AddItemLabel>
-                <Input value={idCard} onChange={val => setIdCard(val)} />
+                <Input value={`${props.date} ${props.week} ${props.time}`} readOnly />
             </AddItem>
             <AddItem>
                 <AddItemLabel>名称：</AddItemLabel>
