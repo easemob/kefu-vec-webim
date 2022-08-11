@@ -2,7 +2,13 @@ import styled from 'styled-components'
 import s from '@/assets/css/color'
 
 export const Wrapper = styled.div`
-    height: 100vh;
+    position: absolute;
+    width: ${props => props.top ? '650px' : '100%'};
+    height: ${props => props.top ? '650px' : '100%'};
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    box-shadow: 0px 0px 10px #ccc;
     .adm-tabs {
         height: calc(100% - 50px);
         .adm-tabs-content {

@@ -34,7 +34,10 @@ export default function MyReserve({isLogin, setShowLogin, tenantId}) {
 
     // 上周
     const handlePrevDays = () => {
-        getDays(moment(sevenDays.shift().subscribeDate).add(-7, 'd').format('YYYY-MM-DD'))
+        let d = moment(sevenDays[0].subscribeDate).add(-7, 'd').format('YYYY-MM-DD')
+        if (moment(d).diff(moment(moment().format('YYYY-MM-DD')), 'days') > -1) {
+            getDays(d)
+        }
     }
 
     // 下周

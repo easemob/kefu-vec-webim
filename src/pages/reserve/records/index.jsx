@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react"
+import React, { useCallback, useEffect, useState } from "react"
 import { Wrapper, Content, Item, Container, Cancel } from './style'
 import { Modal, Toast, Empty, InfiniteScroll } from 'antd-mobile'
 import intl from 'react-intl-universal'
@@ -52,14 +52,19 @@ export default function Records(props) {
         })
         if (status === 'OK') {
             setList(val => [...val, ...entities])
-            setHasMore(entities.length > 0)
-            entities.length > 0 && setPage(val => val + 1)
+            setHasMore(entities.length > 9)
+            entities.length > 9 && setPage(val => val + 1)
         }
     }
 
     useEffect(() => {
-        getList()
-    }, [])
+        if (props.selectTab === 'records') {
+            getList()
+        } else {
+            setPage(0)
+            setList([])
+        }
+    }, [props])
 
     return <React.Fragment>
         <Wrapper>

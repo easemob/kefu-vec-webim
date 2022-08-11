@@ -9,6 +9,9 @@ import { useRecoilState, useRecoilValue } from "recoil"
 import { tenantIdState, visitorInfoState, showLoginState } from "@/store/reserve"
 import { delVisitorInfo } from '@/assets/storage/cookie'
 import { userLogout } from '@/assets/http/reserve'
+import utils from '@/tools/utils'
+
+let top = window.top === window.self // false 在iframe里面 true不在
 
 export default function Reserve() {
     const [selectTab, setSelectTab] = useState('reserve')
@@ -45,7 +48,7 @@ export default function Reserve() {
 
     const isLogin = visitorInfo ? true : false;
 
-    return <Wrapper>
+    return <Wrapper top={top} className={`${utils.isMobile ? 'full_screen' : ''}`}>
         <Header>
             <span>{intl.get('reserve_header')}</span>
             {!isLogin ? <span onClick={handleLogin}>{intl.get('reserve_login')}</span> : <span onClick={handleLogout}>{intl.get('reserve_loginout')}</span>}
@@ -63,6 +66,7 @@ export default function Reserve() {
                     <Tabs.Tab className={selectTab === 'records' ? 'selected' : ''} title={intl.get('reserve_tab_records')} key='records'>
                         <Records
                             tenantId={tenantId}
+                            selectTab={selectTab}
                         />
                     </Tabs.Tab>
                 </Tabs>
