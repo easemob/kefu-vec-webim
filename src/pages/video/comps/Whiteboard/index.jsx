@@ -29,7 +29,7 @@ export default function WhiteBoard({whiteboardRoomInfo, whiteboardUser, callId, 
     const [uiConfig] = useState(() => ({
         page_control: { enable: true },
         redo_undo: { enable: true },
-        toolbar: { enable: true },
+        toolbar: { enable: true, apps:{ enable: false} },
         zoom_control: { enable: true }
     }));
  

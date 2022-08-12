@@ -567,6 +567,7 @@ async function initConfig() {
 
 // 处理一键邀请、预约、多方通话等提示语
 async function parseWaitingPrompt(conf, tenantId) {
+	conf.styleSettings = conf.styleSettings || {}
 	if (urlParams.businessType) {
 		let extra
 		switch (urlParams.businessType) {
