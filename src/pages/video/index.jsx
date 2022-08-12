@@ -254,6 +254,7 @@ export default function Video() {
                     serviceAgora={serviceAgora}
                     callId={callId}
                     handleCloseVideo={handleClose}
+                    recived={recived}
                     />
                 {enquiryVisible && <Enquiry handleSendWs={handleEnquiry} {...enquiryData} />}
                 {chatVisible && top && !utils.isMobile && getChat()}

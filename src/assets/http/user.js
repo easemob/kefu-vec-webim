@@ -49,7 +49,7 @@ function getVisitorInfo(params) {
     })
 }
 
-function getVisitorId(){
+export function getVisitorId(){
     var config = commonConfig.getConfig()
     var techChannelInfo = config.orgName
 		+ "%23" + config.appName
@@ -166,5 +166,19 @@ export function visitorEnquiry(tenantId, data) {
 		url: `/v1/kefurtc/tenant/${tenantId}/enquiry/visitor/submit`,
 		method: 'post',
 		data
+	})
+}
+
+// 获取访客密码
+export function getPassword(userId) {
+	return request({
+		url: `/v1/webimplugin/visitors/password?userId=${userId}`
+	})
+}
+
+// 声网ticket
+export function getTicket(sessionId) {
+	return request({
+		url: `/v1/kefurtc/visitor/${cache.visitorId}/session/${sessionId}/ticket`
 	})
 }

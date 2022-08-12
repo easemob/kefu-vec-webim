@@ -5,7 +5,8 @@ import intl from 'react-intl-universal'
 import event from '@/tools/event'
 import { WaitWrapper, WaitTitle, WaitAgent, WaitAgentLogo, WaitAgentDesc, WaitTip, WaitOpera, InviteOpera} from './style'
 import { SYSTEM_RTCSESSION_INFO, SYSTEM_VIDEO_CALLBACK } from '@/assets/constants/events'
-import { visitorClose, visitorWaiting } from '@/assets/http/user'
+import { visitorClose, visitorWaiting, getVisitorId, getTicket } from '@/assets/http/user'
+import { useNavigate } from 'react-router-dom'
 
 function AnswerButton({handleClick, desc, init = true}) {
     return <React.Fragment>
@@ -16,7 +17,16 @@ function AnswerButton({handleClick, desc, init = true}) {
     </React.Fragment>
 }
 
-export default React.forwardRef(function({step, config, ws, setStep, params, callId, serviceAgora, handleCloseVideo }, ref) {
+function AnswerButtonNew({handleClick, desc, icon}) {
+    return <React.Fragment>
+        <div>
+            <span className={`icon-${icon}`} onClick={handleClick}></span>
+        </div>
+        <div>{desc}</div>
+    </React.Fragment>
+}
+
+export default React.forwardRef(function({step, config, ws, setStep, params, callId, serviceAgora, handleCloseVideo, recived }, ref) {
     const [desc, setDesc] = useState(intl.get('startVideo'))
     const [tip, setTip] = useState(config.style.waitingPrompt)
     const [timer, setTimer] = useState(null)
@@ -29,6 +39,7 @@ export default React.forwardRef(function({step, config, ws, setStep, params, cal
     })
 
     const stepRef = useRef()
+    let navigate = useNavigate()
 
     const callbackRecived = () => {
         ws.cancelVideo(null, {
@@ -84,11 +95,14 @@ export default React.forwardRef(function({step, config, ws, setStep, params, cal
                     },
                 }
             }
-            if (params.subscribe && JSON.parse(params.subscribe)) {
+            if (params.source) {
+                // source: 一键邀请invitation 预约subscribe
                 ext.sessionExt = {
-                    source: 'subscribe',
+                    source: params.source,
                     taskId: params.taskId || '',
-                    queueId: Number(params.queueId) || 0
+                    queueId: Number(params.queueId) || 0,
+                    agentUserId: params.agentUserId,
+                    inviteeVisitorName: params.inviteeVisitorName
                 }
             }
             ws.sendText(intl.get('inviteAgentVideo'), {
@@ -155,6 +169,73 @@ export default React.forwardRef(function({step, config, ws, setStep, params, cal
         setTip('客服正在邀请您进行视频通话')
     }
 
+    // 重新预约
+    const handleReserve = () => {
+        navigate(`../reserve?tenantId=${config.tenantId}`, { replace: true })
+    }
+
+    // 加入当前通话
+    const handleAddCurrent = async () => {
+        let visitorId = await getVisitorId()
+        if (visitorId) {
+            const ticket = await getTicket(params.sessionId)
+            if (ticket.status && ticket.status === 'OK') {
+                recived(Object.assign({}, ticket.entity.visitorTicket, {agentTicket: ticket.entity.agentTicket}))
+            } else {
+                console.error('通话不存在')
+            }
+        }
+    }
+
+    // 操作按钮
+    const getOperaButton = () => {
+        if (step === 'invite') {
+            return <InviteOpera>
+                <div className='recive'>
+                    <AnswerButton
+                        handleClick={callbackRecived}
+                        desc={intl.get('reciveVideo')}/>
+                </div>
+                <div className='hung'>
+                    <AnswerButton
+                        handleClick={callbackReject}
+                        desc={intl.get('closeVideo')}
+                        init={false}/>
+                </div>
+            </InviteOpera>
+        } else if (params.businessType === 'SubscribeTask-Vec') { // 预约服务
+            return <InviteOpera role={step} ref={stepRef}>
+                <div className='recive'>
+                    <AnswerButtonNew
+                        handleClick={handleReserve}
+                        desc={'重新预约'}
+                        icon='reserve' />
+                </div>
+                {step === 'start' ? <div className='reserve'>
+                    <AnswerButton
+                        handleClick={handleStart}
+                        desc={'预约通话'}
+                    />
+                </div> : <div className='hung'>
+                    <AnswerButton
+                        handleClick={handleCloseVideo}
+                        desc={desc}
+                        init={false} />
+                </div>}
+            </InviteOpera>
+        } else if (params.businessType === 'multiparty-Vec') { // 邀请多方通话
+            return <WaitOpera role={step} ref={stepRef}>
+                {step === 'start' ? (
+                    params.sessionId ? <AnswerButtonNew handleClick={handleAddCurrent} desc={'加入通话'} icon='join-video' /> : <AnswerButton handleClick={handleStart} desc={desc} />
+                ) : <AnswerButton handleClick={handleCloseVideo} desc={desc} init={false} />}
+            </WaitOpera>
+        }
+
+        return <WaitOpera role={step} ref={stepRef}>
+            {step === 'start' ? <AnswerButton handleClick={handleStart} desc={desc} /> : <AnswerButton handleClick={handleCloseVideo} desc={desc} init={false} />}
+        </WaitOpera>
+    }
+
     useEffect(() => {
         if (waitTimerFlag !== 'true') {
             clearInterval(waitTimer)
@@ -204,24 +285,6 @@ export default React.forwardRef(function({step, config, ws, setStep, params, cal
             </WaitAgentDesc>
         </WaitAgent>
         <WaitTip>{tip}</WaitTip>
-        {step === 'invite' ? (
-            <InviteOpera>
-                <div className='recive'>
-                    <AnswerButton
-                        handleClick={callbackRecived}
-                        desc={intl.get('reciveVideo')}/>
-                </div>
-                <div className='hung'>
-                    <AnswerButton
-                        handleClick={callbackReject}
-                        desc={intl.get('closeVideo')}
-                        init={false}/>
-                </div>
-            </InviteOpera>
-        ) : (
-            <WaitOpera role={step} ref={stepRef}>
-                {step === 'start' ? <AnswerButton handleClick={handleStart} desc={desc} /> : <AnswerButton handleClick={handleCloseVideo} desc={desc} init={false} />}
-            </WaitOpera>
-        )}
+        {getOperaButton()}
     </WaitWrapper>
 })

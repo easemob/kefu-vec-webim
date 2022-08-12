@@ -136,6 +136,13 @@ export const InviteOpera = styled.div`
             }
         }
     }
+    .reserve {
+        > div {
+            &:first-child {
+                background: linear-gradient(172deg, #5ef61e , #44d434);
+            }
+        }
+    }
     > div {
         > div {
             &:first-child {

@@ -7,9 +7,10 @@ import Dict from '@/tools/Dict'
 import List from '@/tools/List'
 import commonConfig from '@/common/config'
 import { getConfig, getConfigOption, getRelevanceListConfig, tenantInfo } from '../assets/http/config'
-import { createVisitor, getToken, grayScaleList } from '../assets/http/user'
+import { createVisitor, getToken, grayScaleList, getPassword } from '../assets/http/user'
 import { SYSTEM_OFFLINE, HEART_BEAT_INTERVAL, SYSTEM_CHAT_CLOSED, SYSTEM_CLEAR_AGENTSTATE, SYSTEM_CLEAR_AGENTINPUTSTATE, SYSTEM_IS_PULL_HISTORY, SYSTEM_NEW_OFFICIAL_ACCOUNT_FOUND, SYSTEM_OFFICIAL_ACCOUNT_UPDATED, SYSTEM_VIDEO_TICKET_RECEIVED, SYSTEM_VIDEO_ARGO_END, SYSTEM_WHITE_BOARD_RECEIVED, WEBIM_CONNCTION_AUTH_ERROR, WEBIM_CONNCTION_CALLBACK_INNER_ERROR, SYSTEM_AGENT_INFO_UPDATE, SYSTEM_EVENT_MSG_TEXT, SYSTEM_VIDEO_ARGO_REJECT, SYSTEM_SESSION_TRANSFERED, SYSTEM_SESSION_TRANSFERING, SYSTEM_SESSION_CLOSED, SYSTEM_SESSION_OPENED,SESSION_STATE_PROCESSING,SYSTEM_SESSION_CREATED, SYSTEM_VIDEO_CALLBACK_TICKET, SYSTEM_AGENT_CANCALCALLBACK, SYSTEM_ENQUIRY_INVITE, SYSTEM_RTCSESSION_INFO, SYSTEM_VIDEO_CALLBACK, SYSTEM_OPERA_MICROPHONE, SYSTEM_OPERA_CAMERA } from '@/assets/constants/events'
 import queryString from 'query-string'
+import { TaskInfo } from '@/assets/http/transfer'
 
 var handleConfig = commonConfig.handleConfig;
 
@@ -17,6 +18,12 @@ var handleConfig = commonConfig.handleConfig;
 var receiveMsgDict = new Dict();
 var conn
 var config = commonConfig.getConfig()
+const urlParams = (() => {
+	let searchOps = queryString.parse(location.search)
+	let hashOps = queryString.parse(location.hash.substring(location.hash.indexOf('?')))
+	
+	return Object.assign({}, searchOps, hashOps)
+})()
 
 var _open = tools.retryThrottle(function(){
 	var op = {
@@ -537,32 +544,88 @@ function _initConnection(){
 
 // 初始化配置
 commonConfig.setConfig({
-	configId: queryString.parse(location.search).configId || ''
+	configId: urlParams.configId || ''
 })
 async function initConfig() {
+	if (!commonConfig.getConfig().configId) {
+		console.log('no configId, init end', Date.now())
+		return Promise.resolve(null)
+	}
+
 	const {status, entity} = await getConfig(commonConfig.getConfig().configId)
 	if (status === 'OK') {
-		entity.configJson = JSON.parse(entity.configJson)
+		entity.configJson = await parseWaitingPrompt(JSON.parse(entity.configJson), entity.tenantId)
 		entity.configJson.tenantId = entity.tenantId;
 		entity.configJson.configName = entity.configName;
 		handleConfig(entity.configJson);
 
 		await initRelevanceList(entity.tenantId);
 
-		console.log('config end')
+		console.log('config end', Date.now())
 	}
+}
+
+// 处理一键邀请、预约、多方通话等提示语
+async function parseWaitingPrompt(conf, tenantId) {
+	if (urlParams.businessType) {
+		let extra
+		switch (urlParams.businessType) {
+			case 'OneClickInvitation-Vec':
+				extra = JSON.parse(urlParams.extra)
+				conf.styleSettings.waitingPrompt = `${extra.inviteeVisitorName || ''}您好，${extra.creatorName || ''}邀请您加入视频通话，如您需要请点击加入发起通话！`
+				break;
+			case 'SubscribeTask-Vec':
+				let defaultText = '您好！您可以发起预约通话进行咨询，也可以选择重新预约服务！'
+				let text = '您好！预约通话服务#，如有需要您可以选择以下服务！'
+				let statusDesc = {
+					CANCEL: '已取消',
+					EXECUTED: '已执行',
+					CREATED: '待执行',
+					UNFINISHED: '未完成',
+					FINISHED: '已完成'
+				}
+				const { status, entity} = await TaskInfo(tenantId, urlParams.taskId)
+				if (status === 'OK' && entity) {
+					let replace;
+					replace = entity.taskResultStatus === 'FINISHED' ? statusDesc[entity.taskResultStatus] : statusDesc[entity.taskStatus]
+					entity.subscribeEndDateTime < Date.now() && (replace = '已过期')
+					entity.subscribeStartDateTime > Date.now() && (replace = '未到时间')
+					if (replace) {
+						conf.styleSettings.waitingPrompt = text.replace('#', replace)
+					} else {
+						conf.styleSettings.waitingPrompt = defaultText
+					}
+				}
+				break;
+			case 'multiparty-Vec':
+				extra = JSON.parse(urlParams.extra)
+				let mulText
+				if (urlParams.sessionId) {
+					mulText = `${extra.inviteeVisitorName}您好，${extra.creatorName || ''}邀请您加入视频通话，如您需要请点击加入视频通话！`
+				} else {
+					mulText = `${extra.inviteeVisitorName || ''}您好，${extra.creatorName || ''}邀请您加入视频通话，如您需要请点击加入发起通话！`
+				}
+				conf.styleSettings.waitingPrompt = mulText
+				break;
+			default:
+				break;
+		}
+	}
+
+	return conf
 }
 
 async function initRelevanceList(tenantId){
 	// 获取关联信息（targetChannel）
-	const [value, _relevanceList, info, grayScale] = await Promise.all([
+	const [value, _relevanceList, info, grayScale, password] = await Promise.all([
 		getConfigOption({
 			configId: commonConfig.getConfig().configId,
 			tenantId
 		}),
 		getRelevanceListConfig({tenantId}),
 		tenantInfo({tenantId}),
-		grayScaleList(tenantId)
+		grayScaleList(tenantId),
+		urlParams.userName ? getPassword(urlParams.userName) : null
 	])
 
 	if (value.status && value.status === 'OK') {
@@ -586,6 +649,14 @@ async function initRelevanceList(tenantId){
 		profile.grayList = garyRes
 	} else {
 		profile.grayList = {}
+	}
+	
+	// 用户密码
+	if (password) {
+		// 设置cookie
+		var cacheKeyName = (commonConfig.getConfig().configId || (commonConfig.getConfig().to + commonConfig.getConfig().tenantId + commonConfig.getConfig().emgroup));
+		utils.set(cacheKeyName, urlParams.userName);
+		utils.set('pass' + cacheKeyName, password);
 	}
 
 	await handleCfgData(_relevanceList || [], []);

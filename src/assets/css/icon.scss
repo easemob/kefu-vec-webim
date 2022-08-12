@@ -83,7 +83,7 @@ $fs: 25px;
 	@extend %font-shell-base-newagent;
 	&:before {
 		@extend %font-base-newagent;
-		content: "\e6eb";
+		content: "\ecb5";
 	}
 }
 
@@ -156,5 +156,21 @@ $fs: 25px;
 	&:before {
 		@extend %font-base-newagent;
 		content: "\e639";
+	}
+}
+
+.icon-join-video {
+	@extend %font-shell-base-newagent;
+	&:before {
+		@extend %font-base-newagent;
+		content: "\e662";
+	}
+}
+
+.icon-reserve {
+	@extend %font-shell-base-newagent;
+	&:before {
+		@extend %font-base-newagent;
+		content: "\e663";
 	}
 }

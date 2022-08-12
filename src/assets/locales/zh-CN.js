@@ -43,5 +43,7 @@ export default {
     reserve_code_placeholder: '验证码',
     reserve_code: '发送验证码',
     reserve_recode: '重新发送',
-    logout_fail: '退登失败'
+    logout_fail: '退登失败',
+    SHORT_URL_0004: '未到短连接生效时间',
+    SHORT_URL_0005:'短连接过期'
 }

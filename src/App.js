@@ -1,7 +1,6 @@
 import React, { Suspense } from 'react'
 import '@/assets/css/icon.scss'
 import '@/assets/css/common.scss'
-import '@/ws/webim.config'
 import Loading from './components/Loading'
 import intl from 'react-intl-universal'
 import queryString from 'query-string'

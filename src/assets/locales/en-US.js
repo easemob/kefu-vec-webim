@@ -43,5 +43,7 @@ export default {
     reserve_code_placeholder: 'Verify Code',
     reserve_code: 'Send verify code',
     reserve_recode: 'Resend',
-    logout_fail: 'Logout Fail'
+    logout_fail: 'Logout Fail',
+    SHORT_URL_0004: '未到短连接生效时间',
+    SHORT_URL_0005:'短连接过期'
 }
