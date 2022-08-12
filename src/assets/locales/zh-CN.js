@@ -46,5 +46,6 @@ export default {
     logout_fail: '退登失败',
     SHORT_URL_0004: '未到短连接生效时间',
     SHORT_URL_0005:'短连接过期',
-    KEFU_SUBSCRIBE_0022: '无效的电话号码'
+    KEFU_SUBSCRIBE_0022: '无效的电话号码',
+    KEFU_SUBSCRIBE_0020: '验证码错误'
 }

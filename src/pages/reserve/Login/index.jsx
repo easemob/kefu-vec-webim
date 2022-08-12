@@ -58,7 +58,7 @@ export default function Login({tenantId, setShowLogin, setVisitorInfoState}) {
             } else {
                 Toast.show({
                     icon: 'fail',
-                    content: data.response.data.errorDescription,
+                    content: intl.get(data.response.data.errorCode),
                 })
             }
         }

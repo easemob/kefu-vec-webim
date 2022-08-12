@@ -46,5 +46,6 @@ export default {
     logout_fail: 'Logout Fail',
     SHORT_URL_0004: '未到短连接生效时间',
     SHORT_URL_0005:'短连接过期',
-    KEFU_SUBSCRIBE_0022: 'invalid phone number'
+    KEFU_SUBSCRIBE_0022: 'invalid phone number',
+    KEFU_SUBSCRIBE_0020: 'sms code not right'
 }
