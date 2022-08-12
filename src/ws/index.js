@@ -572,7 +572,7 @@ async function parseWaitingPrompt(conf, tenantId) {
 		switch (urlParams.businessType) {
 			case 'OneClickInvitation-Vec':
 				extra = JSON.parse(urlParams.extra)
-				conf.styleSettings.waitingPrompt = `${extra.inviteeVisitorName || ''}您好，${extra.creatorName || ''}邀请您加入视频通话，如您需要请点击加入发起通话！`
+				extra && (conf.styleSettings.waitingPrompt = `${extra.inviteeVisitorName || ''}您好，${extra.creatorName || ''}邀请您加入视频通话，如您需要请点击加入发起通话！`)
 				break;
 			case 'SubscribeTask-Vec':
 				let defaultText = '您好！您可以发起预约通话进行咨询，也可以选择重新预约服务！'

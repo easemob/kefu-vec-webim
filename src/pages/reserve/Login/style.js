@@ -9,6 +9,17 @@ export const Header = styled.header`
     font-size: 17px;
     color: ${s.white};
     background-color: ${s.theme};
+    position: relative;
+    > span {
+        position: absolute;
+        left: 20px;
+        top: 50%;
+        transform: translateY(-50%);
+        cursor: pointer;
+        &::before {
+            font-size: 20px;
+        }
+    }
 `
 
 export const Body = styled.div`

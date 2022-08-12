@@ -174,3 +174,11 @@ $fs: 25px;
 		content: "\e663";
 	}
 }
+
+.icon-back {
+	@extend %font-shell-base-newagent;
+	&:before {
+		@extend %font-base-newagent;
+		content: "\e601";
+	}
+}

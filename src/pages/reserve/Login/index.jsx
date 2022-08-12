@@ -73,7 +73,10 @@ export default function Login({tenantId, setShowLogin, setVisitorInfoState}) {
     }, [])
 
     return <React.Fragment>
-        <Header>{intl.get('reserve_login_withMsg')}</Header>
+        <Header>
+            <span className="icon-back" onClick={() => setShowLogin(false)}></span>
+            {intl.get('reserve_login_withMsg')}
+        </Header>
         <Body>
             <Input
                 value={phone}
