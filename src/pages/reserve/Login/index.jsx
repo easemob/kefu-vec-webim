@@ -4,6 +4,8 @@ import { Input, Toast } from 'antd-mobile'
 import { Header, Body, VerCodeWrapper } from "./style"
 import { sendCode, userLoginWithCode } from "@/assets/http/reserve"
 import { setVisitorInfo } from "@/assets/storage/cookie";
+import IntlTelInput from 'react-intl-tel-input';
+import 'react-intl-tel-input/dist/main.css';
 
 export default function Login({tenantId, setShowLogin, setVisitorInfoState}) {
     const [phone, setPhone] = useState('+86')
@@ -64,6 +66,14 @@ export default function Login({tenantId, setShowLogin, setVisitorInfoState}) {
         }
     }
 
+    function handlePhoneChange() {
+        setPhone(arguments[1])
+    }
+
+    function handlePhoneSelect() {
+        setPhone('+' + arguments[1].dialCode)
+    }
+
     useEffect(() => {
 
         return () => {
@@ -78,12 +88,23 @@ export default function Login({tenantId, setShowLogin, setVisitorInfoState}) {
             {intl.get('reserve_login_withMsg')}
         </Header>
         <Body>
-            <Input
+            {/* <Input
                 value={phone}
                 onChange={val => setPhone(val)}
                 placeholder={intl.get('reserve_phone_placeholder')}
                 minLength={11}
                 maxLength={14}
+            /> */}
+            <IntlTelInput
+                value={phone}
+                preferredCountries={['cn', 'us']}
+                defaultCountry="cn"
+                containerClassName="intl-tel-input adm-input"
+                inputClassName="adm-input-element"
+                placeholder={intl.get('reserve_phone_placeholder')}
+                onPhoneNumberChange={handlePhoneChange}
+                onSelectFlag={handlePhoneSelect}
+                style={{display: 'flex'}}
             />
             <VerCodeWrapper canCode={canCode}>
                 <Input

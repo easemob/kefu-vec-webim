@@ -26,75 +26,75 @@ module.exports = {
     //解决the request of a dependency is an expression
     exprContextCritical: false,
     rules: [
-      {
-        test: /\.jsx?$/,
-        use: 'babel-loader',
-        exclude: /node_modules/
-      },
-      {
-        test: /\.(le|c)ss$/,
-        // exclude: /node_modules/,
-        use: [
-          'style-loader',
-          // MiniCssExtractPlugin.loader,
-          'css-loader',
-          'postcss-loader',
-          // 当解析antd.less，必须写成下面格式，否则会报Inline JavaScript is not enabled错误
-          { loader: 'less-loader', options: { lessOptions: { javascriptEnabled: true } } },
-        ],
-      },
-      {
-        test: /\.(png|jpe?g|svg|gif)$/,
-        type: 'asset/inline',
-      },
-      {
-        test: /\.(eot|ttf|woff|woff2)$/,
-        type: 'asset/resource',
-        generator: {
-          filename: 'fonts/[hash][ext][query]',
-        },
-      },
-      {
-        test: /\.s[ac]ss$/i,
-        exclude: /node_modules/,
-        use: [
-          'style-loader',
-          // 将 JS 字符串生成为 style 节点
-          // isDev ? 'style-loader' : MiniCssExtractPlugin.loader,
-          // 将 CSS 转化成 CommonJS 模块
-          'css-loader',
-          // 将 Sass 编译成 CSS
-          'sass-loader',
-        ],
-      },
-      {
-				test: require.resolve("underscore"),
-        loader: "expose-loader",
-        options: {
-          exposes: {
-            globalName: '_',
-            override: true
-          },
-        },
+		{
+			test: /\.jsx?$/,
+			use: 'babel-loader',
+			exclude: /node_modules/
+		},
+		{
+			test: /\.(le|c)ss$/,
+			// exclude: /node_modules/,
+			use: [
+			'style-loader',
+			// MiniCssExtractPlugin.loader,
+			'css-loader',
+			'postcss-loader',
+			// 当解析antd.less，必须写成下面格式，否则会报Inline JavaScript is not enabled错误
+			{ loader: 'less-loader', options: { lessOptions: { javascriptEnabled: true } } },
+			],
+		},
+		{
+			test: /\.(png|jpe?g|svg|gif)$/,
+			type: 'asset/inline',
+		},
+		{
+			test: /\.(eot|ttf|woff|woff2)$/,
+			type: 'asset/resource',
+			generator: {
+			filename: 'fonts/[hash][ext][query]',
 			},
-      {
-				test: require.resolve("../src/ws/webim.config.js"),
-				loader: "expose-loader",
-        options: {
-          exposes: ['WebIM']
-        }
+		},
+		{
+			test: /\.s[ac]ss$/i,
+			exclude: /node_modules/,
+			use: [
+			'style-loader',
+			// 将 JS 字符串生成为 style 节点
+			// isDev ? 'style-loader' : MiniCssExtractPlugin.loader,
+			// 将 CSS 转化成 CommonJS 模块
+			'css-loader',
+			// 将 Sass 编译成 CSS
+			'sass-loader',
+			],
+		},
+      	{
+			test: require.resolve("underscore"),
+			loader: "expose-loader",
+			options: {
+			exposes: {
+				globalName: '_',
+				override: true
 			},
-      {
-				test: [
-					/plugin(\\|\/)+index\.js$/
-				],
-        exclude: /node_modules/,
-				loader: "string-replace-loader",
-        options: {
-          search: "__WEBIM_SLASH_KEY_PATH__",
-					replace: SLASH_KEY_PATH,
-        }
 			},
+		},
+      	{
+			test: require.resolve("../src/ws/webim.config.js"),
+			loader: "expose-loader",
+			options: {
+				exposes: ['WebIM']
+			}
+		},
+      	{
+			test: [
+				/plugin(\\|\/)+index\.js$/
+			],
+			exclude: /node_modules/,
+			loader: "string-replace-loader",
+			options: {
+			search: "__WEBIM_SLASH_KEY_PATH__",
+				replace: SLASH_KEY_PATH,
+			}
+		},
     ],
   },
   plugins: [

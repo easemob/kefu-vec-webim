@@ -61,6 +61,7 @@
     "react": "^18.1.0",
     "react-dom": "^18.1.0",
     "react-h5-calendar": "^1.0.6",
+    "react-intl-tel-input": "^8.2.0",
     "react-intl-universal": "^2.5.3",
     "react-router-dom": "^6.3.0",
     "recoil": "^0.7.4",
