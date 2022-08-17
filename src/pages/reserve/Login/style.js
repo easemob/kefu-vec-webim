@@ -45,6 +45,9 @@ export const Body = styled.div`
             cursor: pointer;
         }
     }
+    .form-control {
+        border: none;
+    }
 `
 
 export const VerCodeWrapper = styled.div`

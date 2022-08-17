@@ -59,7 +59,7 @@ export default function Records(props) {
 
     useEffect(() => {
         if (props.selectTab === 'records') {
-            getList()
+            visitorInfo && getList()
         } else {
             setPage(0)
             setList([])

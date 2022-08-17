@@ -4,8 +4,8 @@ import { Input, Toast } from 'antd-mobile'
 import { Header, Body, VerCodeWrapper } from "./style"
 import { sendCode, userLoginWithCode } from "@/assets/http/reserve"
 import { setVisitorInfo } from "@/assets/storage/cookie";
-import IntlTelInput from 'react-intl-tel-input';
-import 'react-intl-tel-input/dist/main.css';
+import PhoneInput from 'react-phone-input-2'
+import 'react-phone-input-2/lib/style.css'
 
 export default function Login({tenantId, setShowLogin, setVisitorInfoState}) {
     const [phone, setPhone] = useState('+86')
@@ -24,7 +24,7 @@ export default function Login({tenantId, setShowLogin, setVisitorInfoState}) {
                 return
             }
 
-            const data = await sendCode(tenantId, phone) // 请求数据，成功后倒计时
+            const data = await sendCode(tenantId, '+' + phone) // 请求数据，成功后倒计时
             if (data.status && data.status === 'OK') {
                 let i = 60;
                 let timerBak = setInterval(() => {
@@ -51,7 +51,7 @@ export default function Login({tenantId, setShowLogin, setVisitorInfoState}) {
 
     const userLogin = async () => {
         if (phone.trim() && verCode.trim()) {
-            const data = await userLoginWithCode(tenantId, phone.trim(), verCode.trim()) // 请求接口，成功后回到设置登录状态，保存用户数据
+            const data = await userLoginWithCode(tenantId, '+' + phone.trim(), verCode.trim()) // 请求接口，成功后回到设置登录状态，保存用户数据
             if (data.status && data.status === 'OK') {
                 const { entity } = data
                 setVisitorInfoState(entity)
@@ -64,14 +64,6 @@ export default function Login({tenantId, setShowLogin, setVisitorInfoState}) {
                 })
             }
         }
-    }
-
-    function handlePhoneChange() {
-        setPhone(arguments[1])
-    }
-
-    function handlePhoneSelect() {
-        setPhone('+' + arguments[1].dialCode)
     }
 
     useEffect(() => {
@@ -95,16 +87,15 @@ export default function Login({tenantId, setShowLogin, setVisitorInfoState}) {
                 minLength={11}
                 maxLength={14}
             /> */}
-            <IntlTelInput
+            <PhoneInput
+                containerClass="adm-input"
+                inputClass="adm-input-element"
+                country={'cn'}
                 value={phone}
+                onChange={phone => setPhone(phone)}
                 preferredCountries={['cn', 'us']}
-                defaultCountry="cn"
-                containerClassName="intl-tel-input adm-input"
-                inputClassName="adm-input-element"
                 placeholder={intl.get('reserve_phone_placeholder')}
-                onPhoneNumberChange={handlePhoneChange}
-                onSelectFlag={handlePhoneSelect}
-                style={{display: 'flex'}}
+                style={{paddingLeft: 0}}
             />
             <VerCodeWrapper canCode={canCode}>
                 <Input
