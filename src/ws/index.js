@@ -596,6 +596,11 @@ async function parseWaitingPrompt(conf, tenantId) {
 					} else {
 						conf.styleSettings.waitingPrompt = defaultText
 					}
+
+					// 标记是否是预约任务
+					commonConfig.setConfig({
+						isReserveTask: entity.subscribeEndDateTime < Date.now() || entity.subscribeStartDateTime > Date.now() ? false : true
+					})
 				}
 				break;
 			case 'multiparty-Vec':

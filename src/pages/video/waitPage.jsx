@@ -105,6 +105,8 @@ export default React.forwardRef(function({step, config, ws, setStep, params, cal
                     inviteeVisitorName: params.inviteeVisitorName
                 }
             }
+            // 非预约任务去除sessionExt，防止访客插队
+            typeof config.isReserveTask !== 'undefined' && !config.isReserveTask && (delete ext['sessionExt'])
             ws.sendText(intl.get('inviteAgentVideo'), {
                 ext
             })
@@ -214,7 +216,7 @@ export default React.forwardRef(function({step, config, ws, setStep, params, cal
                 {step === 'start' ? <div className='reserve'>
                     <AnswerButton
                         handleClick={handleStart}
-                        desc={'预约通话'}
+                        desc={config.isReserveTask ? '预约通话' : '非预约通话'}
                     />
                 </div> : <div className='hung'>
                     <AnswerButton
