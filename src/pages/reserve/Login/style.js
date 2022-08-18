@@ -46,7 +46,7 @@ export const Body = styled.div`
         }
     }
     .form-control {
-        border: none;
+        border: none !important;
     }
 `
 
