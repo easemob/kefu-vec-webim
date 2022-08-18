@@ -4,7 +4,9 @@ import s from '@/assets/css/color'
 export const Wrapper = styled.div`
     position: absolute;
     width: ${props => props.top ? '650px' : '100%'};
-    height: ${props => props.top ? '650px' : '100%'};
+    // height: ${props => props.top ? '650px' : '100%'};
+    height: 90%;
+    max-height: 650px;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
