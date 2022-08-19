@@ -173,7 +173,7 @@ export default React.forwardRef(function({step, config, ws, setStep, params, cal
 
     // 重新预约
     const handleReserve = () => {
-        navigate(`../reserve?tenantId=${config.tenantId}`, { replace: true })
+        navigate(`../reserve?tenantId=${config.tenantId}`)
     }
 
     // 加入当前通话
