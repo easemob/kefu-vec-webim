@@ -177,8 +177,8 @@ export function getPassword(userId) {
 }
 
 // 声网ticket
-export function getTicket(sessionId) {
+export function getTicket(visitorId, sessionId) {
 	return request({
-		url: `/v1/kefurtc/visitor/${cache.visitorId}/session/${sessionId}/ticket`
+		url: `/v1/kefurtc/visitor/${visitorId}/session/${sessionId}/ticket`
 	})
 }

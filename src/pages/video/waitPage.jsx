@@ -5,7 +5,7 @@ import intl from 'react-intl-universal'
 import event from '@/tools/event'
 import { WaitWrapper, WaitTitle, WaitAgent, WaitAgentLogo, WaitAgentDesc, WaitTip, WaitOpera, InviteOpera} from './style'
 import { SYSTEM_RTCSESSION_INFO, SYSTEM_VIDEO_CALLBACK } from '@/assets/constants/events'
-import { visitorClose, visitorWaiting, getVisitorId, getTicket } from '@/assets/http/user'
+import { visitorClose, visitorWaiting, getTicket } from '@/assets/http/user'
 import { useNavigate } from 'react-router-dom'
 import { Toast } from 'antd-mobile'
 
@@ -180,29 +180,16 @@ export default React.forwardRef(function({step, config, ws, setStep, params, cal
     // 加入当前通话
     const handleAddCurrent = async () => {
         let extra = JSON.parse(params.extra)
-        try {
-            let visitorId = await getVisitorId()
-            if (visitorId) {
-                const ticket = await getTicket(params.sessionId)
-                console.log(222, ticket)
-                if (ticket.status && ticket.status === 'OK') {
-                    recived(Object.assign({}, ticket.entity.visitorTicket, {agentTicket: ticket.entity.agentTicket}))
-                } else {
-                    delete params.businessType
-                    Toast.show({
-                        icon: 'fail',
-                        content: '通话不存在'
-                    })
-                    setTip(`${extra.inviteeVisitorName || ''}您好，${extra.creatorName || ''}邀请您加入视频通话，如您需要请点击加入发起通话！`)
-                }
-            }
-        } catch (error) {
+        const ticket = await getTicket(params.visitorId, params.sessionId)
+        if (ticket.status && ticket.status === 'OK') {
+            recived(Object.assign({}, ticket.entity.visitorTicket, {agentTicket: ticket.entity.agentTicket}))
+        } else {
+            delete params.businessType
             Toast.show({
                 icon: 'fail',
-                content: '访客不存在'
+                content: '通话不存在'
             })
             setTip(`${extra.inviteeVisitorName || ''}您好，${extra.creatorName || ''}邀请您加入视频通话，如您需要请点击加入发起通话！`)
-            delete params.businessType
         }
     }
 
