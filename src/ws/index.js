@@ -603,7 +603,7 @@ async function parseWaitingPrompt(conf, tenantId) {
 					})
 				}
 				break;
-			case 'multiparty-Vec':
+			case 'MultiInvitation-Vec':
 				extra = JSON.parse(urlParams.extra)
 				let mulText
 				if (urlParams.sessionId) {

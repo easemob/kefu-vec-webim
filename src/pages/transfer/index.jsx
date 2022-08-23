@@ -20,6 +20,7 @@ export default function Transfer() {
             }
             switch (data.entity.businessType) {
                 case 'OneClickInvitation-Vec': // 一键邀请
+                case 'MultiInvitation-Vec': // 多方通话
                     p.extra = JSON.stringify(data.entity.extra)
                     break;
                 case 'SubscribeTask-Vec':

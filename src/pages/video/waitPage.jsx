@@ -186,6 +186,8 @@ export default React.forwardRef(function({step, config, ws, setStep, params, cal
             } else {
                 console.error('通话不存在')
             }
+        } else {
+            console.error('访客不存在')
         }
     }
 
@@ -225,7 +227,7 @@ export default React.forwardRef(function({step, config, ws, setStep, params, cal
                         init={false} />
                 </div>}
             </InviteOpera>
-        } else if (params.businessType === 'multiparty-Vec') { // 邀请多方通话
+        } else if (params.businessType === 'MultiInvitation-Vec') { // 邀请多方通话
             return <WaitOpera role={step} ref={stepRef}>
                 {step === 'start' ? (
                     params.sessionId ? <AnswerButtonNew handleClick={handleAddCurrent} desc={'加入通话'} icon='join-video' /> : <AnswerButton handleClick={handleStart} desc={desc} />
