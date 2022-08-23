@@ -7,6 +7,7 @@ import { WaitWrapper, WaitTitle, WaitAgent, WaitAgentLogo, WaitAgentDesc, WaitTi
 import { SYSTEM_RTCSESSION_INFO, SYSTEM_VIDEO_CALLBACK } from '@/assets/constants/events'
 import { visitorClose, visitorWaiting, getVisitorId, getTicket } from '@/assets/http/user'
 import { useNavigate } from 'react-router-dom'
+import { Toast } from 'antd-mobile'
 
 function AnswerButton({handleClick, desc, init = true}) {
     return <React.Fragment>
@@ -178,16 +179,30 @@ export default React.forwardRef(function({step, config, ws, setStep, params, cal
 
     // 加入当前通话
     const handleAddCurrent = async () => {
-        let visitorId = await getVisitorId()
-        if (visitorId) {
-            const ticket = await getTicket(params.sessionId)
-            if (ticket.status && ticket.status === 'OK') {
-                recived(Object.assign({}, ticket.entity.visitorTicket, {agentTicket: ticket.entity.agentTicket}))
-            } else {
-                console.error('通话不存在')
+        let extra = JSON.parse(params.extra)
+        try {
+            let visitorId = await getVisitorId()
+            if (visitorId) {
+                const ticket = await getTicket(params.sessionId)
+                console.log(222, ticket)
+                if (ticket.status && ticket.status === 'OK') {
+                    recived(Object.assign({}, ticket.entity.visitorTicket, {agentTicket: ticket.entity.agentTicket}))
+                } else {
+                    delete params.businessType
+                    Toast.show({
+                        icon: 'fail',
+                        content: '通话不存在'
+                    })
+                    setTip(`${extra.inviteeVisitorName || ''}您好，${extra.creatorName || ''}邀请您加入视频通话，如您需要请点击加入发起通话！`)
+                }
             }
-        } else {
-            console.error('访客不存在')
+        } catch (error) {
+            Toast.show({
+                icon: 'fail',
+                content: '访客不存在'
+            })
+            setTip(`${extra.inviteeVisitorName || ''}您好，${extra.creatorName || ''}邀请您加入视频通话，如您需要请点击加入发起通话！`)
+            delete params.businessType
         }
     }
 
