@@ -182,7 +182,7 @@ export default React.forwardRef(function({step, config, ws, setStep, params, cal
         let extra = JSON.parse(params.extra)
         const ticket = await getTicket(params.visitorId, params.sessionId)
         if (ticket.status && ticket.status === 'OK') {
-            recived(Object.assign({}, ticket.entity.visitorTicket, {agentTicket: ticket.entity.agentTicket}))
+            recived(Object.assign({}, ticket.entity.visitorTicket || ticket.entity, {agentTicket: ticket.entity.agentTicket || {}}))
         } else {
             delete params.businessType
             Toast.show({

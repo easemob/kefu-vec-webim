@@ -53,7 +53,6 @@ export default function Video() {
     // 接受视频
     const recived = async ticketInfo => {
         if (!serviceAgora) {
-
             var cfgAgora = {
                 appid: ticketInfo.appId,
                 channel: ticketInfo.channel,
@@ -69,7 +68,8 @@ export default function Video() {
                 onUserLeft
             })
             // 获取访客信息 关闭信息的时候要用 后续不掉用关闭接口可以去除
-            const officialAccountList = await getOfficalAccounts()
+            params.businessType === undefined && await getOfficalAccounts()
+
             await serviceAgora.join(cfgAgora)
             setTime(true) // 开始计时
             setStep('current')
