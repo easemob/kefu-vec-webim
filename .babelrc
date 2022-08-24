@@ -1,24 +1,24 @@
 {
-    "presets": [
-        // "@babel/preset-env",
-        "@babel/preset-react",
-        [
-          "@babel/preset-env",
-          {
-            "targets": {
-              "chrome": "49",
-              "ios": "10"
-            }
-          }
-        ]
-    ],
-    "sourceType": "unambiguous",
-    "plugins": [
-      [
-        "@babel/plugin-transform-runtime",
-        {
-            "regenerator": true
-        }
-      ]
-    ]
-  }
+	"presets": [
+		// "@babel/preset-env",
+		"@babel/preset-react",
+		[
+			"@babel/preset-env",
+			{
+			"targets": {
+				"chrome": "49",
+				"ios": "10"
+			}
+			}
+		]
+	],
+	"sourceType": "unambiguous",
+	"plugins": [
+		[
+			"@babel/plugin-transform-runtime",
+			{
+				"regenerator": true
+			}
+		]
+	]
+}
