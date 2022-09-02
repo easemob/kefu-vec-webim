@@ -96,6 +96,7 @@ export default function Login({tenantId, setShowLogin, setVisitorInfoState}) {
                 preferredCountries={['cn', 'us']}
                 placeholder={intl.get('reserve_phone_placeholder')}
                 style={{paddingLeft: 0}}
+                autoFormat={false}
             />
             <VerCodeWrapper canCode={canCode}>
                 <Input
