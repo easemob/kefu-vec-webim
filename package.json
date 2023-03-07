@@ -40,11 +40,11 @@
     "sass-loader": "^12.6.0",
     "string-replace-loader": "^3.1.0",
     "style-loader": "^3.3.1",
+    "vconsole": "^3.14.6",
     "webpack": "^5.72.1",
     "webpack-bundle-analyzer": "^4.5.0",
     "webpack-cli": "^4.9.2",
-    "webpack-dev-server": "^4.9.0",
-    "vconsole": "^3.14.6"
+    "webpack-dev-server": "^4.9.0"
   },
   "dependencies": {
     "@netless/fastboard-react": "^0.3.3",
@@ -55,6 +55,7 @@
     "crypto-js": "^4.1.1",
     "easemob-kefu-webim": "^1.1.9",
     "js-cookie": "^3.0.1",
+    "jspdf": "^2.5.1",
     "moment": "^2.29.3",
     "query-string": "^7.1.1",
     "rc-upload": "^4.3.4",
