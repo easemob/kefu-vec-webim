@@ -182,3 +182,11 @@ $fs: 25px;
 		content: "\e601";
 	}
 }
+
+.icon-overturn {
+	@extend %font-shell-base-newagent;
+	&:before {
+		@extend %font-base-newagent;
+		content: "\e664";
+	}
+}

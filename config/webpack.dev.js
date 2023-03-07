@@ -1,6 +1,7 @@
 const { merge } = require('webpack-merge')
 const path = require('path')
 const common = require('./webpack.base')
+const fs = require('fs');
 
 const getPath = pathname => path.resolve(__dirname, pathname)
 
@@ -28,6 +29,11 @@ var vec = merge(common, {
     compress: true,
     // 启动的端口
     port: 8888,
+    // https: {
+    //   key: fs.readFileSync(path.join(__dirname, './cert/privatekey.pem'), 'utf8'),
+	  //   cert: fs.readFileSync(path.join(__dirname, './cert/certificate.crt'), 'utf8')
+    // },
+    // server: 'https',
     // 代理
     proxy: {
       "/push": {

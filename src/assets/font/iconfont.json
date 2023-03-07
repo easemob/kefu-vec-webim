@@ -6,6 +6,13 @@
   "description": "新版网页访客端icon",
   "glyphs": [
     {
+      "icon_id": "1350383",
+      "name": "翻转摄像头",
+      "font_class": "fanzhuanshexiangtou",
+      "unicode": "e664",
+      "unicode_decimal": 58980
+    },
+    {
       "icon_id": "26847478",
       "name": "预约挂号面性",
       "font_class": "yuyueguahaomianxing",

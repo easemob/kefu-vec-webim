@@ -47,6 +47,17 @@ export default React.forwardRef(function({step, config, serviceAgora, callId,set
         serviceAgora.localVideoTrack.setMuted(face); // false 打开 true 关闭
         setFace(!face)
     }
+    // 翻转摄像头
+    const handleOverTurn = async () => {
+        const cams = await AgoraRTC.getCameras()
+        let decideId = cams.find(item => item.label != serviceAgora.localVideoTrack._deviceName).deviceId
+        // 切换摄像头
+        serviceAgora.localVideoTrack.setDevice(decideId).then(() => {
+            console.log("set device success");
+        }).catch(e => {
+            console.log("set device error", e);
+        });
+    }
 
     const agentChangeMicroPhone = info => {
         let flag = info.action === 'on' ? true : false;
@@ -282,6 +293,9 @@ export default React.forwardRef(function({step, config, serviceAgora, callId,set
             <div onClick={handleFace}>
                 <span className={face ? 'icon-face' : 'icon-face-close'}></span>
             </div>
+            {utils.isMobile && <div onClick={handleOverTurn}>
+                <span className='icon-overturn'></span>
+            </div>}
             {profile.grayList.shareDesktop && !utils.isMobile && top && <div onClick={onDesktopControl}>
                 <span className={`icon-desktop-share ${whiteboardVisible ? 'gray' : ''}`}></span>
             </div>}

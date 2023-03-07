@@ -1,9 +1,9 @@
 @font-face {
   font-family: "newim"; /* Project id 2812636 */
-  src: url('iconfont.eot?t=1660203867084'); /* IE9 */
-  src: url('iconfont.eot?t=1660203867084#iefix') format('embedded-opentype'), /* IE6-IE8 */
-       url('iconfont.woff?t=1660203867084') format('woff'),
-       url('iconfont.ttf?t=1660203867084') format('truetype');
+  src: url('iconfont.eot?t=1678171676881'); /* IE9 */
+  src: url('iconfont.eot?t=1678171676881#iefix') format('embedded-opentype'), /* IE6-IE8 */
+       url('iconfont.woff?t=1678171676881') format('woff'),
+       url('iconfont.ttf?t=1678171676881') format('truetype');
 }
 
 .newim {
@@ -12,6 +12,10 @@
   font-style: normal;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+.newim-fanzhuanshexiangtou:before {
+  content: "\e664";
 }
 
 .newim-yuyueguahaomianxing:before {
