@@ -49,6 +49,9 @@ export default React.forwardRef(function({step, config, serviceAgora, callId,set
     }
     // 翻转摄像头
     const handleOverTurn = async () => {
+        // 打开视频才可以切换前后摄像头
+        if (!face) return
+
         const cams = await AgoraRTC.getCameras()
         let decideId = cams.find(item => item.label != serviceAgora.localVideoTrack._deviceName).deviceId
         // 切换摄像头
@@ -294,7 +297,7 @@ export default React.forwardRef(function({step, config, serviceAgora, callId,set
                 <span className={face ? 'icon-face' : 'icon-face-close'}></span>
             </div>
             {utils.isMobile && <div onClick={handleOverTurn}>
-                <span className='icon-overturn'></span>
+                <span className={`icon-overturn ${face ? '' : 'gray'}`}></span>
             </div>}
             {profile.grayList.shareDesktop && !utils.isMobile && top && <div onClick={onDesktopControl}>
                 <span className={`icon-desktop-share ${whiteboardVisible ? 'gray' : ''}`}></span>
