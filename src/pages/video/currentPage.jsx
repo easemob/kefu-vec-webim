@@ -19,6 +19,7 @@ export default React.forwardRef(function({step, config, serviceAgora, callId,set
     const [whiteboardRoomInfo, setWhiteboardRoomInfo] = useState(null);
     let [ callingScreenSwitch, setCallingScreenSwitch ] = useState(false);
     const [chatUnread, setChatUnread] = useState(null)
+    const [cams, setCams] = useState([])
 
     const videoRef = useRef();
 
@@ -48,11 +49,10 @@ export default React.forwardRef(function({step, config, serviceAgora, callId,set
         setFace(!face)
     }
     // 翻转摄像头
-    const handleOverTurn = async () => {
+    const handleOverTurn = () => {
         // 打开视频才可以切换前后摄像头
-        if (!face) return
+        if (!face || cams.length < 2) return
 
-        const cams = await AgoraRTC.getCameras()
         let decideId = cams.find(item => item.label != serviceAgora.localVideoTrack._deviceName).deviceId
         // 切换摄像头
         serviceAgora.localVideoTrack.setDevice(decideId).then(() => {
@@ -223,10 +223,19 @@ export default React.forwardRef(function({step, config, serviceAgora, callId,set
             event.off(SYSTEM_OPERA_CAMERA, agentChangeCamera)
         }
     }, [step])
+    
+    const fetchCams = async () => {
+        const cams = await AgoraRTC.getCameras()
+        setCams(cams)
+    }
+
+    useEffect(() => {
+        fetchCams()
+    }, [])
 
     let videoLinking = step === 'current' && !!remoteUsers.length; //通话中 有其他人加入
     var isDisabledWhiteboard = !videoLinking || callingScreenSwitch || whiteboardVisible;
-    
+
     return <CurrentWrapper className={step === 'current' ? '' : 'hide'}>
         <CurrentTitle>
             <span>{time ? intl.get('calling') : intl.get('waitCalling')}</span>
@@ -297,7 +306,7 @@ export default React.forwardRef(function({step, config, serviceAgora, callId,set
                 <span className={face ? 'icon-face' : 'icon-face-close'}></span>
             </div>
             {utils.isMobile && <div onClick={handleOverTurn}>
-                <span className={`icon-overturn ${face ? '' : 'gray'}`}></span>
+                <span className={`icon-overturn ${face && cams.length > 1 ? '' : 'gray'}`}></span>
             </div>}
             {profile.grayList.shareDesktop && !utils.isMobile && top && <div onClick={onDesktopControl}>
                 <span className={`icon-desktop-share ${whiteboardVisible ? 'gray' : ''}`}></span>
