@@ -21,6 +21,7 @@ var top = window.top === window.self // false 在iframe里面 true不在
 var config = commonConfig.getConfig()
 var params = queryString.parse(location.search)
 var hideDefault = params.hideDefaultButton || false
+params.frompage && params.frompage == 'webim' && (top = true) // webim直接引入链接，不能是js集成展示样式
 if (!top && params.hideDefaultButton === undefined) {
     hideDefault = false
 }
