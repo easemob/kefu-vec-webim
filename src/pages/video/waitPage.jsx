@@ -108,6 +108,16 @@ export default React.forwardRef(function({step, config, ws, setStep, params, cal
             }
             // 非预约任务去除sessionExt，防止访客插队
             typeof config.isReserveTask !== 'undefined' && !config.isReserveTask && (delete ext['sessionExt'])
+
+            // 在线接入vec需要增加sessionExt参数
+            if (params.source && params.source == 'relatedSession') {
+                ext.sessionExt = {
+                    source: 'relatedSession',
+                    relatedSessionId: params.relatedSessionId || '',
+                    relatedVisitorUserId: params.relatedVisitorUserId || '',
+                }
+            }
+
             ws.sendText(intl.get('inviteAgentVideo'), {
                 ext
             })

@@ -21,7 +21,8 @@ var top = window.top === window.self // false 在iframe里面 true不在
 var config = commonConfig.getConfig()
 var params = queryString.parse(location.search)
 var hideDefault = params.hideDefaultButton || false
-params.frompage && params.frompage == 'webim' && (top = true) // webim直接引入链接，不能是js集成展示样式
+var mergeVec = params.frompage && params.frompage == 'webim'
+mergeVec && (top = true) // webim直接引入链接，不能是js集成展示样式
 if (!top && params.hideDefaultButton === undefined) {
     hideDefault = false
 }
@@ -220,7 +221,7 @@ export default function Video() {
 
     return (
         <React.Fragment>
-            <Wrapper role={step} top={top} className={`${utils.isMobile ? 'full_screen' : ''} ${top || show || hideDefaultButton ? '' : 'hide'} ${chatVisible && !utils.isMobile ? chatPos : ''}`}>
+            <Wrapper role={step} top={top} className={`${utils.isMobile || mergeVec ? 'full_screen' : ''} ${top || show || hideDefaultButton ? '' : 'hide'} ${chatVisible && !utils.isMobile ? chatPos : ''}`}>
                 {!top && step !== 'enquiry' && <span onClick={handleMini} className={step === 'current' ? 'icon-mini' : 'icon-close'}></span>}
                 <CurrentPage
                     step={step}
