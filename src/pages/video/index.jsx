@@ -208,9 +208,18 @@ export default function Video() {
         }
     }, [step])
 
+    function handleMessage(e) {
+        if (e.data && e.data.event && e.data.event == 'webimVecClose') {
+            handleClose()
+        }
+    }
+
     useEffect(() => {
+        window.addEventListener('message', handleMessage)
+
         return () => {
             clearTimeout(enquiryTimer)
+            window.removeEventListener('message', handleMessage)
         }
     }, [])
 
