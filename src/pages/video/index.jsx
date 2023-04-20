@@ -213,7 +213,11 @@ export default function Video() {
         console.log(111111, 'start')
         if (e.data && e.data.event && e.data.event == 'webimVecClose') {
             console.log(111111, '接受')
-            handleClose(e)
+            if (Math.random() > 0.5) {
+                handleClose.apply(null, [e, {zhy: 123}])
+            } else {
+                handleClose.call(null, e)
+            }            
         }
     }
 
