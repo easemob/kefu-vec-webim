@@ -213,7 +213,7 @@ export default function Video() {
         console.log(111111, 'start')
         if (e.data && e.data.event && e.data.event == 'webimVecClose') {
             console.log(111111, '接受')
-            handleClose({agentReject: false})
+            handleClose(e)
         }
     }
 
