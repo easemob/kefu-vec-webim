@@ -97,7 +97,7 @@ export default function Video() {
     }
 
     const handleClose = (e) => {
-        console.log(111111, '执行', step)
+        console.log(111111, '执行', step, e)
         waitPageRef.current.handleClose(e)
         currentPageRef.current.handleClose()
         setTime(false)
@@ -213,7 +213,7 @@ export default function Video() {
         console.log(111111, 'start')
         if (e.data && e.data.event && e.data.event == 'webimVecClose') {
             console.log(111111, '接受')
-            handleClose({})
+            handleClose({agentReject: false})
         }
     }
 
