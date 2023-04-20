@@ -97,7 +97,6 @@ export default function Video() {
     }
 
     const handleClose = (e) => {
-        console.log(111111, '执行', step, e)
         waitPageRef.current.handleClose(e)
         currentPageRef.current.handleClose()
         setTime(false)
@@ -210,14 +209,12 @@ export default function Video() {
     }, [step])
 
     function handleMessage(e) {
-        console.log(111111, 'start')
         if (e.data && e.data.event && e.data.event == 'webimVecClose') {
-            console.log(111111, '接受')
-            if (Math.random() > 0.5) {
-                handleClose.apply(null, [e, {zhy: 123}])
-            } else {
+            // if (Math.random() > 0.5) {
+            //     handleClose.apply(null, [e, {zhy: 123}])
+            // } else {
                 handleClose.call(null, e)
-            }            
+            // }            
         }
     }
 
