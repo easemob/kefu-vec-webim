@@ -157,6 +157,11 @@ export function visitorWaiting(tenantId, rtcSessionId) {
 	return request({
 		url: `/v1/kefurtc/tenant/${tenantId}/webim/session/${rtcSessionId}/waiting`,
 		method: 'get'
+	}).then(ret => {
+		ret.entity.rtcSessionId = rtcSessionId
+		return Object.assign({}, ret)
+	}, err => {
+		return err
 	})
 }
 

@@ -40,6 +40,7 @@ export default React.forwardRef(function({step, config, ws, setStep, params, cal
     })
 
     const stepRef = useRef()
+    const sessionRef = useRef()
     let navigate = useNavigate()
 
     const callbackRecived = () => {
@@ -161,18 +162,29 @@ export default React.forwardRef(function({step, config, ws, setStep, params, cal
     // 会话信息&&排队
     const receiveRtcSession = sInfo => {
         setSessionInfo(sInfo)
+        sessionRef.current = sInfo
         // callType  视频类型，呼入: 0，呼出: 1, 只有呼入才会调用查询排队人数接口
         if (sInfo.callType === 0) {
-            setWaitTimer(setInterval(() => {
+            let id = setInterval(() => {
                 getWaitData(sInfo.tenantId, sInfo.rtcSessionId)
-            }, 3000))
+            }, 3000)
+
+            setWaitTimer(old => {
+                if (old) {
+                    return Object.assign({}, old, {[sInfo.rtcSessionId]: id})
+                } else {
+                    return {[sInfo.rtcSessionId]: id}
+                }
+            })
         }
     }
 
     const getWaitData = (tenantId, ssid) => {
-        visitorWaiting(tenantId, ssid).then(({entity: {waitingFlag, visitorWaitingNumber}}) => {
-            stepRef.current.getAttribute('role') === 'wait' && setTip(visitorWaitingNumber)
-            setWaitTimerFlag(waitingFlag)
+        visitorWaiting(tenantId, ssid).then(({entity: {waitingFlag, visitorWaitingNumber, rtcSessionId}}) => {
+            if (rtcSessionId == sessionRef.current.rtcSessionId) {
+                stepRef.current.getAttribute('role') === 'wait' && setTip(visitorWaitingNumber)
+                setWaitTimerFlag(waitingFlag)
+            }
         })
     }
 
@@ -253,11 +265,19 @@ export default React.forwardRef(function({step, config, ws, setStep, params, cal
     }
 
     useEffect(() => {
+        waitTimer && Object.keys(waitTimer).forEach(key => {
+            if (waitTimer[key] && sessionRef.current.rtcSessionId != key) {
+                clearInterval(waitTimer[key])
+            }
+        })
+    
         if (waitTimerFlag !== 'true') {
-            clearInterval(waitTimer)
+            // 清除最后一个当前定时器
+            clearInterval(waitTimer[sessionRef.current.rtcSessionId])
+
             setWaitTimerFlag('true')
         }
-    }, [waitTimerFlag, waitTimer])
+    }, [waitTimerFlag, waitTimer, sessionRef])
 
     useEffect(() => {
         event.on(SYSTEM_RTCSESSION_INFO, receiveRtcSession) // 会话信息，开始排队
@@ -277,7 +297,12 @@ export default React.forwardRef(function({step, config, ws, setStep, params, cal
 
         return () => {
             clearTimeout(timer)
-            clearTimeout(waitTimer)
+            // clearInterval(waitTimer)
+            waitTimer && Object.keys(waitTimer).forEach(key => {
+                if (waitTimer[key]) {
+                    clearInterval(waitTimer[key])
+                }
+            })
         }
     }, [])
 
