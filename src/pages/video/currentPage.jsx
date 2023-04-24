@@ -56,8 +56,7 @@ export default React.forwardRef(function({step, config, serviceAgora, callId,set
         let decideId = cams.find(item => item.label != serviceAgora.localVideoTrack._deviceName).deviceId
         // 切换摄像头
         serviceAgora.localVideoTrack.setDevice(decideId).then(() => {
-            console.log(111111, serviceAgora.localVideoTrack)
-            console.log("set device success");
+            console.log("set device success", serviceAgora.localVideoTrack);
         }).catch(e => {
             console.log("set device error", e);
         });
